@@ -1,0 +1,5 @@
+namespace ZExcel;
+
+interface IComparable
+{
+}

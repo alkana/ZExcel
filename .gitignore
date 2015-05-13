@@ -1,0 +1,7 @@
+.temp
+compile-errors.log
+compile.log
+
+ext/*
+!ext/kernel/
+!ext/kernel/*
