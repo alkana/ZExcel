@@ -2254,10 +2254,6 @@ class Calculation
     {
         throw new \Exception("Not implemented yet!");
     }
-
-        // Return
-        return returnValue;
-    }
     
     private function _processTokenStack(tokens, cellID = null, <\ZExcel\Cell> pCell = null)
     {
