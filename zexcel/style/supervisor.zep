@@ -94,9 +94,9 @@ abstract class Supervisor
         
         for key, value in vars {
             if ((is_object(value)) && (key != "parent")) {
-                let this->key = clone value;
+                let this->{key} = clone value;
             } else {
-                let this->key = value;
+                let this->{key} = value;
             }
         }
     }

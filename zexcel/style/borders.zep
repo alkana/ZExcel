@@ -247,6 +247,8 @@ class Borders extends Supervisor implements ZIComparable
 
     public function setDiagonalDirection(pValue = \ZExcel\Style\Borders::DIAGONAL_NONE)
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = \ZExcel\Style\Borders::DIAGONAL_NONE;
         }

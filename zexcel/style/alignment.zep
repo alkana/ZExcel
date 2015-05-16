@@ -145,6 +145,8 @@ class Alignment extends Supervisor implements ZIComparable
     
     public function setHorizontal(var pValue = \ZExcel\Style\Alignment::HORIZONTAL_GENERAL) -> <\ZExcel\Style\Alignment>
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = \ZExcel\Style\Alignment::HORIZONTAL_GENERAL;
         }
@@ -171,6 +173,8 @@ class Alignment extends Supervisor implements ZIComparable
     
     public function setVertical(var pValue = \ZExcel\Style\Alignment::VERTICAL_BOTTOM) -> <\ZExcel\Style\Alignment>
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = \ZExcel\Style\Alignment::VERTICAL_BOTTOM;
         }
@@ -197,6 +201,8 @@ class Alignment extends Supervisor implements ZIComparable
     
     public function setTextRotation(int pValue = 0) -> <\ZExcel\Style\Alignment>
     {
+        var styleArray;
+        
         // Excel2007 value 255 => PHPExcel value -165
         if (pValue == 255) {
             let pValue = -165;
@@ -229,6 +235,8 @@ class Alignment extends Supervisor implements ZIComparable
     
     public function setWrapText(var pValue = false) -> <\ZExcel\Style\Alignment>
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = false;
         }
@@ -256,6 +264,8 @@ class Alignment extends Supervisor implements ZIComparable
     
     public function setShrinkToFit(var pValue = false) -> <\ZExcel\Style\Alignment>
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = false;
         }
@@ -281,6 +291,8 @@ class Alignment extends Supervisor implements ZIComparable
     
     public function setIndent(int pValue = 0) -> <\ZExcel\Style\Alignment>
     {
+        var styleArray;
+        
         if (pValue > 0) {
             if (this->getHorizontal() != self::HORIZONTAL_GENERAL &&
                 this->getHorizontal() != self::HORIZONTAL_LEFT &&
@@ -311,6 +323,8 @@ class Alignment extends Supervisor implements ZIComparable
     
     public function setReadorder(int pValue = 0) -> <\ZExcel\Style\Alignment>
     {
+        var styleArray;
+        
         if (pValue < 0 || pValue > 2) {
             let pValue = 0;
         }

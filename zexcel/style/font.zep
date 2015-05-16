@@ -161,6 +161,8 @@ class Font extends Supervisor implements ZIComparable
 
     public function setName(string pValue = "Calibri")
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = "Calibri";
         }
@@ -187,6 +189,8 @@ class Font extends Supervisor implements ZIComparable
 
     public function setSize(pValue = 10)
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = 10;
         }
@@ -214,6 +218,8 @@ class Font extends Supervisor implements ZIComparable
 
     public function setBold(pValue = false)
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = false;
         }
@@ -241,6 +247,8 @@ class Font extends Supervisor implements ZIComparable
 
     public function setItalic(var pValue = false)
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = false;
         }
@@ -268,6 +276,8 @@ class Font extends Supervisor implements ZIComparable
 
     public function setSuperScript(var pValue = false)
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = false;
         }
@@ -296,6 +306,8 @@ class Font extends Supervisor implements ZIComparable
 
     public function setSubScript(var pValue = false)
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = false;
         }
@@ -324,6 +336,8 @@ class Font extends Supervisor implements ZIComparable
 
     public function setUnderline(pValue = self::UNDERLINE_NONE)
     {
+        var styleArray;
+        
         if (is_bool(pValue)) {
             let pValue = (pValue) ? self::UNDERLINE_SINGLE : self::UNDERLINE_NONE;
         } elseif (pValue == "") {
@@ -353,6 +367,8 @@ class Font extends Supervisor implements ZIComparable
 
     public function setStrikethrough(var pValue = false)
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = false;
         }
@@ -376,7 +392,7 @@ class Font extends Supervisor implements ZIComparable
 
     public function setColor(<\ZExcel\Style\Color> pValue = null)
     {
-        var color;
+        var color, styleArray;
     	
     	let color = pValue;
     	

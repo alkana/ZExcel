@@ -123,6 +123,8 @@ class Excel2007 extends Abstrac implements IReader
         let zipClass = \ZExcel\Settings::getZipClass();
 
         let zip = new {zipClass}();
+        
+        throw new \Exception("Not full implemented yet!");
 	}
 
 	private static function _readColor(color, background = false)

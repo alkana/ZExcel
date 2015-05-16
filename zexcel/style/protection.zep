@@ -24,7 +24,7 @@ class Protection extends Supervisor implements ZIComparable
     protected hidden;
 
     /**
-     * Create a new PHPExcel_Style_Protection
+     * Create a new \ZExcel\Style\Protection
      *
      * @param    boolean    isSupervisor    Flag indicating if this is a supervisor or not
      *                                    Leave this value at default unless you understand exactly what
@@ -49,7 +49,7 @@ class Protection extends Supervisor implements ZIComparable
      * Get the shared style component for the currently active cell in currently active sheet.
      * Only used for style supervisor
      *
-     * @return PHPExcel_Style_Protection
+     * @return \ZExcel\Style\Protection
      */
     public function getSharedComponent()
     {
@@ -80,8 +80,8 @@ class Protection extends Supervisor implements ZIComparable
      * </code>
      *
      * @param    array    pStyles    Array containing style information
-     * @throws    PHPExcel_Exception
-     * @return PHPExcel_Style_Protection
+     * @throws    \ZExcel\Exception
+     * @return \ZExcel\Style\Protection
      */
     public function applyFromArray(pStyles = null)
     {
@@ -97,7 +97,7 @@ class Protection extends Supervisor implements ZIComparable
                 }
             }
         } else {
-            throw new PHPExcel_Exception("Invalid style array passed.");
+            throw new \ZExcel\Exception("Invalid style array passed.");
         }
         
         return this;
@@ -120,10 +120,12 @@ class Protection extends Supervisor implements ZIComparable
      * Set locked
      *
      * @param string pValue
-     * @return PHPExcel_Style_Protection
+     * @return \ZExcel\Style\Protection
      */
     public function setLocked(pValue = self::PROTECTION_INHERIT)
     {
+        var styleArray;
+        
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["locked": pValue]);
             this->getActiveSheet()
@@ -152,10 +154,12 @@ class Protection extends Supervisor implements ZIComparable
      * Set hidden
      *
      * @param string pValue
-     * @return PHPExcel_Style_Protection
+     * @return \ZExcel\Style\Protection
      */
     public function setHidden(pValue = self::PROTECTION_INHERIT)
     {
+        var styleArray;
+        
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["hidden": pValue]);
             this->getActiveSheet()

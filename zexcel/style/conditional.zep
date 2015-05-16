@@ -169,15 +169,15 @@ class Conditional implements ZIComparable
 
     public function __clone()
     {
-    	var key, value;
+    	var vars, key, value;
     	
         let vars = get_object_vars(this);
         
         for key, value in vars {
             if (is_object(value)) {
-                let this->key = clone value;
+                let this->{key} = clone value;
             } else {
-                let this->key = value;
+                let this->{key} = value;
             }
         }
     }

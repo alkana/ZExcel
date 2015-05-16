@@ -99,8 +99,6 @@ abstract class Abstrac implements IReader
 			return false;
 		}
 		
-		// let readable = this->_isValidFormat();
-		
 		fclose (this->_fileHandle);
 		
 		return false;

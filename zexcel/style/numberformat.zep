@@ -196,6 +196,8 @@ class NumberFormat extends Supervisor implements ZIComparable
      */
     public function setFormatCode(pValue = \ZExcel\Style\NumberFormat::FORMAT_GENERAL)
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = \ZExcel\Style\NumberFormat::FORMAT_GENERAL;
         }
@@ -233,7 +235,8 @@ class NumberFormat extends Supervisor implements ZIComparable
      */
     public function setBuiltInFormatCode(pValue = 0)
     {
-
+        var styleArray;
+        
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["code": self::builtInFormatCode(pValue)]);
             this->getActiveSheet()->getStyle(this->getSelectedCells())->applyFromArray(styleArray);
@@ -281,7 +284,7 @@ class NumberFormat extends Supervisor implements ZIComparable
             let self::builtInFormats[39] = "#,##0.00;(#,##0.00)";
             let self::builtInFormats[40] = "#,##0.00;[Red](#,##0.00)";
 
-            let self::builtInFormats[44] = '_("$"* #,##0.00_);_("$"* \(#,##0.00\);_("$"* "-"??_);_(@_)';
+            let self::builtInFormats[44] = "_(\"$\"* #,##0.00_);_(\"$\"* \(#,##0.00\);_(\"$\* \"-\"??_);_(@_)";
             let self::builtInFormats[45] = "mm:ss";
             let self::builtInFormats[46] = "[h]:mm:ss";
             let self::builtInFormats[47] = "mmss.0";
@@ -440,6 +443,8 @@ class NumberFormat extends Supervisor implements ZIComparable
 
     private static function formatAsDate(value, format)
     {
+        var dateObj;
+        
         // dvc: convert Excel formats to PHP date formats
         self::getDateFormatReplacements();
         self::getDateFormatReplacements12();
@@ -470,11 +475,14 @@ class NumberFormat extends Supervisor implements ZIComparable
 
     private static function formatAsPercentage(value, format)
     {
+        var s = null, m = [];
+        
         if (format === self::FORMAT_PERCENTAGE) {
             let value = round((100 * value), 0) . "%";
         } else {
             if (preg_match("/\.[#0]+/i", format, m)) {
-                let s = substr(m[0], 0, 1) . (strlen(m[0]) - 1);
+                let s = (strlen(m[0]) - 1);
+                let s = substr(m[0], 0, 1) . s;
                 let format = str_replace(m[0], s, format);
             }
             if (preg_match("/^[#0]+/", format, m)) {
@@ -490,6 +498,9 @@ class NumberFormat extends Supervisor implements ZIComparable
 
     private static function formatAsFraction(value, format)
     {
+        var sign, integerPart = 0, decimalPart, decimalLength, decimalDivisor,
+            Gcd, adjustedDecimalPart, adjustedDecimalDivisor = 0;
+        
         let sign = (value < 0) ? "-" : "";
 
         let integerPart = floor(abs(value));
@@ -506,10 +517,11 @@ class NumberFormat extends Supervisor implements ZIComparable
             if (integerPart == 0) {
                 let integerPart = "";
             }
-            let value = "signintegerPart adjustedDecimalPart/adjustedDecimalDivisor";
+            let value = sign . integerPart . " " . adjustedDecimalPart . "/" . adjustedDecimalDivisor;
         } else {
-            let adjustedDecimalPart += integerPart * adjustedDecimalDivisor;
-            let value = "signadjustedDecimalPart/adjustedDecimalDivisor";
+            let adjustedDecimalDivisor = adjustedDecimalDivisor * integerPart;
+            let adjustedDecimalPart += adjustedDecimalDivisor;
+            let value = sign . adjustedDecimalPart . "/" . adjustedDecimalDivisor;
         }
         
         return [value, format];
@@ -517,9 +529,10 @@ class NumberFormat extends Supervisor implements ZIComparable
 
     private static function complexNumberFormatMask(number, mask, level = 0)
     {
-    	var block;
+    	var block, sign, numbers, masks, result1, result2, r,
+    		divisor, size, offset, blockValue, result = [];
     
-        let sign = (number < 0.0);
+        let sign = (number < 0);
         let number = abs(number);
         if (strpos(mask, ".") !== false) {
             let numbers = explode(".", number . ".0");
@@ -534,7 +547,7 @@ class NumberFormat extends Supervisor implements ZIComparable
             let result = array_reverse(result[0]);
 
             for block in result {
-                let divisor = 1 . block[0];
+                let divisor = "1" . block[0];
                 let size = strlen(block[0]);
                 let offset = block[1];
 
@@ -564,10 +577,13 @@ class NumberFormat extends Supervisor implements ZIComparable
      * @param array        callBack    Callback function for additional formatting of string
      * @return string    Formatted string
      */
-    public static function toFormattedString(value = "0", format = \ZExcel\Style\NumberFormat::FORMAT_GENERAL, callBack = null)
+    public static function toFormattedString(var value = "0", var format = \ZExcel\Style\NumberFormat::FORMAT_GENERAL, var callback = null)
     {
-    	var value;
-    	
+        var sections, formatColor, color_regex, arry, useThousands,
+        	scale, matches, n, number_regex, left, dec, right,
+        	minWidth, sprintf_pattern, currencyFormat,
+        	currencyCode, writerInstance, m = [], tmp = [];
+        
         // For now we do not treat strings although section 4 of a format code affects strings
         if (!is_numeric(value)) {
             return value;
@@ -647,7 +663,7 @@ class NumberFormat extends Supervisor implements ZIComparable
 //                format = str_replace(array("\\"", "*"), array(""", ""), format);
 
                 // Some non-number strings are quoted, so we"ll get rid of the quotes, likewise any positional * symbols
-                let format = str_replace(['"', '*'], '', format);
+                let format = str_replace(["\"", "*"], "", format);
 
                 // Find out if we need thousands separator
                 // This is indicated by a comma enclosed by a digit placeholder:
@@ -703,8 +719,8 @@ class NumberFormat extends Supervisor implements ZIComparable
                             let value = number_format(
                                 value,
                                 strlen(right),
-                                \ZExcel\Shared\String::getDecimalSeparator(),
-                                \ZExcel\Shared\String::getThousandsSeparator()
+                                \ZExcel\Shared\Strin::getDecimalSeparator(),
+                                \ZExcel\Shared\Strin::getThousandsSeparator()
                             );
                             let value = preg_replace(number_regex, value, format);
                         } else {
@@ -714,7 +730,8 @@ class NumberFormat extends Supervisor implements ZIComparable
                             } elseif (preg_match("/0([^\d\.]+)0/", format)) {
                                 let value = self::complexNumberFormatMask(value, format);
                             } else {
-                                let sprintf_pattern = "%0minWidth." . strlen(right) . "f";
+                            	let sprintf_pattern = strlen(right);
+                                let sprintf_pattern = "%0" . minWidth . "." . sprintf_pattern . "f";
                                 let value = sprintf(sprintf_pattern, value);
                                 let value = preg_replace(number_regex, value, format);
                             }
@@ -729,7 +746,7 @@ class NumberFormat extends Supervisor implements ZIComparable
                     let currencyCode = tmp[0];
                     
                     if (currencyCode == "") {
-                        let currencyCode = \ZExcel\Shared\String::getCurrencyCode();
+                        let currencyCode = \ZExcel\Shared\Strin::getCurrencyCode();
                     }
                     let value = preg_replace("/\[\([^\]]*)\]/u", currencyCode, value);
                 }
@@ -737,10 +754,9 @@ class NumberFormat extends Supervisor implements ZIComparable
         }
 
         // Additional formatting provided by callback function
-        if (callBack !== null) {
+        if (callback !== null) {
         	let writerInstance = callback[0];
-        	let functon = callBack;
-            let value = writerInstance->{functon}(value, formatColor);
+            let value = writerInstance->{callback}(value, formatColor);
         }
 
         return value;

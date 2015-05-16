@@ -126,6 +126,8 @@ class Fill extends Supervisor implements ZIComparable
 
     public function setFillType(pValue = \ZExcel\Style\Fill::FILL_NONE)
     {
+        var styleArray;
+        
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["type": pValue]);
             this->getActiveSheet()->getStyle(this->getSelectedCells())->applyFromArray(styleArray);
@@ -147,6 +149,8 @@ class Fill extends Supervisor implements ZIComparable
 
     public function setRotation(int pValue = 0)
     {
+        var styleArray;
+        
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["rotation": pValue]);
             this->getActiveSheet()
@@ -166,7 +170,7 @@ class Fill extends Supervisor implements ZIComparable
 
     public function setStartColor(<\ZExcel\Style\Color> pValue = null)
     {
-    	var color;
+    	var color, styleArray;
     	
     	let color = pValue;
     	
@@ -194,7 +198,7 @@ class Fill extends Supervisor implements ZIComparable
 
     public function setEndColor(<\ZExcel\Style\Color> pValue = null)
     {
-        var color;
+        var color, styleArray;
     	
     	let color = pValue;
     	

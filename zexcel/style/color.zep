@@ -70,6 +70,8 @@ class Color extends Supervisor implements ZIComparable
 
     public function getStyleArray(array arry)
     {
+        var key;
+        
     	array output = [];
     	
         switch (this->parentPropertyName) {
@@ -122,6 +124,8 @@ class Color extends Supervisor implements ZIComparable
 
     public function setARGB(pValue = \ZExcel\Style\Color::COLOR_BLACK)
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = \ZExcel\Style\Color::COLOR_BLACK;
         }
@@ -146,8 +150,10 @@ class Color extends Supervisor implements ZIComparable
         return substr(this->argb, 2);
     }
 
-    public function setRGB(string pValue = "000000")
+    public function setRGB(var pValue = "000000")
     {
+        var styleArray;
+        
         if (pValue == "") {
             let pValue = "000000";
         }
@@ -167,13 +173,15 @@ class Color extends Supervisor implements ZIComparable
 
     private static function getColourComponent(string Rgb, int offset, boolean hex = true)
     {
-        let colour = substr(Rgb, offset, 2);
+        var color;
+        
+        let color = substr(Rgb, offset, 2);
         
         if (!hex) {
-            let colour = hexdec(colour);
+            let color = hexdec(color);
         }
         
-        return colour;
+        return color;
     }
 
     public static function getRed(string Rgb, boolean hex = true)
@@ -193,6 +201,8 @@ class Color extends Supervisor implements ZIComparable
 
     public static function changeBrightness(string hex, var adjustPercentage)
     {
+        var rgba, red, green, blue, rgb;
+        
         let rgba = (strlen(hex) == 8);
 
         let red = self::getRed(hex, false);

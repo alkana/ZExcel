@@ -2,7 +2,7 @@ namespace ZExcel;
 
 class Settings
 {
-	const PCLZIP     = "\ZExcel\Shared\ZipArchive";
+    const PCLZIP     = "\ZExcel\Shared\ZipArchive";
     const ZIPARCHIVE = "\ZipArchive";
 
     const CHART_RENDERER_JPGRAPH = "jpgraph";
@@ -105,31 +105,29 @@ class Settings
 
     public static function setLibXmlLoaderOptions(var options = null)
     {
-    	var tmp = 0;
-    	
+        var tmp = 0;
+        
         if (is_null(options) && defined(LIBXML_DTDLOAD)) {
-        	let tmp = LIBXML_DTDLOAD | LIBXML_DTDATTR;
+            let tmp = LIBXML_DTDLOAD | LIBXML_DTDATTR;
             let options = LIBXML_DTDLOAD | LIBXML_DTDATTR;
         }
         
         let tmp = (options == (LIBXML_DTDLOAD | LIBXML_DTDATTR));
         
-		libxml_disable_entity_loader(tmp);
+        libxml_disable_entity_loader(tmp);
         
-		let self::libXmlLoaderOptions = options;
+        let self::libXmlLoaderOptions = options;
     }
 
     public static function getLibXmlLoaderOptions()
     {
-		var tmp;
-		
-		if (is_null(self::libXmlLoaderOptions) && defined(LIBXML_DTDLOAD)) {
+        var tmp;
+        
+        if (is_null(self::libXmlLoaderOptions) && defined(LIBXML_DTDLOAD)) {
             let tmp = LIBXML_DTDLOAD | LIBXML_DTDATTR;
             
             self::setLibXmlLoaderOptions(tmp);
         }
-        
-        // libxml_disable_entity_loader(self::libXmlLoaderOptions == (LIBXML_DTDLOAD | LIBXML_DTDATTR));
         
         return self::libXmlLoaderOptions;
     }

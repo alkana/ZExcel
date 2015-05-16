@@ -72,7 +72,6 @@ class Border extends Supervisor implements ZIComparable
             case "outline":
             case "vertical":
                 throw new \ZExcel\Exception("Cannot get shared component for a pseudo-border.");
-                break;
             case "bottom":
                 return this->parent->getSharedComponent()->getBottom();
             case "diagonal":
@@ -88,7 +87,9 @@ class Border extends Supervisor implements ZIComparable
 
     public function getStyleArray(array arry)
     {
-    	array output;
+    	var key;
+    	
+    	array output = [];
     
         switch (this->parentPropertyName) {
             case "allBorders":
@@ -142,7 +143,8 @@ class Border extends Supervisor implements ZIComparable
 
     public function setBorderStyle(var pValue = \ZExcel\Style\Border::BORDER_NONE)
     {
-
+        var styleArray;
+        
         if (empty(pValue)) {
             let pValue = \ZExcel\Style\Border::BORDER_NONE;
         } elseif (is_bool(pValue) && pValue) {
@@ -166,8 +168,8 @@ class Border extends Supervisor implements ZIComparable
 
     public function setColor(<\ZExcel\Style\Color> pValue = null)
     {
-    	var color;
-    	
+        var styleArray, color;
+        
     	let color = pValue;
     	
         // make sure parameter is a real color and not a supervisor

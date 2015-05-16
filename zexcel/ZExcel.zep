@@ -2,7 +2,7 @@ namespace ZExcel;
 
 class ZExcel
 {
-	private uniqueID;
+    private uniqueID;
 
     /**
      * Document properties
@@ -401,8 +401,8 @@ class ZExcel
      */
     public function createSheet(int iSheetIndex = null) -> <\ZExcel\Worksheet>
     {
-    	var newSheet;
-    	
+        var newSheet;
+        
         let newSheet = new \ZExcel\Worksheet(this);
         this->addSheet(newSheet, iSheetIndex);
         
@@ -441,7 +441,7 @@ class ZExcel
      */
     public function removeSheetByIndex(int pIndex = 0)
     {
-		throw new \Exception("Not implemented yet!");
+        throw new \Exception("Not implemented yet!");
     }
 
     /**
@@ -486,8 +486,8 @@ class ZExcel
      */
     public function getIndex(<\ZExcel\Worksheet> pSheet) -> string
     {
-    	var key, value;
-    	
+        var key, value;
+        
         for key, value in this->workSheetCollection {
             if (value->getHashCode() == pSheet->getHashCode()) {
                 return key;
@@ -561,11 +561,12 @@ class ZExcel
      */
     public function getSheetNames() -> array
     {
-    	var worksheetCount;
+        var worksheetCount;
         array returnValue = [];
-    	int i = 0;
+        int i = 0;
         
         let worksheetCount = this->getSheetCount() - 1;
+        
         for i in range(1, worksheetCount) {
             let returnValue[] = this->getSheet(i)->getTitle();
         }
@@ -656,9 +657,10 @@ class ZExcel
      */
     public function __clone()
     {
-    	var key, val;
-    	
-        for key, val in this {
+        var vars, key, val;
+        
+        let vars = get_object_vars(this);
+        for key, val in vars {
             if (is_object(val) || (is_array(val))) {
                 let this->{key} = unserialize(serialize(val));
             }
@@ -694,7 +696,7 @@ class ZExcel
      */
     public function getCellXfByHashCode(string pValue = "")
     {
-    	var cellXf;
+        var cellXf;
     
         for cellXf in this->cellXfCollection {
             if (cellXf->getHashCode() == pValue) {
