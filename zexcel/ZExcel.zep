@@ -474,7 +474,18 @@ class ZExcel
      */
     public function getSheetByName(string pName = "")
     {
-        throw new \Exception("Not implemented yet!");
+        var worksheet, workSheetCount = 0, i = 0;
+        
+        let workSheetCount = count(this->workSheetCollection) - 1;
+        
+        for i in range(0, workSheetCount) {
+            let worksheet = this->workSheetCollection[i]; 
+            if (worksheet->getTitle() === pName) {
+                return worksheet;
+            }
+        }
+        
+        return null;
     }
 
     /**

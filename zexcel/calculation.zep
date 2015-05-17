@@ -2075,6 +2075,13 @@ class Calculation
         }
     }
     
+    public function renameCalculationCacheForWorksheet(fromWorksheetName, toWorksheetName) {
+        if (isset(this->_calculationCache[fromWorksheetName])) {
+            let this->_calculationCache[toWorksheetName] = this->_calculationCache[fromWorksheetName];
+            unset(this->_calculationCache[fromWorksheetName]);
+        }
+    }
+    
     public function calculateCellValue(<\ZExcel\Cell> pCell = null, resetLog = null)
     {
         var returnArrayAsType, result, cellAddress, e, testResult, r, c;

@@ -13,7 +13,7 @@ class DefaultValueBinder implements IValueBinder
     {
         // sanitize UTF-8 strings
         if (is_string(value)) {
-            let value = \ZExcel\Shared\Strin::SanitizeUTF8(value);
+            let value = \ZExcel\Shared\Stringg::SanitizeUTF8(value);
         } elseif (is_object(value)) {
             // Handle any objects that might be injected
             if (value instanceof \DateTime) {

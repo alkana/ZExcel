@@ -842,25 +842,7 @@ class Cell
      */
     public static function stringFromColumnIndex(pColumnIndex = 0)
     {
-        //    Using a lookup cache adds a slight memory overhead, but boosts speed
-        //    caching using a static within the method is faster than a class static,
-        //        though it's additional memory overhead
-        array _indexCache = [];
-
-        if (!isset(_indexCache[pColumnIndex])) {
-            // Determine column string
-            if (pColumnIndex < 26) {
-                let _indexCache[pColumnIndex] = chr(65 + pColumnIndex);
-            } elseif (pColumnIndex < 702) {
-                let _indexCache[pColumnIndex] = chr(64 + (pColumnIndex / 26)) .
-                                              chr(65.0 + pColumnIndex % 26);
-            } else {
-                let _indexCache[pColumnIndex] = chr(64 + ((pColumnIndex - 26) / 676)) .
-                                              chr(65 + (((pColumnIndex - 26) % 676) / 26)) .
-                                              chr(65.0 + pColumnIndex % 26);
-            }
-        }
-        return _indexCache[pColumnIndex];
+        throw new \Exception("Not implemented yet!");
     }
 
     /**

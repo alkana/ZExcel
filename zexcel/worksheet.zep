@@ -17,7 +17,7 @@ class Worksheet implements IComparable
      *
      * @var array
      */
-    private static _invalidCharacters = ["*", ":", "/", "\\", "?", "[", "]"];
+    private static _invalidCharacters;
 
     /**
      * Parent spreadsheet
@@ -171,14 +171,14 @@ class Worksheet implements IComparable
      *
      * @var \ZExcel\Worksheet\AutoFilter
      */
-    private _autoFilter = NULL;
+    private _autoFilter = null;
 
     /**
      * Freeze pane
      *
      * @var string
      */
-    private _freezePane = '';
+    private _freezePane = "";
 
     /**
      * Show gridlines?
@@ -227,21 +227,21 @@ class Worksheet implements IComparable
      *
      * @var string
      */
-    private _activeCell = 'A1';
+    private _activeCell = "A1";
 
     /**
      * Selected cells
      *
      * @var string
      */
-    private _selectedCells = 'A1';
+    private _selectedCells = "A1";
 
     /**
      * Cached highest column
      *
      * @var string
      */
-    private _cachedHighestColumn = 'A';
+    private _cachedHighestColumn = "A";
 
     /**
      * Cached highest row
@@ -312,38 +312,38 @@ class Worksheet implements IComparable
         this->setTitle(pTitle, false);
         // setTitle can change $pTitle
         this->setCodeName(this->getTitle());
-        this->setSheetState(\ZExcel\Worksheet::SHEETSTATE_VISIBLE);
+        // this->setSheetState(\ZExcel\Worksheet::SHEETSTATE_VISIBLE);
 
-        let this->_cellCollection = \ZExcel\CachedObjectStorageFactory::getInstance(this);
+        // let this->_cellCollection = \ZExcel\CachedObjectStorageFactory::getInstance(this);
 
         // Set page setup
-        let this->_pageSetup  = new \ZExcel\Worksheet\PageSetup();
+        // let this->_pageSetup  = new \ZExcel\Worksheet\PageSetup();
 
         // Set page margins
-        let this->_pageMargins = new \ZExcel\Worksheet\PageMargins();
+        // let this->_pageMargins = new \ZExcel\Worksheet\PageMargins();
 
         // Set page header/footer
-        let this->_headerFooter = new \ZExcel\Worksheet\HeaderFooter();
+        // let this->_headerFooter = new \ZExcel\Worksheet\HeaderFooter();
 
         // Set sheet view
-        let this->_sheetView = new \ZExcel\Worksheet\SheetView();
+        // let this->_sheetView = new \ZExcel\Worksheet\SheetView();
 
         // Drawing collection
-        let this->_drawingCollection = new ArrayObject();
+        // let this->_drawingCollection = new \ArrayObject();
 
         // Chart collection
-        let this->_chartCollection = new ArrayObject();
+        // let this->_chartCollection = new \ArrayObject();
 
         // Protection
-        let this->_protection = new \ZExcel\Worksheet\Protection();
+        // let this->_protection = new \ZExcel\Worksheet\Protection();
 
         // Default row dimension
-        let this->_defaultRowDimension = new \ZExcel\Worksheet\RowDimension(null);
+        // let this->_defaultRowDimension = new \ZExcel\Worksheet\RowDimension(null);
 
         // Default column dimension
-        let this->_defaultColumnDimension = new \ZExcel\Worksheet\ColumnDimension(null);
+        // let this->_defaultColumnDimension = new \ZExcel\Worksheet\ColumnDimension(null);
 
-        let this->_autoFilter = new \ZExcel\Worksheet\AutoFilter(null, this);
+        // let this->_autoFilter = new \ZExcel\Worksheet\AutoFilter(null, this);
     }
 
 
@@ -354,14 +354,20 @@ class Worksheet implements IComparable
      */
     public function disconnectCells()
     {
-        throw new \Exception("Not implemented yet!");
+        if ( this->_cellCollection !== null){
+            this->_cellCollection->unsetWorksheetCells();
+            let this->_cellCollection = null;
+        }
+        // detach ourself from the workbook, so that it can then delete this worksheet successfully
+        let this->_parent = null;
     }
 
     /**
      * Code to execute when this worksheet is unset()
      *
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         \ZExcel\Calculation::getInstance(this->_parent)->clearCalculationCacheForWorksheet(this->_title);
 
         this->disconnectCells();
@@ -372,7 +378,8 @@ class Worksheet implements IComparable
      *
      * @return \ZExcel\CachedObjectStorage_xxx
      */
-    public function getCellCacheController() {
+    public function getCellCacheController()
+    {
         return this->_cellCollection;
     }    //    function getCellCacheController()
 
@@ -384,6 +391,10 @@ class Worksheet implements IComparable
      */
     public static function getInvalidCharacters()
     {
+        if (self::_invalidCharacters == null) {
+            let self::_invalidCharacters = ["*", ":", "/", "\\", "?", "[", "]"];
+        }
+        
         return self::_invalidCharacters;
     }
 
@@ -394,9 +405,32 @@ class Worksheet implements IComparable
      * @return string The valid string
      * @throws Exception
      */
-    private static function _checkSheetCodeName(pValue)
+    private static function _checkSheetCodeName(var pValue)
     {
-        throw new \Exception("Not implemented yet!");
+        var charCount = 0, invalidCharacter;
+        string checkPValue;
+        
+        let charCount = \ZExcel\Shared\Stringg::CountCharacters(pValue);
+        
+        if (charCount == 0) {
+            throw new \ZExcel\Exception("Sheet code name cannot be empty.");
+        }
+        
+        // @FIXEME Segment_fault str_replace with array
+        let checkPValue = pValue;
+        for invalidCharacter in self::getInvalidCharacters() {
+            let checkPValue = str_replace(invalidCharacter, "", checkPValue);
+        }
+        
+        if (pValue !== checkPValue) {
+            throw new \ZExcel\Exception("Invalid character found in sheet code name");
+        }
+        
+        if (charCount > 31) {
+            throw new \ZExcel\Exception("Maximum 31 characters allowed in sheet code name.");
+        }
+        
+        return pValue;
     }
 
    /**
@@ -408,7 +442,20 @@ class Worksheet implements IComparable
      */
     private static function _checkSheetTitle(pValue)
     {
-        throw new \Exception("Not implemented yet!");
+        var invalidCharacters;
+        
+        let invalidCharacters = self::getInvalidCharacters();
+        
+        if (str_replace(invalidCharacters, "", pValue) !== false) {
+            return new \ZExcel\Exception("Invalid character found in sheet title");
+        }
+        
+        // Maximum 31 characters allowed for sheet title
+        if (\ZExcel\Shared\Stringg::CountCharacters(pValue) > 31) {
+            throw new \ZExcel\Exception("Maximum 31 characters allowed in sheet title.");
+        }
+        
+        return pValue;
     }
 
     /**
@@ -649,7 +696,34 @@ class Worksheet implements IComparable
      */
     public function setTitle(pValue = "Worksheet", updateFormulaCellReferences = true)
     {
-        throw new \Exception("Not implemented yet!");
+        var oldTitle, newTitle;
+        
+        let oldTitle = this->getTitle();
+        
+        if (oldTitle == pValue) {
+            return this;
+        }
+        
+        self::_checkSheetTitle(pValue);
+        
+        if (isset(this->_parent) && this->_parent->sheetNameExists(pValue)) {
+            throw new \ZExcel\Exception("Title name already exists.");
+        }
+        
+        let this->_title = pValue;
+        let this->_dirty = true;
+        
+        if (isset(this->_parent)) {
+            let newTitle = this->getTitle();
+            
+            \ZExcel\Calculation::getInstance(this->_parent)->renameCalculationCacheForWorksheet(oldTitle, newTitle);
+            
+            if (updateFormulaCellReferences == true) {
+                throw new \Exception("Not full implemented yet! (\ZExcel\ReferenceHelper->updateNamedFormulas)");
+            }
+        }
+        
+        return this;
     }
 
     /**
@@ -884,7 +958,7 @@ class Worksheet implements IComparable
      * @param bool $returnCell Return the worksheet (false, default) or the cell (true)
      * @return \ZExcel\Worksheet|\ZExcel\Cell    Depending on the last parameter being specified
      */
-    public function setCellValueExplicit(pCoordinate = "A1", pValue = null, pDataType = \ZExcel\Cell_DataType::TYPE_STRING, returnCell = false)
+    public function setCellValueExplicit(pCoordinate = "A1", pValue = null, pDataType = \ZExcel\Cell\DataType::TYPE_STRING, returnCell = false)
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -899,7 +973,7 @@ class Worksheet implements IComparable
      * @param bool $returnCell Return the worksheet (false, default) or the cell (true)
      * @return \ZExcel\Worksheet|\ZExcel\Cell    Depending on the last parameter being specified
      */
-    public function setCellValueExplicitByColumnAndRow(pColumn = 0, pRow = 1, pValue = null, pDataType = \ZExcel\Cell_DataType::TYPE_STRING, returnCell = false)
+    public function setCellValueExplicitByColumnAndRow(pColumn = 0, pRow = 1, pValue = null, pDataType = \ZExcel\Cell\DataType::TYPE_STRING, returnCell = false)
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -1730,7 +1804,7 @@ class Worksheet implements IComparable
      */
     public function getCommentByColumnAndRow(int pColumn = 0, int pRow = 1)
     {
-        return this->getComment(\PHPExcel\Cell::stringFromColumnIndex(pColumn) . pRow);
+        return this->getComment(\ZExcel\Cell::stringFromColumnIndex(pColumn) . pRow);
     }
 
     /**
@@ -1969,7 +2043,7 @@ class Worksheet implements IComparable
      * Set hyperlnk
      *
      * @param string $pCellCoordinate    Cell coordinate to insert hyperlink
-     * @param    \ZExcel\Cell_Hyperlink    $pHyperlink
+     * @param    \ZExcel\Cell\Hyperlink    $pHyperlink
      * @return \ZExcel\Worksheet
      */
     public function setHyperlink(string pCellCoordinate = "A1", <\ZExcel\Cell\Hyperlink> pHyperlink = null)
@@ -1997,7 +2071,7 @@ class Worksheet implements IComparable
     /**
      * Get collection of hyperlinks
      *
-     * @return \ZExcel\Cell_Hyperlink[]
+     * @return \ZExcel\Cell\Hyperlink[]
      */
     public function getHyperlinkCollection()
     {
@@ -2026,7 +2100,7 @@ class Worksheet implements IComparable
      * Set data validation
      *
      * @param string $pCellCoordinate    Cell coordinate to insert data validation
-     * @param    \ZExcel\Cell_DataValidation    $pDataValidation
+     * @param    \ZExcel\Cell\DataValidation    $pDataValidation
      * @return \ZExcel\Worksheet
      */
     public function setDataValidation(string pCellCoordinate = "A1", <\ZExcel\Cell\DataValidation> pDataValidation = null)
@@ -2053,7 +2127,7 @@ class Worksheet implements IComparable
     /**
      * Get collection of data validations
      *
-     * @return \ZExcel\Cell_DataValidation[]
+     * @return \ZExcel\Cell\DataValidation[]
      */
     public function getDataValidationCollection()
     {
@@ -2133,8 +2207,25 @@ class Worksheet implements IComparable
      * @return objWorksheet
      * @throws \ZExcel\Exception
     */
-    public function setCodeName(pValue = null){
-        throw new \Exception("Not implemented yet!");
+    public function setCodeName(string pValue = null){
+        var oldCodeName;
+        
+        let oldCodeName = this->getCodeName();
+        let pValue = str_replace(" ", "_", pValue);
+        
+        if (oldCodeName === pValue) {
+            return this;
+        }
+        
+        self::_checkSheetCodeName(pValue);
+        
+        // if (isset(this->_parent) && this->_parent->sheetCodeNameExists(pValue)) {
+        //    throw new \ZExcel\Exception("Code name already exists.");
+        // }
+        
+        // let this->_codeName = pValue;
+        
+        return this;
     }
     /**
      * Return the code name of the sheet
