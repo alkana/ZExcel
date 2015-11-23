@@ -21,6 +21,11 @@
 #ifndef ZEPHIR_KERNEL_MEMORY_H
 #define ZEPHIR_KERNEL_MEMORY_H
 
+#include <php.h>
+#include <Zend/zend.h>
+#include "php_ext.h"
+#include "kernel/globals.h"
+
 #define ZEPHIR_NUM_PREALLOCATED_FRAMES 25
 
 /* Variable Tracking */
@@ -216,7 +221,7 @@ void zephir_deinitialize_memory(TSRMLS_D);
 
 #define ZEPHIR_OBSERVE_OR_NULLIFY_PPZV(ppzv) \
 	do { \
-		zval **tmp_ = (ppzv); \
+		zval ** restrict tmp_ = (ppzv); \
 		if (tmp_ != NULL) { \
 			if (*tmp_) { \
 				zephir_ptr_dtor(tmp_); \

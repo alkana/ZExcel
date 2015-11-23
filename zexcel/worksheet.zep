@@ -668,7 +668,7 @@ class Worksheet implements IComparable
      * @param PHPExcel $parent
      * @return \ZExcel\Worksheet
      */
-    public function rebindParent(<ZExcel\ZExcel> parent)
+    public function rebindParent(<ZExcel> parent)
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -678,7 +678,7 @@ class Worksheet implements IComparable
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle() -> string
     {
         return this->_title;
     }

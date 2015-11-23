@@ -291,6 +291,7 @@ class ZExcel
         let this->workSheetCollection = [];
         let this->workSheetCollection[] = new \ZExcel\Worksheet(this);
         let this->activeSheetIndex = 0;
+        
 
         // Create document properties
         let this->properties = new \ZExcel\DocumentProperties();
@@ -327,7 +328,13 @@ class ZExcel
      */
     public function disconnectWorksheets()
     {
-        throw new \Exception("Not implemented yet!");
+        var k;
+        
+        for k, _ in this->workSheetCollection {
+            this->workSheetCollection[k]->disconnectCells();
+        }
+        
+        let this->_workSheetCollection = [];
     }
 
     /**
@@ -355,7 +362,7 @@ class ZExcel
      *
      * @param PHPExcel_DocumentProperties    pValue
      */
-    public function setProperties(<ZExcel\DocumentProperties> pValue)
+    public function setProperties(<\ZExcel\DocumentProperties> pValue)
     {
         let this->properties = pValue;
     }
@@ -428,9 +435,40 @@ class ZExcel
      * @return ZExcel\Worksheet
      * @throws ZExcel\Exception
      */
-    public function addSheet(<ZExcel\Worksheet> pSheet, int iSheetIndex = null)
+    public function addSheet(<\ZExcel\Worksheet> pSheet, int iSheetIndex = -1)
     {
-        throw new \Exception("Not implemented yet!");
+        if (this->sheetNameExists(
+        	pSheet->getTitle())
+        		) {
+            throw new \ZExcel\Exception("Workbook already contains a worksheet named '{$pSheet->getTitle()}'. Rename this worksheet first.");
+        }
+
+        if(iSheetIndex == -1) {
+            if (this->activeSheetIndex < 0) {
+                let this->activeSheetIndex = 0;
+            }
+            
+            let this->workSheetCollection[] = pSheet;
+        } else {
+            // Insert the sheet at the requested index
+            array_splice(
+                this->workSheetCollection,
+                iSheetIndex,
+                0,
+                [pSheet]
+            );
+
+            // Adjust active sheet index if necessary
+            if (this->activeSheetIndex >= iSheetIndex) {
+                let this->activeSheetIndex = this->activeSheetIndex + 1;
+            }
+        }
+
+        if (pSheet->getParent() == null) {
+            pSheet->rebindParent(this);
+        }
+
+        return pSheet;
     }
 
     /**
@@ -441,7 +479,19 @@ class ZExcel
      */
     public function removeSheetByIndex(int pIndex = 0)
     {
-        throw new \Exception("Not implemented yet!");
+    	var numSheets;
+    	
+        let numSheets = count(this->workSheetCollection);
+
+        if (pIndex > numSheets - 1) {
+            throw new \ZExcel\Exception("You tried to remove a sheet by the out of bounds index: " . pIndex . ". The actual number of sheets is " . numSheets . ".");
+        } else {
+            array_splice(this->workSheetCollection, pIndex, 1);
+        }
+        // Adjust active sheet index if necessary
+        if ((this->activeSheetIndex >= pIndex) && (pIndex > count(this->workSheetCollection) - 1)) {
+            let this->activeSheetIndex = this->activeSheetIndex - 1;
+        }
     }
 
     /**
@@ -453,7 +503,14 @@ class ZExcel
      */
     public function getSheet(int pIndex = 0)
     {
-        throw new \Exception("Not implemented yet!");
+        var numSheets;
+        
+        if (!isset(this->workSheetCollection[pIndex])) {
+            let numSheets = this->getSheetCount();
+            throw new \ZExcel\Exception("Your requested sheet index: " . pIndex . " is out of bounds. The actual number of sheets is " . numSheets . ".");
+        }
+
+        return this->workSheetCollection[pIndex];
     }
 
     /**
@@ -578,7 +635,7 @@ class ZExcel
         
         let worksheetCount = this->getSheetCount() - 1;
         
-        for i in range(1, worksheetCount) {
+        for i in range(0, worksheetCount) {
             let returnValue[] = this->getSheet(i)->getTitle();
         }
 
@@ -763,7 +820,30 @@ class ZExcel
      */
     public function removeCellXfByIndex(pIndex = 0)
     {
-        throw new \Exception("Not implemented yet!");
+    	var worksheet, cellID, cell, xfIndex;
+    	
+        if (pIndex > count(this->cellXfCollection) - 1) {
+            throw new \ZExcel\Exception("CellXf index is out of bounds.");
+        } else {
+            // first remove the cellXf
+            array_splice(this->cellXfCollection, pIndex, 1);
+
+            // then update cellXf indexes for cells
+            for worksheet in this->workSheetCollection {
+                for cellID in worksheet->getCellCollection(false) {
+                    let cell = worksheet->getCell(cellID);
+                    let xfIndex = cell->getXfIndex();
+                    
+                    if (xfIndex > pIndex ) {
+                        // decrease xf index by 1
+                        cell->setXfIndex(xfIndex - 1);
+                    } elseif (xfIndex == pIndex) {
+                        // set to default xf index 0
+                        cell->setXfIndex(0);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -813,9 +893,10 @@ class ZExcel
      *
      * @param PHPExcel_Style pStyle
      */
-    public function addCellStyleXf(<ZExcel\Style> pStyle)
+    public function addCellStyleXf(<Style> pStyle)
     {
-        throw new \Exception("Not implemented yet!");
+    	let this->cellStyleXfCollection[] = pStyle;
+        pStyle->setIndex(count(this->cellStyleXfCollection) - 1);
     }
 
     /**
@@ -826,7 +907,11 @@ class ZExcel
      */
     public function removeCellStyleXfByIndex(pIndex = 0)
     {
-        throw new \Exception("Not implemented yet!");
+        if (pIndex > count(this->cellStyleXfCollection) - 1) {
+            throw new \ZExcel\Exception("CellStyleXf index is out of bounds.");
+        } else {
+            array_splice(this->cellStyleXfCollection, pIndex, 1);
+        }
     }
 
     /**
