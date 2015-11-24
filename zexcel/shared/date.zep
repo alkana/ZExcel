@@ -71,7 +71,11 @@ class Date
      */
     public static function setExcelCalendar(baseDate)
     {
-        throw new \Exception("Not implemented yet!");
+        if ((baseDate == self::CALENDAR_WINDOWS_1900) || (baseDate == self::CALENDAR_MAC_1904)) {
+            let self::excelBaseDate = baseDate;
+            return true;
+        }
+        return false;
     }
 
 
@@ -82,7 +86,7 @@ class Date
      */
     public static function getExcelCalendar()
     {
-        throw new \Exception("Not implemented yet!");
+        return self::excelBaseDate;
     }
 
 
