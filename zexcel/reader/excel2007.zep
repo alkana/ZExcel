@@ -119,7 +119,8 @@ class Excel2007 extends Abstrac implements IReader
             xmlCore, xmlWorkbook,
             eleSheet, docSheet, docProps,
             fileWorksheet, xmlSheet, sharedFormulas,
-            xSplit, ySplit, sqref, sheetViewAttr, paneAttr, selectionAttr,
+            xSplit, ySplit, sqref,
+            sheetViewAttr, paneAttr, selectionAttr,
             activeTab;
         
         if (!file_exists(pFilename)) {
@@ -330,7 +331,7 @@ class Excel2007 extends Abstrac implements IReader
                         for eleSheet in iterator(xmlWorkbook->sheets->sheet) {
                             let oldSheetId = oldSheetId + 1;
                             
-                            if (this->_loadSheetsOnly == true && !in_array((string) eleSheet->attributes()->{"name"}, this->_loadSheetsOnly)) {
+                            if (this->_loadSheetsOnly == true && !in_array((string) eleSheet->attributes()->name, this->_loadSheetsOnly)) {
                                 let countSkippedSheets = countSkippedSheets + 1;
                                 let mapSheetId[oldSheetId] = null;
                                 continue;
@@ -392,23 +393,23 @@ class Excel2007 extends Abstrac implements IReader
                                     if (is_array(paneAttr)) {
                                         let paneAttr = paneAttr["@attributes"];
                                     
-	                                    if (isset(paneAttr["topLeftCell"])) {
-	                                        docSheet->freezePane(paneAttr["topLeftCell"]);
-	                                    } else {
-	                                        let xSplit = 0;
-	                                        let ySplit = 0;
-	                                
-	                                        if (isset(paneAttr["xSplit"]) && is_numeric(paneAttr["xSplit"])) {
-	                                            let xSplit = 1 + intval(paneAttr["xSplit"]);
-	                                        }
-	                                
-	                                        if (isset(paneAttr["ySplit"]) && is_numeric(paneAttr["ySplit"])) {
-	                                            let ySplit = 1 + intval(paneAttr["ySplit"]);
-	                                        }
-	                                
-	                                        docSheet->freezePaneByColumnAndRow(xSplit, ySplit);
-	                                    }
-	                                }
+                                        if (isset(paneAttr["topLeftCell"])) {
+                                            docSheet->freezePane(paneAttr["topLeftCell"]);
+                                        } else {
+                                            let xSplit = 0;
+                                            let ySplit = 0;
+                                    
+                                            if (isset(paneAttr["xSplit"]) && is_numeric(paneAttr["xSplit"])) {
+                                                let xSplit = 1 + intval(paneAttr["xSplit"]);
+                                            }
+                                    
+                                            if (isset(paneAttr["ySplit"]) && is_numeric(paneAttr["ySplit"])) {
+                                                let ySplit = 1 + intval(paneAttr["ySplit"]);
+                                            }
+                                    
+                                            docSheet->freezePaneByColumnAndRow(xSplit, ySplit);
+                                        }
+                                    }
                                 }
                                 
                                 if (isset(xmlSheet->sheetViews->sheetView->selection)) {
@@ -426,10 +427,65 @@ class Excel2007 extends Abstrac implements IReader
                                     }
                                 }
                             }
-
-                            // @TODO add code from lines 718 - 1553
                             
-                            excel->addSheet(docSheet, eleSheet->attributes()->{"sheetId"});
+                            if (count(xmlSheet->sheetPr) > 0) {
+                                if (count(xmlSheet->sheetPr->tabColor) > 0 && xmlSheet->sheetPr->tabColor->getAttributes()->rgb !== null) {
+                                    docSheet->getTabColor()->setARGB((string) xmlSheet->sheetPr->tabColor->getAttributes()->rgb);
+                                }
+                                
+                                if (xmlSheet->sheetPr->attributes()->codeName !== null) {
+                                    docSheet->setCodeName((string) xmlSheet->sheetPr->attributes()->codeName);
+                                }
+                                
+                                if (count(xmlSheet->sheetPr->outlinePr) > 0) {
+                                    if (xmlSheet->sheetPr->outlinePr->attributes()->summaryRight !== null
+                                           && !self::boolea((string) xmlSheet->sheetPr->outlinePr->attributes()->summaryRight)) {
+                                        docSheet->setShowSummaryRight(false);
+                                    } else {
+                                        docSheet->setShowSummaryRight(true);
+                                    }
+        
+                                    if (xmlSheet->sheetPr->outlinePr->attributes()->summaryBelow !== null
+                                           && !self::boolea((string) xmlSheet->sheetPr->outlinePr->attributes()->summaryBelow)) {
+                                        docSheet->setShowSummaryBelow(false);
+                                    } else {
+                                        docSheet->setShowSummaryBelow(true);
+                                    }
+                                }
+
+                                if (count(xmlSheet->sheetPr->pageSetUpPr) > 0) {
+                                
+                                    if (xmlSheet->sheetPr->pageSetUpPr->attributes()->fitToPage !== null
+                                           && !self::boolea((string) xmlSheet->sheetPr->pageSetUpPr->attributes()->fitToPage)) {
+                                        docSheet->getPageSetup()->setFitToPage(false);
+                                    } else {
+                                        docSheet->getPageSetup()->setFitToPage(true);
+                                    }
+                                }
+                            }
+    
+                            if (count(xmlSheet->sheetFormatPr) > 0) {
+                                if (xmlSheet->sheetFormatPr->attributes()->customHeight !== null
+                                        && self::boolea((string) xmlSheet->attributes()->customHeight)
+                                        && xmlSheet->sheetFormatPr->attributes()->defaultRowHeight !== null) {
+                                    docSheet->getDefaultRowDimension()->setRowHeight((float) xmlSheet->sheetFormatPr->attributes()->defaultRowHeight);
+                                }
+                                
+                                if (xmlSheet->sheetFormatPr->attributes()->defaultColWidth !== null) {
+                                    docSheet->getDefaultColumnDimension()->setWidth((float) xmlSheet->sheetFormatPr->attributes()->defaultColWidth);
+                                }
+                                if (xmlSheet->sheetFormatPr->attributes()->zeroHeight !== null) {
+                                    let k = (string) xmlSheet->sheetFormatPr->attributes()->zeroHeight;
+                                    
+                                    if (k === "1") {
+                                        docSheet->getDefaultRowDimension()->setZeroHeight(true);
+                                    }
+                                }
+                            }
+
+                            // @TODO add code from lines 766 - 1553
+                            
+                            excel->addSheet(docSheet, eleSheet->attributes()->sheetId);
                         }
                     }
                     

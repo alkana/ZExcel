@@ -317,7 +317,7 @@ class Worksheet implements IComparable
         // let this->_cellCollection = \ZExcel\CachedObjectStorageFactory::getInstance(this);
 
         // Set page setup
-        // let this->_pageSetup  = new \ZExcel\Worksheet\PageSetup();
+        let this->_pageSetup  = new \ZExcel\Worksheet\PageSetup();
 
         // Set page margins
         // let this->_pageMargins = new \ZExcel\Worksheet\PageMargins();
