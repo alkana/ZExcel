@@ -664,7 +664,7 @@ class Cell
         }
 
         let exploded = explode(",", pRange);
-        let counter = count(exploded);
+        let counter = count(exploded) - 1;
         for i in range(0, counter) {
             let exploded[i] = explode(":", exploded[i]);
         }

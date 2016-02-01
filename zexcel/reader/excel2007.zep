@@ -116,9 +116,11 @@ class Excel2007 extends Abstrac implements IReader
             worksheets, macros, customUI, ele,
             sheetId, oldSheetId, countSkippedSheets, mapSheetId,
             charts, chartDetails,
-            xmlCore, xmlWorkbook, arrWorkbook,
-            sheets, eleSheet, docSheet, docProps,
-            fileWorksheet, xmlSheet, sharedFormulas;
+            xmlCore, xmlWorkbook,
+            eleSheet, docSheet, docProps,
+            fileWorksheet, xmlSheet, sharedFormulas,
+            xSplit, ySplit, sqref, sheetViewAttr, paneAttr, selectionAttr,
+            activeTab;
         
         if (!file_exists(pFilename)) {
             throw new \ZExcel\Reader\Exception("Could not open " . pFilename . " for reading! File does not exist.");
@@ -142,10 +144,9 @@ class Excel2007 extends Abstrac implements IReader
         //    Read the theme first, because we need the colour scheme when reading the styles
         let wbRels = simplexml_load_string(this->securityScan(this->_getFromZipArchive(zip, "xl/_rels/workbook.xml.rels")), "SimpleXMLElement", \ZExcel\Settings::getLibXmlLoaderOptions());
         
-        let relationships = wbRels->Relationship;
-                
-        for rel in relationships->xpath(".") {
+        for rel in iterator(wbRels->Relationship) {
             let rel = reset(rel);
+            
             switch (rel["Type"]) {
                 case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme":
                     let themeOrderArray = ["lt1","dk1","lt2","dk2"];
@@ -185,13 +186,13 @@ class Excel2007 extends Abstrac implements IReader
             }
         }
 
-        let relationships = reset(simplexml_load_string(
+        let relationships = simplexml_load_string(
             this->securityScan(this->_getFromZipArchive(zip, "_rels/.rels")),
             "SimpleXMLElement",
             \ZExcel\Settings::getLibXmlLoaderOptions()
-        ));
+        );
         
-        for rel in relationships {
+        for rel in iterator(relationships) {
             let rel = reset(rel);
             
             switch (rel["Type"]) {
@@ -271,7 +272,7 @@ class Excel2007 extends Abstrac implements IReader
                     );
                     
                     if (xmlStrings !== false) {
-                        let xmlStrings = reset($xmlStrings);
+                        let xmlStrings = reset(xmlStrings);
                         if (isset(xmlStrings["si"])) {
                             for val in xmlStrings {
                                 let val = reset(val);
@@ -287,11 +288,11 @@ class Excel2007 extends Abstrac implements IReader
                     let macros = null;
                     let customUI = null;
                     let worksheets = [];
-                    let wbRels = reset(relsWorkbook);
                     
-                    for ele in wbRels {
+                    for ele in iterator(relsWorkbook->Relationship) {
                         let ele = reset(ele);
-                        switch(rel["Type"]) {
+                        
+                        switch(ele["Type"]) {
                             case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet":
                                 let worksheets[(string) ele["Id"]] = ele["Target"];
                                 break;
@@ -309,14 +310,11 @@ class Excel2007 extends Abstrac implements IReader
                         "SimpleXMLElement",
                         \ZExcel\Settings::getLibXmlLoaderOptions()
                     );
-                    let arrWorkbook = json_decode(json_encode(xmlWorkbook), 1);
                     
-                    if isset(arrWorkbook["workbookPr"]) {
+                    if isset(xmlWorkbook->workbookPr) {
                         \ZExcel\Shared\Date::setExcelCalendar(\ZExcel\Shared\Date::CALENDAR_WINDOWS_1900);
-                        if (isset(arrWorkbook["workbookPr"]["@attributes"]["date1904"])) {
-                            if (self::boolea((string) arrWorkbook["workbookPr"]["@attributes"]["date1904"])) {
-                                \ZExcel\Shared\Date::setExcelCalendar(\ZExcel\Shared\Date::CALENDAR_MAC_1904);
-                            }
+                        if !empty(xmlWorkbook->workbookPr->attributes()->{"date1904"}) && self::boolea((string) xmlWorkbook->workbookPr->attributes()->{"date1904"}) {
+                            \ZExcel\Shared\Date::setExcelCalendar(\ZExcel\Shared\Date::CALENDAR_MAC_1904);
                         }
                     }
                     
@@ -328,18 +326,11 @@ class Excel2007 extends Abstrac implements IReader
                     let charts = [];
                     let chartDetails = [];
                     
-                    if isset(arrWorkbook["sheets"]) {
-                        let sheets = arrWorkbook["sheets"];
-                        
-                        // if we have more than one sheet, it's not the same mapping
-                        if isset(sheets["sheet"]) {
-                            let sheets = sheets["sheet"];
-                        }
-                    
-                        for eleSheet in sheets {
+                    if isset(xmlWorkbook->sheets) {
+                        for eleSheet in iterator(xmlWorkbook->sheets->sheet) {
                             let oldSheetId = oldSheetId + 1;
                             
-                            if (this->_loadSheetsOnly == true && !in_array((string) eleSheet["@attributes"]["name"], this->_loadSheetsOnly)) {
+                            if (this->_loadSheetsOnly == true && !in_array((string) eleSheet->attributes()->{"name"}, this->_loadSheetsOnly)) {
                                 let countSkippedSheets = countSkippedSheets + 1;
                                 let mapSheetId[oldSheetId] = null;
                                 continue;
@@ -349,24 +340,113 @@ class Excel2007 extends Abstrac implements IReader
                             
                             let docSheet = new \ZExcel\Worksheet(excel);
                             
-                            docSheet->setTitle((string) eleSheet["@attributes"]["name"], false);
-                            /*
-                            let fileWorksheet = worksheets[(string) self::array_item(eleSheet->attributes("http://schemas.openxmlformats.org/officeDocument/2006/relationships"), "id")];
+                            docSheet->setTitle((string) eleSheet->attributes()->name, false);
+                            
+                            let fileWorksheet = worksheets[(string) eleSheet->attributes("http://schemas.openxmlformats.org/officeDocument/2006/relationships")->id];
                             let xmlSheet = simplexml_load_string(
                                 this->securityScan(this->_getFromZipArchive(zip, dir . "/" . fileWorksheet)),
                                 "SimpleXMLElement",
                                 \ZExcel\Settings::getLibXmlLoaderOptions()
                             );
-
+    
                             let sharedFormulas = [];
-
-                            if (isset(eleSheet["@attributes"]["state"]) && eleSheet["@attributes"]["state"] != "") {
-                                docSheet->setSheetState((string) eleSheet["@attributes"]["state"] );
+    
+                            if (!empty(eleSheet->attributes()->state) && ((string) eleSheet->attributes()->state) != "") {
+                                docSheet->setSheetState((string) eleSheet->attributes()->state);
                             }
-                            */
-                            // @TODO add code from lines 662 - 1553
+                            
+                            if (isset(xmlSheet->sheetViews) && isset(xmlSheet->sheetViews->sheetView)) {
+                                let sheetViewAttr = json_decode(json_encode(xmlSheet->sheetViews->sheetView->attributes()), true);
+                               
+                                if (is_array(sheetViewAttr)) {
+                                    let sheetViewAttr = sheetViewAttr["@attributes"];
+                            
+                                    if (isset(sheetViewAttr["zoomScale"]) && is_numeric(sheetViewAttr["zoomScale"])) {
+                                        docSheet->getSheetView()->setZoomScale(intval(sheetViewAttr["zoomScale"]));
+                                    }
+                                    
+                                    if (isset(sheetViewAttr["zoomScaleNormal"]) && is_numeric(sheetViewAttr["zoomScaleNormal"])) {
+                                        docSheet->getSheetView()->setZoomScaleNormal( intval(sheetViewAttr["zoomScaleNormal"]));
+                                    }
+                                    
+                                    if (isset(sheetViewAttr["view"]) && sheetViewAttr["view"] != "") {
+                                        docSheet->getSheetView()->setView(sheetViewAttr["view"]);
+                                    }
+                                    
+                                    if (isset(sheetViewAttr["showGridLines"])) {
+                                        docSheet->setShowGridLines(self::boolea(sheetViewAttr["showGridLines"]));
+                                    }
+                                    
+                                    if (isset(sheetViewAttr["showRowColHeaders"])) {
+                                        docSheet->setShowRowColHeaders(self::boolea(sheetViewAttr["showRowColHeaders"]));
+                                    }
+                                    
+                                    if (isset(sheetViewAttr["rightToLeft"])) {
+                                        docSheet->setRightToLeft(self::boolea(sheetViewAttr["rightToLeft"]));
+                                    }
+                                }
+                                
+                                if (isset(xmlSheet->sheetViews->sheetView->pane)) {
+                                    let paneAttr = json_decode(json_encode(xmlSheet->sheetViews->sheetView->pane), true);
+                                    
+                                    if (is_array(paneAttr)) {
+                                        let paneAttr = paneAttr["@attributes"];
+                                    
+	                                    if (isset(paneAttr["topLeftCell"])) {
+	                                        docSheet->freezePane(paneAttr["topLeftCell"]);
+	                                    } else {
+	                                        let xSplit = 0;
+	                                        let ySplit = 0;
+	                                
+	                                        if (isset(paneAttr["xSplit"]) && is_numeric(paneAttr["xSplit"])) {
+	                                            let xSplit = 1 + intval(paneAttr["xSplit"]);
+	                                        }
+	                                
+	                                        if (isset(paneAttr["ySplit"]) && is_numeric(paneAttr["ySplit"])) {
+	                                            let ySplit = 1 + intval(paneAttr["ySplit"]);
+	                                        }
+	                                
+	                                        docSheet->freezePaneByColumnAndRow(xSplit, ySplit);
+	                                    }
+	                                }
+                                }
+                                
+                                if (isset(xmlSheet->sheetViews->sheetView->selection)) {
+                                    let selectionAttr = json_decode(json_encode(xmlSheet->sheetViews->sheetView->selection->attributes()), true);
+                                    
+                                    if (is_array(selectionAttr)) {
+                                        let selectionAttr = selectionAttr["@attributes"];
+                                    }
+                                
+                                    if (isset(selectionAttr["sqref"])) {
+                                        let sqref = explode(" ", selectionAttr["sqref"]);
+                                        let sqref = sqref[0];
+                                        
+                                        docSheet->setSelectedCells(sqref);
+                                    }
+                                }
+                            }
 
-                            excel->addSheet(docSheet, eleSheet["@attributes"]["sheetId"]);
+                            // @TODO add code from lines 718 - 1553
+                            
+                            excel->addSheet(docSheet, eleSheet->attributes()->{"sheetId"});
+                        }
+                    }
+                    
+                    // Select active sheet
+                    if ((!this->_readDataOnly) || (!empty(this->_loadSheetsOnly))) {
+                        // active sheet index
+                        let activeTab = intval((string) xmlWorkbook->bookViews->workbookView->attributes()->activeTab); // refers to old sheet index
+
+                        // keep active sheet index if sheet is still loaded, else first sheet is set as the active
+                        if (isset(mapSheetId[activeTab]) && mapSheetId[activeTab] !== null) {
+                            excel->setActiveSheetIndex(mapSheetId[activeTab]);
+                        } else {
+                            if (excel->getSheetCount() == 0) {
+                                excel->createSheet();
+                            }
+                            
+                            excel->setActiveSheetIndex(0);
                         }
                     }
                     

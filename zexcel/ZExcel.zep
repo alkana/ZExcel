@@ -437,9 +437,7 @@ class ZExcel
      */
     public function addSheet(<\ZExcel\Worksheet> pSheet, int iSheetIndex = -1)
     {
-        if (this->sheetNameExists(
-        	pSheet->getTitle())
-        		) {
+        if (this->sheetNameExists(pSheet->getTitle())) {
             throw new \ZExcel\Exception("Workbook already contains a worksheet named '{$pSheet->getTitle()}'. Rename this worksheet first.");
         }
 
@@ -607,7 +605,17 @@ class ZExcel
      */
     public function setActiveSheetIndex(int pIndex = 0)
     {
-        throw new \Exception("Not implemented yet!");
+        int numSheets = 0;
+    
+        let numSheets = count(this->workSheetCollection);
+
+        if (pIndex > numSheets - 1) {
+            throw new \ZExcel\Exception("You tried to set a sheet active by the out of bounds index: " . pIndex . " The actual number of sheets is " . numSheets . ".");
+        } else {
+            let this->activeSheetIndex = $pIndex;
+        }
+        
+        return this->getActiveSheet();
     }
 
     /**
@@ -619,7 +627,16 @@ class ZExcel
      */
     public function setActiveSheetIndexByName(string pValue = "")
     {
-        throw new \Exception("Not implemented yet!");
+        var worksheet;
+        
+        let worksheet = this->getSheetByName(pValue);
+        
+        if (worksheet instanceof \ZExcel\Worksheet) {
+            this->setActiveSheetIndex(this->getIndex(worksheet));
+            return worksheet;
+        }
+
+        throw new \ZExcel\Exception("Workbook does not contain sheet:" . pValue);
     }
 
     /**

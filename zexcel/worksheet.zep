@@ -326,7 +326,7 @@ class Worksheet implements IComparable
         // let this->_headerFooter = new \ZExcel\Worksheet\HeaderFooter();
 
         // Set sheet view
-        // let this->_sheetView = new \ZExcel\Worksheet\SheetView();
+        let this->_sheetView = new \ZExcel\Worksheet\SheetView();
 
         // Drawing collection
         // let this->_drawingCollection = new \ArrayObject();
@@ -1858,7 +1858,33 @@ class Worksheet implements IComparable
      */
     public function setSelectedCells(string pCoordinate = "A1")
     {
-        throw new \Exception("Not implemented yet!");
+        var pCoordinate, first;
+        // Uppercase coordinate
+        let pCoordinate = strtoupper(pCoordinate);
+
+        // Convert 'A' to 'A:A'
+        let pCoordinate = preg_replace("/^([A-Z]+)$/", "${1}:${1}", pCoordinate);
+
+        // Convert '1' to '1:1'
+        let pCoordinate = preg_replace("/^([0-9]+)$/", "${1}:${1}", pCoordinate);
+
+        // Convert 'A:C' to 'A1:C1048576'
+        let pCoordinate = preg_replace("/^([A-Z]+):([A-Z]+)$/", "${1}1:${2}1048576", pCoordinate);
+
+        // Convert '1:3' to 'A1:XFD3'
+        let pCoordinate = preg_replace("/^([0-9]+):([0-9]+)$/", "A${1}:XFD${2}", pCoordinate);
+
+        if (strpos(pCoordinate, ":") !== false || strpos(pCoordinate, ",") !== false) {
+            let first = \ZExcel\Cell::splitRange(pCoordinate);
+            
+            let this->_activeCell = first[0][0];
+        } else {
+            let this->_activeCell = pCoordinate;
+        }
+        
+        let this->_selectedCells = pCoordinate;
+        
+        return this;
     }
 
     /**
