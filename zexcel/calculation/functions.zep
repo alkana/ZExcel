@@ -34,59 +34,206 @@ class Functions
      * @access    private
      * @var array
      */
-    protected static errorCodes;
+    protected static errorCodes = [
+        "null": "#NULL!",
+        "divisionbyzero": "#DIV/0!",
+        "value": "#VALUE!",
+        "reference": "#REF!",
+        "name": "#NAME?",
+        "num": "#NUM!",
+        "na": "#N/A",
+        "gettingdata": "#GETTING_DATA"
+    ];
     
-    protected static function getErrorCodes()
+    public static function setCompatibilityMode(string compatibilityMode) -> boolean
     {
-        if (self::errorCodes == null) {
-            let self::errorCodes = [
-                "null": "#NULL!",
-                "divisionbyzero": "#DIV/0!",
-                "value": "#VALUE!",
-                "reference": "#REF!",
-                "name": "#NAME?",
-                "num": "#NUM!",
-                "na": "#N/A",
-                "gettingdata": "#GETTING_DATA"
-            ];
+        if ((compatibilityMode == self::COMPATIBILITY_EXCEL)
+                || (compatibilityMode == self::COMPATIBILITY_GNUMERIC)
+                || (compatibilityMode == self::COMPATIBILITY_OPENOFFICE)) {
+            let self::compatibilityMode = compatibilityMode;
+            
+            return true;
         }
-    
-        return self::errorCodes;
+        return false;
     }
     
-    public static function VaLUE()
+    public static function getCompatibilityMode() -> string
     {
-        var errorCodes;
-        
-        let errorCodes = self::getErrorCodes();
-        
-        return errorCodes["value"];
+        return self::compatibilityMode;
     }
     
-    public static function NaN()
+    public static function setReturnDateType(string returnDateType) -> boolean
     {
-        var errorCodes;
-        let errorCodes = self::getErrorCodes();
-        
-        return errorCodes["num"];
+        if ((returnDateType == self::RETURNDATE_PHP_NUMERIC)
+                || (returnDateType == self::RETURNDATE_PHP_OBJECT)
+                || (returnDateType == self::RETURNDATE_EXCEL)) {
+            let self::returnDateType = returnDateType;
+
+            return true;
+        }
+        return false;
     }
     
-    public static function NaME()
+    public static function getReturnDateType() -> string
     {
-        var errorCodes;
-        
-        let errorCodes = self::getErrorCodes();
-        
-        return errorCodes["name"];
+        return self::returnDateType;
     }
 
-    public static function ReF()
+    /**
+     * DUMMY
+     *
+     * @access    public
+     * @category Error Returns
+     * @return    string    #Not Yet Implemented
+     */
+    public static function dummy()
     {
-        var errorCodes;
+        return "#Not Yet Implemented";
+    }
+
+
+    /**
+     * DIV0
+     *
+     * @access    public
+     * @category Error Returns
+     * @return    string    #Not Yet Implemented
+     */
+    public static function div0() -> string
+    {
+        return self::errorCodes["divisionbyzero"];
+    }
+    
+    public static function na()
+    {
+        return self::errorCodes["na"];
+    }
+    
+    public static function nan() -> string
+    {
+        return self::errorCodes["num"];
+    }
+    
+    public static function name() -> string
+    {
+        return self::errorCodes["name"];
+    }
+
+    public static function ref() -> string
+    {
+        return self::errorCodes["reference"];
+    }
+    
+    public static function nulll() -> string
+    {
+        return self::errorCodes["null"];
+    }
+
+    public static function value() -> string
+    {
+        return self::errorCodes["value"];
+    }
+
+    public static function isMatrixValue(int idx) -> boolean
+    {
+        return ((substr_count(idx, ".") <= 1) || (preg_match("/\.[A-Z]/", idx) > 0));
+    }
+
+
+    public static function isValue(int idx) -> boolean
+    {
+        return (substr_count(idx, ".") == 0);
+    }
+
+
+    public static function isCellValue(int idx) -> boolean
+    {
+        return (substr_count(idx, ".") > 1);
+    }
+
+
+    public static function ifCondition(condition)
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+
+    /**
+     * ERROR_TYPE
+     *
+     * @param    mixed    value    Value to check
+     * @return    boolean
+     */
+    public static function error_type(value = "")
+    {
+        var i, errorCode;
         
-        let errorCodes = self::getErrorCodes();
-        
-        return errorCodes["reference"];
+        let value = self::flattenSingleValue(value);
+
+        let i = 1;
+        for errorCode in self::errorCodes {
+            if (value === errorCode) {
+                return i;
+            }
+            let i = i + 1;
+        }
+        return self::na();
+    }
+
+    /**
+     * IS_BLANK
+     *
+     * @param    mixed    value    Value to check
+     * @return    boolean
+     */
+    public static function is_blank(value = null) -> boolean
+    {
+        if (!is_null(value)) {
+            let value = self::flattenSingleValue(value);
+        }
+
+        return is_null(value);
+    }
+
+    /**
+     * IS_ERR
+     *
+     * @param    mixed    value    Value to check
+     * @return    boolean
+     */
+    public static function is_err(value = "") -> boolean
+    {
+        let value = self::flattenSingleValue(value);
+
+        return self::is_error(value) && (!self::is_na(value));
+    }
+
+    /**
+     * IS_ERROR
+     *
+     * @param    mixed    value    Value to check
+     * @return    boolean
+     */
+    public static function is_error(value = "") -> boolean
+    {
+        let value = self::flattenSingleValue(value);
+
+        if (!is_string(value)) {
+            return false;
+        }
+        return in_array(value, array_values(self::errorCodes));
+    }
+
+    /**
+     * IS_NA
+     *
+     * @param    mixed    $value    Value to check
+     * @return    boolean
+     */
+    public static function is_na(value = "") -> boolean
+    {
+        let value = self::flattenSingleValue(value);
+
+        return (value === self::na());
     }
     
     public static function flattenArray(var arry)
