@@ -20,24 +20,24 @@ class WorksheetRowTest extends PHPUnit_Framework_TestCase
 
     public function testInstantiateRowDefault()
     {
-        $row = new \ZExcel\Worksheet_Row($this->mockWorksheet);
-        $this->assertInstanceOf('\ZExcel\Worksheet_Row', $row);
+        $row = new \ZExcel\Worksheet\Row($this->mockWorksheet);
+        $this->assertInstanceOf('\ZExcel\Worksheet\Row', $row);
         $rowIndex = $row->getRowIndex();
         $this->assertEquals(1, $rowIndex);
     }
 
     public function testInstantiateRowSpecified()
     {
-        $row = new \ZExcel\Worksheet_Row($this->mockWorksheet, 5);
-        $this->assertInstanceOf('\ZExcel\Worksheet_Row', $row);
+        $row = new \ZExcel\Worksheet\Row($this->mockWorksheet, 5);
+        $this->assertInstanceOf('\ZExcel\Worksheet\Row', $row);
         $rowIndex = $row->getRowIndex();
         $this->assertEquals(5, $rowIndex);
     }
 
     public function testGetCellIterator()
     {
-        $row = new \ZExcel\Worksheet_Row($this->mockWorksheet);
+        $row = new \ZExcel\Worksheet\Row($this->mockWorksheet);
         $cellIterator = $row->getCellIterator();
-        $this->assertInstanceOf('\ZExcel\Worksheet_RowCellIterator', $cellIterator);
+        $this->assertInstanceOf('\ZExcel\Worksheet\RowCellIterator', $cellIterator);
     }
 }

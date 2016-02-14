@@ -561,11 +561,11 @@ class Cell
      *    @return    array    Array containing column and row (indexes 0 and 1)
      *    @throws    \ZExcel\Exception
      */
-    public static function coordinateFromString(pCoordinateString = "A1")
+    public static function coordinateFromString(string pCoordinateString = "A1")
     {
         var matches = [];
         
-        if (preg_match("/^([]?[A-Z]{1,3})([]?\d{1,7})/", pCoordinateString, matches)) {
+        if (preg_match("/^([$]?[A-Z]{1,3})([$]?\d{1,7})$/", pCoordinateString, matches)) {
             return [matches[1],matches[2]];
         } elseif ((strpos(pCoordinateString,":") !== false) || (strpos(pCoordinateString,",") !== false)) {
             throw new \ZExcel\Exception("Cell coordinate string can not be a range of cells");

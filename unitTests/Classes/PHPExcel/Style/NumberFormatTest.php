@@ -10,8 +10,8 @@ class NumberFormatTest extends PHPUnit_Framework_TestCase
     {
         
 
-        \ZExcel\Shared_String::setDecimalSeparator('.');
-        \ZExcel\Shared_String::setThousandsSeparator(',');
+        \ZExcel\Shared\Stringg::setDecimalSeparator('.');
+        \ZExcel\Shared\Stringg::setThousandsSeparator(',');
     }
 
     /**

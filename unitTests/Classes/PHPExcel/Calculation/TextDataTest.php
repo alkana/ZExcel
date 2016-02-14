@@ -317,9 +317,9 @@ class TextDataTest extends PHPUnit_Framework_TestCase
     public function testTEXT()
     {
         //    Enforce decimal and thousands separator values to UK/US, and currency code to USD
-        call_user_func(array('\ZExcel\Shared_String', 'setDecimalSeparator'), '.');
-        call_user_func(array('\ZExcel\Shared_String', 'setThousandsSeparator'), ',');
-        call_user_func(array('\ZExcel\Shared_String', 'setCurrencyCode'), '$');
+        call_user_func(array('\ZExcel\Shared\Stringg', 'setDecimalSeparator'), '.');
+        call_user_func(array('\ZExcel\Shared\Stringg', 'setThousandsSeparator'), ',');
+        call_user_func(array('\ZExcel\Shared\Stringg', 'setCurrencyCode'), '$');
 
         $args = func_get_args();
         $expectedResult = array_pop($args);
@@ -337,9 +337,9 @@ class TextDataTest extends PHPUnit_Framework_TestCase
      */
     public function testVALUE()
     {
-        call_user_func(array('\ZExcel\Shared_String', 'setDecimalSeparator'), '.');
-        call_user_func(array('\ZExcel\Shared_String', 'setThousandsSeparator'), ' ');
-        call_user_func(array('\ZExcel\Shared_String', 'setCurrencyCode'), '$');
+        call_user_func(array('\ZExcel\Shared\Stringg', 'setDecimalSeparator'), '.');
+        call_user_func(array('\ZExcel\Shared\Stringg', 'setThousandsSeparator'), ' ');
+        call_user_func(array('\ZExcel\Shared\Stringg', 'setCurrencyCode'), '$');
 
         $args = func_get_args();
         $expectedResult = array_pop($args);

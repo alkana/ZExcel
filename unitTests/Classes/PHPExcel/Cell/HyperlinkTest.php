@@ -13,7 +13,7 @@ class HyperlinkTest extends PHPUnit_Framework_TestCase
     {
         $urlValue = 'http://www.phpexcel.net';
 
-        $testInstance = new \ZExcel\Cell_Hyperlink($urlValue);
+        $testInstance = new \ZExcel\Cell\Hyperlink($urlValue);
 
         $result = $testInstance->getUrl();
         $this->assertEquals($urlValue, $result);
@@ -24,9 +24,9 @@ class HyperlinkTest extends PHPUnit_Framework_TestCase
         $initialUrlValue = 'http://www.phpexcel.net';
         $newUrlValue = 'http://github.com/PHPOffice/PHPExcel';
 
-        $testInstance = new \ZExcel\Cell_Hyperlink($initialUrlValue);
+        $testInstance = new \ZExcel\Cell\Hyperlink($initialUrlValue);
         $result = $testInstance->setUrl($newUrlValue);
-        $this->assertTrue($result instanceof \ZExcel\Cell_Hyperlink);
+        $this->assertTrue($result instanceof \ZExcel\Cell\Hyperlink);
 
         $result = $testInstance->getUrl();
         $this->assertEquals($newUrlValue, $result);
@@ -36,7 +36,7 @@ class HyperlinkTest extends PHPUnit_Framework_TestCase
     {
         $tooltipValue = 'PHPExcel Web Site';
 
-        $testInstance = new \ZExcel\Cell_Hyperlink(null, $tooltipValue);
+        $testInstance = new \ZExcel\Cell\Hyperlink(null, $tooltipValue);
 
         $result = $testInstance->getTooltip();
         $this->assertEquals($tooltipValue, $result);
@@ -47,9 +47,9 @@ class HyperlinkTest extends PHPUnit_Framework_TestCase
         $initialTooltipValue = 'PHPExcel Web Site';
         $newTooltipValue = 'PHPExcel Repository on Github';
 
-        $testInstance = new \ZExcel\Cell_Hyperlink(null, $initialTooltipValue);
+        $testInstance = new \ZExcel\Cell\Hyperlink(null, $initialTooltipValue);
         $result = $testInstance->setTooltip($newTooltipValue);
-        $this->assertTrue($result instanceof \ZExcel\Cell_Hyperlink);
+        $this->assertTrue($result instanceof \ZExcel\Cell\Hyperlink);
 
         $result = $testInstance->getTooltip();
         $this->assertEquals($newTooltipValue, $result);
@@ -60,7 +60,7 @@ class HyperlinkTest extends PHPUnit_Framework_TestCase
         $initialUrlValue = 'http://www.phpexcel.net';
         $newUrlValue = 'sheet://Worksheet1!A1';
 
-        $testInstance = new \ZExcel\Cell_Hyperlink($initialUrlValue);
+        $testInstance = new \ZExcel\Cell\Hyperlink($initialUrlValue);
         $result = $testInstance->isInternal();
         $this->assertFalse($result);
 
@@ -75,7 +75,7 @@ class HyperlinkTest extends PHPUnit_Framework_TestCase
         $tooltipValue = 'PHPExcel Web Site';
         $initialExpectedHash = 'd84d713aed1dbbc8a7c5af183d6c7dbb';
 
-        $testInstance = new \ZExcel\Cell_Hyperlink($urlValue, $tooltipValue);
+        $testInstance = new \ZExcel\Cell\Hyperlink($urlValue, $tooltipValue);
 
         $result = $testInstance->getHashCode();
         $this->assertEquals($initialExpectedHash, $result);

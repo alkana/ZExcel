@@ -13,7 +13,7 @@ class AutofilterColumnTest extends PHPUnit_Framework_TestCase
     {
         
 
-        $this->_mockAutoFilterObject = $this->getMockBuilder('\ZExcel\Worksheet_AutoFilter')
+        $this->_mockAutoFilterObject = $this->getMockBuilder('\ZExcel\Worksheet\AutoFilter')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -21,7 +21,7 @@ class AutofilterColumnTest extends PHPUnit_Framework_TestCase
             ->method('testColumnInRange')
             ->will($this->returnValue(3));
 
-        $this->_testAutoFilterColumnObject = new \ZExcel\Worksheet_AutoFilter_Column(
+        $this->_testAutoFilterColumnObject = new \ZExcel\Worksheet\AutoFilter\Column(
             $this->_testInitialColumn,
             $this->_mockAutoFilterObject
         );
@@ -39,7 +39,7 @@ class AutofilterColumnTest extends PHPUnit_Framework_TestCase
 
         //    Setters return the instance to implement the fluent interface
         $result = $this->_testAutoFilterColumnObject->setColumnIndex($expectedResult);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result);
 
         $result = $this->_testAutoFilterColumnObject->getColumnIndex();
         $this->assertEquals($expectedResult, $result);
@@ -48,29 +48,29 @@ class AutofilterColumnTest extends PHPUnit_Framework_TestCase
     public function testGetParent()
     {
         $result = $this->_testAutoFilterColumnObject->getParent();
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter', $result);
     }
 
     public function testSetParent()
     {
         //    Setters return the instance to implement the fluent interface
         $result = $this->_testAutoFilterColumnObject->setParent($this->_mockAutoFilterObject);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result);
     }
 
     public function testGetFilterType()
     {
         $result = $this->_testAutoFilterColumnObject->getFilterType();
-        $this->assertEquals(\ZExcel\Worksheet_AutoFilter_Column::AUTOFILTER_FILTERTYPE_FILTER, $result);
+        $this->assertEquals(\ZExcel\Worksheet\AutoFilter\Column::AUTOFILTER_FILTERTYPE_FILTER, $result);
     }
 
     public function testSetFilterType()
     {
-        $result = $this->_testAutoFilterColumnObject->setFilterType(\ZExcel\Worksheet_AutoFilter_Column::AUTOFILTER_FILTERTYPE_DYNAMICFILTER);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result);
+        $result = $this->_testAutoFilterColumnObject->setFilterType(\ZExcel\Worksheet\AutoFilter\Column::AUTOFILTER_FILTERTYPE_DYNAMICFILTER);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result);
 
         $result = $this->_testAutoFilterColumnObject->getFilterType();
-        $this->assertEquals(\ZExcel\Worksheet_AutoFilter_Column::AUTOFILTER_FILTERTYPE_DYNAMICFILTER, $result);
+        $this->assertEquals(\ZExcel\Worksheet\AutoFilter\Column::AUTOFILTER_FILTERTYPE_DYNAMICFILTER, $result);
     }
 
     /**
@@ -86,16 +86,16 @@ class AutofilterColumnTest extends PHPUnit_Framework_TestCase
     public function testGetJoin()
     {
         $result = $this->_testAutoFilterColumnObject->getJoin();
-        $this->assertEquals(\ZExcel\Worksheet_AutoFilter_Column::AUTOFILTER_COLUMN_JOIN_OR, $result);
+        $this->assertEquals(\ZExcel\Worksheet\AutoFilter\Column::AUTOFILTER_COLUMN_JOIN_OR, $result);
     }
 
     public function testSetJoin()
     {
-        $result = $this->_testAutoFilterColumnObject->setJoin(\ZExcel\Worksheet_AutoFilter_Column::AUTOFILTER_COLUMN_JOIN_AND);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result);
+        $result = $this->_testAutoFilterColumnObject->setJoin(\ZExcel\Worksheet\AutoFilter\Column::AUTOFILTER_COLUMN_JOIN_AND);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result);
 
         $result = $this->_testAutoFilterColumnObject->getJoin();
-        $this->assertEquals(\ZExcel\Worksheet_AutoFilter_Column::AUTOFILTER_COLUMN_JOIN_AND, $result);
+        $this->assertEquals(\ZExcel\Worksheet\AutoFilter\Column::AUTOFILTER_COLUMN_JOIN_AND, $result);
     }
 
     /**
@@ -116,7 +116,7 @@ class AutofilterColumnTest extends PHPUnit_Framework_TestCase
 
         //    Setters return the instance to implement the fluent interface
         $result = $this->_testAutoFilterColumnObject->setAttributes($attributeSet);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result);
     }
 
     public function testGetAttributes()
@@ -141,7 +141,7 @@ class AutofilterColumnTest extends PHPUnit_Framework_TestCase
         foreach ($attributeSet as $attributeName => $attributeValue) {
             //    Setters return the instance to implement the fluent interface
             $result = $this->_testAutoFilterColumnObject->setAttribute($attributeName, $attributeValue);
-            $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result);
+            $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result);
         }
     }
 
@@ -164,6 +164,6 @@ class AutofilterColumnTest extends PHPUnit_Framework_TestCase
     public function testClone()
     {
         $result = clone $this->_testAutoFilterColumnObject;
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result);
     }
 }

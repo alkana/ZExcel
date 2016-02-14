@@ -20,24 +20,24 @@ class WorksheetColumnTest extends PHPUnit_Framework_TestCase
 
     public function testInstantiateColumnDefault()
     {
-        $column = new \ZExcel\Worksheet_Column($this->mockWorksheet);
-        $this->assertInstanceOf('\ZExcel\Worksheet_Column', $column);
+        $column = new \ZExcel\Worksheet\Column($this->mockWorksheet);
+        $this->assertInstanceOf('\ZExcel\Worksheet\Column', $column);
         $columnIndex = $column->getColumnIndex();
         $this->assertEquals('A', $columnIndex);
     }
 
     public function testInstantiateColumnSpecified()
     {
-        $column = new \ZExcel\Worksheet_Column($this->mockWorksheet, 'E');
-        $this->assertInstanceOf('\ZExcel\Worksheet_Column', $column);
+        $column = new \ZExcel\Worksheet\Column($this->mockWorksheet, 'E');
+        $this->assertInstanceOf('\ZExcel\Worksheet\Column', $column);
         $columnIndex = $column->getColumnIndex();
         $this->assertEquals('E', $columnIndex);
     }
 
     public function testGetCellIterator()
     {
-        $column = new \ZExcel\Worksheet_Column($this->mockWorksheet);
+        $column = new \ZExcel\Worksheet\Column($this->mockWorksheet);
         $cellIterator = $column->getCellIterator();
-        $this->assertInstanceOf('\ZExcel\Worksheet_ColumnCellIterator', $cellIterator);
+        $this->assertInstanceOf('\ZExcel\Worksheet\ColumnCellIterator', $cellIterator);
     }
 }

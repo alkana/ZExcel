@@ -28,7 +28,7 @@ class ColumnCellIteratorTest extends PHPUnit_Framework_TestCase
 
     public function testIteratorFullRange()
     {
-        $iterator = new \ZExcel\Worksheet_ColumnCellIterator($this->mockWorksheet, 'A');
+        $iterator = new \ZExcel\Worksheet\ColumnCellIterator($this->mockWorksheet, 'A');
         $ColumnCellIndexResult = 1;
         $this->assertEquals($ColumnCellIndexResult, $iterator->key());
         
@@ -40,7 +40,7 @@ class ColumnCellIteratorTest extends PHPUnit_Framework_TestCase
 
     public function testIteratorStartEndRange()
     {
-        $iterator = new \ZExcel\Worksheet_ColumnCellIterator($this->mockWorksheet, 'A', 2, 4);
+        $iterator = new \ZExcel\Worksheet\ColumnCellIterator($this->mockWorksheet, 'A', 2, 4);
         $ColumnCellIndexResult = 2;
         $this->assertEquals($ColumnCellIndexResult, $iterator->key());
         
@@ -52,7 +52,7 @@ class ColumnCellIteratorTest extends PHPUnit_Framework_TestCase
 
     public function testIteratorSeekAndPrev()
     {
-        $iterator = new \ZExcel\Worksheet_ColumnCellIterator($this->mockWorksheet, 'A', 2, 4);
+        $iterator = new \ZExcel\Worksheet\ColumnCellIterator($this->mockWorksheet, 'A', 2, 4);
         $columnIndexResult = 4;
         $iterator->seek(4);
         $this->assertEquals($columnIndexResult, $iterator->key());
@@ -68,7 +68,7 @@ class ColumnCellIteratorTest extends PHPUnit_Framework_TestCase
      */
     public function testSeekOutOfRange()
     {
-        $iterator = new \ZExcel\Worksheet_ColumnCellIterator($this->mockWorksheet, 'A', 2, 4);
+        $iterator = new \ZExcel\Worksheet\ColumnCellIterator($this->mockWorksheet, 'A', 2, 4);
         $iterator->seek(1);
     }
 
@@ -77,7 +77,7 @@ class ColumnCellIteratorTest extends PHPUnit_Framework_TestCase
      */
     public function testPrevOutOfRange()
     {
-        $iterator = new \ZExcel\Worksheet_ColumnCellIterator($this->mockWorksheet, 'A', 2, 4);
+        $iterator = new \ZExcel\Worksheet\ColumnCellIterator($this->mockWorksheet, 'A', 2, 4);
         $iterator->prev();
     }
 }

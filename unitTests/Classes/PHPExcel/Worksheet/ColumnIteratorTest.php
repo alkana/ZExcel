@@ -9,7 +9,7 @@ class ColumnIteratorTest extends PHPUnit_Framework_TestCase
     {
         
         
-        $this->mockColumn = $this->getMockBuilder('\ZExcel\Worksheet_Column')
+        $this->mockColumn = $this->getMockBuilder('\ZExcel\Worksheet\Column')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -28,32 +28,32 @@ class ColumnIteratorTest extends PHPUnit_Framework_TestCase
 
     public function testIteratorFullRange()
     {
-        $iterator = new \ZExcel\Worksheet_ColumnIterator($this->mockWorksheet);
+        $iterator = new \ZExcel\Worksheet\ColumnIterator($this->mockWorksheet);
         $columnIndexResult = 'A';
         $this->assertEquals($columnIndexResult, $iterator->key());
         
         foreach ($iterator as $key => $column) {
             $this->assertEquals($columnIndexResult++, $key);
-            $this->assertInstanceOf('\ZExcel\Worksheet_Column', $column);
+            $this->assertInstanceOf('\ZExcel\Worksheet\Column', $column);
         }
     }
 
     public function testIteratorStartEndRange()
     {
-        $iterator = new \ZExcel\Worksheet_ColumnIterator($this->mockWorksheet, 'B', 'D');
+        $iterator = new \ZExcel\Worksheet\ColumnIterator($this->mockWorksheet, 'B', 'D');
         $columnIndexResult = 'B';
         $this->assertEquals($columnIndexResult, $iterator->key());
         
         foreach ($iterator as $key => $column) {
             $this->assertEquals($columnIndexResult++, $key);
-            $this->assertInstanceOf('\ZExcel\Worksheet_Column', $column);
+            $this->assertInstanceOf('\ZExcel\Worksheet\Column', $column);
         }
     }
 
     public function testIteratorSeekAndPrev()
     {
         $ranges = range('A', 'E');
-        $iterator = new \ZExcel\Worksheet_ColumnIterator($this->mockWorksheet, 'B', 'D');
+        $iterator = new \ZExcel\Worksheet\ColumnIterator($this->mockWorksheet, 'B', 'D');
         $columnIndexResult = 'D';
         $iterator->seek('D');
         $this->assertEquals($columnIndexResult, $iterator->key());
@@ -70,7 +70,7 @@ class ColumnIteratorTest extends PHPUnit_Framework_TestCase
      */
     public function testStartOutOfRange()
     {
-        $iterator = new \ZExcel\Worksheet_ColumnIterator($this->mockWorksheet, 'IA', 'IV');
+        $iterator = new \ZExcel\Worksheet\ColumnIterator($this->mockWorksheet, 'IA', 'IV');
     }
 
     /**
@@ -78,7 +78,7 @@ class ColumnIteratorTest extends PHPUnit_Framework_TestCase
      */
     public function testSeekOutOfRange()
     {
-        $iterator = new \ZExcel\Worksheet_ColumnIterator($this->mockWorksheet, 'B', 'D');
+        $iterator = new \ZExcel\Worksheet\ColumnIterator($this->mockWorksheet, 'B', 'D');
         $iterator->seek('A');
     }
 
@@ -87,7 +87,7 @@ class ColumnIteratorTest extends PHPUnit_Framework_TestCase
      */
     public function testPrevOutOfRange()
     {
-        $iterator = new \ZExcel\Worksheet_ColumnIterator($this->mockWorksheet, 'B', 'D');
+        $iterator = new \ZExcel\Worksheet\ColumnIterator($this->mockWorksheet, 'B', 'D');
         $iterator->prev();
     }
 }

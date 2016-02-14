@@ -58,7 +58,7 @@ class AdvancedValueBinderTest extends PHPUnit_Framework_TestCase
 
         $cell = new \ZExcel\Cell(null, \ZExcel\Cell\DataType::TYPE_STRING, $sheet);
 
-        $binder = new \ZExcel\Cell_AdvancedValueBinder();
+        $binder = new \ZExcel\Cell\AdvancedValueBinder();
         $binder->bindValue($cell, $value);
         $this->assertEquals($valueBinded, $cell->getValue());
     }

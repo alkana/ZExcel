@@ -13,21 +13,21 @@ class FontTest extends PHPUnit_Framework_TestCase
 
     public function testGetAutoSizeMethod()
     {
-        $expectedResult = \ZExcel\Shared_Font::AUTOSIZE_METHOD_APPROX;
+        $expectedResult = \ZExcel\Shared\Font::AUTOSIZE_METHOD_APPROX;
 
-        $result = call_user_func(array('\ZExcel\Shared_Font','getAutoSizeMethod'));
+        $result = call_user_func(array('\ZExcel\Shared\Font','getAutoSizeMethod'));
         $this->assertEquals($expectedResult, $result);
     }
 
     public function testSetAutoSizeMethod()
     {
         $autosizeMethodValues = array(
-            \ZExcel\Shared_Font::AUTOSIZE_METHOD_EXACT,
-            \ZExcel\Shared_Font::AUTOSIZE_METHOD_APPROX,
+            \ZExcel\Shared\Font::AUTOSIZE_METHOD_EXACT,
+            \ZExcel\Shared\Font::AUTOSIZE_METHOD_APPROX,
         );
 
         foreach ($autosizeMethodValues as $autosizeMethodValue) {
-            $result = call_user_func(array('\ZExcel\Shared_Font','setAutoSizeMethod'), $autosizeMethodValue);
+            $result = call_user_func(array('\ZExcel\Shared\Font','setAutoSizeMethod'), $autosizeMethodValue);
             $this->assertTrue($result);
         }
     }
@@ -36,7 +36,7 @@ class FontTest extends PHPUnit_Framework_TestCase
     {
         $unsupportedAutosizeMethod = 'guess';
 
-        $result = call_user_func(array('\ZExcel\Shared_Font','setAutoSizeMethod'), $unsupportedAutosizeMethod);
+        $result = call_user_func(array('\ZExcel\Shared\Font','setAutoSizeMethod'), $unsupportedAutosizeMethod);
         $this->assertFalse($result);
     }
 
@@ -47,7 +47,7 @@ class FontTest extends PHPUnit_Framework_TestCase
     {
         $args = func_get_args();
         $expectedResult = array_pop($args);
-        $result = call_user_func_array(array('\ZExcel\Shared_Font','fontSizeToPixels'), $args);
+        $result = call_user_func_array(array('\ZExcel\Shared\Font','fontSizeToPixels'), $args);
         $this->assertEquals($expectedResult, $result);
     }
 
@@ -63,7 +63,7 @@ class FontTest extends PHPUnit_Framework_TestCase
     {
         $args = func_get_args();
         $expectedResult = array_pop($args);
-        $result = call_user_func_array(array('\ZExcel\Shared_Font','inchSizeToPixels'), $args);
+        $result = call_user_func_array(array('\ZExcel\Shared\Font','inchSizeToPixels'), $args);
         $this->assertEquals($expectedResult, $result);
     }
 
@@ -79,7 +79,7 @@ class FontTest extends PHPUnit_Framework_TestCase
     {
         $args = func_get_args();
         $expectedResult = array_pop($args);
-        $result = call_user_func_array(array('\ZExcel\Shared_Font','centimeterSizeToPixels'), $args);
+        $result = call_user_func_array(array('\ZExcel\Shared\Font','centimeterSizeToPixels'), $args);
         $this->assertEquals($expectedResult, $result);
     }
 

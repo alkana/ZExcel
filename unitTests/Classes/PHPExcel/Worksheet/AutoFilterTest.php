@@ -22,7 +22,7 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
             ->method('getCellCacheController')
             ->will($this->returnValue($this->_mockCacheController));
 
-        $this->_testAutoFilterObject = new \ZExcel\Worksheet_AutoFilter(
+        $this->_testAutoFilterObject = new \ZExcel\Worksheet\AutoFilter(
             $this->_testInitialRange,
             $this->_mockWorksheetObject
         );
@@ -47,7 +47,7 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
     {
         //    Setters return the instance to implement the fluent interface
         $result = $this->_testAutoFilterObject->setParent($this->_mockWorksheetObject);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter', $result);
     }
 
     public function testGetRange()
@@ -68,7 +68,7 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
         foreach ($ranges as $actualRange => $fullRange) {
             //    Setters return the instance to implement the fluent interface
             $result = $this->_testAutoFilterObject->setRange($fullRange);
-            $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter', $result);
+            $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter', $result);
 
             //    Result should be the new autofilter range
             $result = $this->_testAutoFilterObject->getRange();
@@ -82,7 +82,7 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
 
         //    Setters return the instance to implement the fluent interface
         $result = $this->_testAutoFilterObject->setRange();
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter', $result);
 
         //    Result should be a clear range
         $result = $this->_testAutoFilterObject->getRange();
@@ -138,15 +138,15 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
 
         //    Setters return the instance to implement the fluent interface
         $result = $this->_testAutoFilterObject->setColumn($expectedResult);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter', $result);
 
         $result = $this->_testAutoFilterObject->getColumns();
-        //    Result should be an array of \ZExcel\Worksheet_AutoFilter_Column
+        //    Result should be an array of \ZExcel\Worksheet\AutoFilter\Column
         //    objects for each column we set indexed by the column ID
         $this->assertInternalType('array', $result);
         $this->assertEquals(1, count($result));
         $this->assertArrayHasKey($expectedResult, $result);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result[$expectedResult]);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result[$expectedResult]);
     }
 
     /**
@@ -162,19 +162,19 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
     public function testSetColumnWithColumnObject()
     {
         $expectedResult = 'M';
-        $columnObject = new \ZExcel\Worksheet_AutoFilter_Column($expectedResult);
+        $columnObject = new \ZExcel\Worksheet\AutoFilter\Column($expectedResult);
 
         //    Setters return the instance to implement the fluent interface
         $result = $this->_testAutoFilterObject->setColumn($columnObject);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter', $result);
 
         $result = $this->_testAutoFilterObject->getColumns();
-        //    Result should be an array of \ZExcel\Worksheet_AutoFilter_Column
+        //    Result should be an array of \ZExcel\Worksheet\AutoFilter\Column
         //    objects for each column we set indexed by the column ID
         $this->assertInternalType('array', $result);
         $this->assertEquals(1, count($result));
         $this->assertArrayHasKey($expectedResult, $result);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result[$expectedResult]);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result[$expectedResult]);
     }
 
     /**
@@ -183,7 +183,7 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
     public function testSetInvalidColumnWithObject()
     {
         $invalidColumn = 'E';
-        $columnObject = new \ZExcel\Worksheet_AutoFilter_Column($invalidColumn);
+        $columnObject = new \ZExcel\Worksheet\AutoFilter\Column($invalidColumn);
 
         $result = $this->_testAutoFilterObject->setColumn($invalidColumn);
     }
@@ -194,7 +194,7 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
     public function testSetColumnWithInvalidDataType()
     {
         $invalidColumn = 123.456;
-        $columnObject = new \ZExcel\Worksheet_AutoFilter_Column($invalidColumn);
+        $columnObject = new \ZExcel\Worksheet\AutoFilter\Column($invalidColumn);
 
         $result = $this->_testAutoFilterObject->setColumn($invalidColumn);
     }
@@ -208,13 +208,13 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
         }
 
         $result = $this->_testAutoFilterObject->getColumns();
-        //    Result should be an array of \ZExcel\Worksheet_AutoFilter_Column
+        //    Result should be an array of \ZExcel\Worksheet\AutoFilter\Column
         //    objects for each column we set indexed by the column ID
         $this->assertInternalType('array', $result);
         $this->assertEquals(count($columnIndexes), count($result));
         foreach ($columnIndexes as $columnIndex) {
             $this->assertArrayHasKey($columnIndex, $result);
-            $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result[$columnIndex]);
+            $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result[$columnIndex]);
         }
     }
 
@@ -227,10 +227,10 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
         }
 
         //    If we request a specific column by its column ID, we should
-        //    get a \ZExcel\Worksheet_AutoFilter_Column object returned
+        //    get a \ZExcel\Worksheet\AutoFilter\Column object returned
         foreach ($columnIndexes as $columnIndex) {
             $result = $this->_testAutoFilterObject->getColumn($columnIndex);
-            $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result);
+            $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result);
         }
     }
 
@@ -242,10 +242,10 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
                               );
 
         //    If we request a specific column by its offset, we should
-        //    get a \ZExcel\Worksheet_AutoFilter_Column object returned
+        //    get a \ZExcel\Worksheet\AutoFilter\Column object returned
         foreach ($columnIndexes as $columnIndex => $columnID) {
             $result = $this->_testAutoFilterObject->getColumnByOffset($columnIndex);
-            $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result);
+            $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result);
             $this->assertEquals($result->getColumnIndex(), $columnID);
         }
     }
@@ -253,9 +253,9 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
     public function testGetColumnIfNotSet()
     {
         //    If we request a specific column by its column ID, we should
-        //    get a \ZExcel\Worksheet_AutoFilter_Column object returned
+        //    get a \ZExcel\Worksheet\AutoFilter\Column object returned
         $result = $this->_testAutoFilterObject->getColumn('K');
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter_Column', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter\Column', $result);
     }
 
     /**
@@ -280,7 +280,7 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
 
         //    Setters return the instance to implement the fluent interface
         $result = $this->_testAutoFilterObject->setRange();
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter', $result);
 
         //    Range should be cleared
         $result = $this->_testAutoFilterObject->getRange();
@@ -309,7 +309,7 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
 
         //    Setters return the instance to implement the fluent interface
         $result = $this->_testAutoFilterObject->setRange($expectedResult);
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter', $result);
 
         //    Range should be correctly set
         $result = $this->_testAutoFilterObject->getRange();
@@ -331,6 +331,6 @@ class AutoFilterTest extends PHPUnit_Framework_TestCase
         }
 
         $result = clone $this->_testAutoFilterObject;
-        $this->assertInstanceOf('\ZExcel\Worksheet_AutoFilter', $result);
+        $this->assertInstanceOf('\ZExcel\Worksheet\AutoFilter', $result);
     }
 }

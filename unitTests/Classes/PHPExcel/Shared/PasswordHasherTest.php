@@ -18,7 +18,7 @@ class PasswordHasherTest extends PHPUnit_Framework_TestCase
     {
         $args = func_get_args();
         $expectedResult = array_pop($args);
-        $result = call_user_func_array(array('\ZExcel\Shared_PasswordHasher','hashPassword'), $args);
+        $result = call_user_func_array(array('\ZExcel\Shared\PasswordHasher','hashPassword'), $args);
         $this->assertEquals($expectedResult, $result);
     }
 
