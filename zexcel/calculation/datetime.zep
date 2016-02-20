@@ -231,9 +231,73 @@ class DateTime
      * @return    mixed    Excel date/time serial value, PHP date/time serial value or PHP date/time object,
      *                        depending on the value of the ReturnDateType flag
      */
-    public static function date($year = 0, $month = 1, $day = 1)
+    public static function date(var year = 0, var month = 1, var day = 1)
     {
-        throw new \Exception("Not implemented yet!");
+        var baseYear, excelDateValue;
+    
+        let year  = \ZExcel\Calculation\Functions::flattenSingleValue(year);
+        let month = \ZExcel\Calculation\Functions::flattenSingleValue(month);
+        let day   = \ZExcel\Calculation\Functions::flattenSingleValue(day);
+
+        if ((month !== null) && (!is_numeric(month))) {
+            let month = \ZExcel\Shared\Date::monthStringToNumber(month);
+        }
+
+        if ((day !== null) && (!is_numeric(day))) {
+            let day = \ZExcel\Shared\Date::dayStringToNumber(day);
+        }
+
+        let year = (year !== null) ? \ZExcel\Shared\Stringg::testStringAsNumeric(year) : 0;
+        let month = (month !== null) ? \ZExcel\Shared\Stringg::testStringAsNumeric(month) : 0;
+        let day = (day !== null) ? \ZExcel\Shared\Stringg::testStringAsNumeric(day) : 0;
+        if ((!is_numeric(year)) ||
+            (!is_numeric(month)) ||
+            (!is_numeric(day))) {
+            return \ZExcel\Calculation\Functions::value();
+        }
+        let year  = (int) year;
+        let month = (int) month;
+        let day   = (int) day;
+
+        let baseYear = \ZExcel\Shared\Date::getExcelCalendar();
+        // Validate parameters
+        if (year < (baseYear - 1900)) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        if (((baseYear - 1900) != 0) && (year < baseYear) && (year >= 1900)) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+
+        if ((year < baseYear) && (year >= (baseYear - 1900))) {
+            let year += 1900;
+        }
+
+        if (month < 1) {
+            //    Handle year/month adjustment if month < 1
+            let month = month - 1;
+            let year = year + ceil(month / 12) - 1;
+            let month = 13 - abs(month % 12);
+        } elseif (month > 12) {
+            //    Handle year/month adjustment if month > 12
+            let year = year + floor($month / 12);
+            let month = (month % 12);
+        }
+
+        // Re-validate the year parameter after adjustments
+        if ((year < baseYear) || (year >= 10000)) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+
+        // Execute function
+        let excelDateValue = \ZExcel\Shared\Date::FormattedPHPToExcel(year, month, day);
+        switch (\ZExcel\Calculation\Functions::getReturnDateType()) {
+            case \ZExcel\Calculation\Functions::RETURNDATE_EXCEL:
+                return (float) excelDateValue;
+            case \ZExcel\Calculation\Functions::RETURNDATE_PHP_NUMERIC:
+                return (int) \ZExcel\Shared\Date::ExcelToPHP(excelDateValue);
+            case \ZExcel\Calculation\Functions::RETURNDATE_PHP_OBJECT:
+                return \ZExcel\Shared\Date::ExcelToPHPObject(excelDateValue);
+        }
     }
 
 
@@ -296,9 +360,108 @@ class DateTime
      * @return    mixed    Excel date/time serial value, PHP date/time serial value or PHP date/time object,
      *                        depending on the value of the ReturnDateType flag
      */
-    public static function datevalue($dateValue = 1)
+    public static function datevalue(var dateValue = 1)
     {
-        throw new \Exception("Not implemented yet!");
+        var yearFound, t1, t, k, PHPDateArray, testVal, excelDateValue;
+    
+        let dateValue = trim(\ZExcel\Calculation\Functions::flattenSingleValue(dateValue), "\"");
+        //    Strip any ordinals because they're allowed in Excel (English only)
+        let dateValue = preg_replace("/(\d)(st|nd|rd|th)([ -\/])/Ui", "$1$3", dateValue);
+        //    Convert separators (/ . or space) to hyphens (should also handle dot used for ordinals in some countries, e.g. Denmark, Germany)
+        let dateValue = str_replace(["/", ".", "-", "  "], [" ", " ", " ", " "], dateValue);
+
+        let yearFound = false;
+        let t1 = explode(" ", dateValue);
+        
+        for k, t in t1 {
+            if ((is_numeric(t)) && (t > 31)) {
+                if (yearFound) {
+                    return \ZExcel\Calculation\Functions::VaLUE();
+                } else {
+                    if (t < 100) {
+                        let t = t + 1900;
+                        let t1[k] = t;
+                    }
+                    let yearFound = true;
+                }
+            }
+        }
+        
+        if ((count(t1) == 1) && (strpos(t, ":") != false)) {
+            //    We've been fed a time value without any date
+            return 0.0;
+        } elseif (count(t1) == 2) {
+            //    We only have two parts of the date: either day/month or month/year
+            if (yearFound) {
+                array_unshift(t1, 1);
+            } else {
+                array_push(t1, date("Y"));
+            }
+        }
+
+        let dateValue = implode(" ", t1);
+        
+        let PHPDateArray = date_parse(dateValue);
+        
+        if ((PHPDateArray === false) || (PHPDateArray["error_count"] > 0)) {
+            let testVal = explode(" ", dateValue);
+            
+            if (count(testVal) < 2) {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            } elseif (!isset(testVal[2])) {
+                let testVal[2] = strftime("%Y");
+            }
+            
+            let PHPDateArray = date_parse(implode("-", testVal));
+            
+            if ((PHPDateArray === false) || (PHPDateArray["error_count"] > 0)) {
+                
+                let PHPDateArray = date_parse(testVal[1] . "-" . testVal[0] . "-" . testVal[2]);
+                
+                if ((PHPDateArray === false) || (PHPDateArray["error_count"] > 0)) {
+                    return \ZExcel\Calculation\Functions::VaLUE();
+                }
+            }
+        }
+
+        if ((PHPDateArray !== false) && (PHPDateArray["error_count"] == 0)) {
+            // Execute function
+            if (PHPDateArray["year"] == "") {
+                let PHPDateArray["year"] = strftime("%Y");
+            }
+            if (PHPDateArray["year"] < 1900) {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
+            if (PHPDateArray["month"] == "") {
+                let PHPDateArray["month"] = strftime("%m");
+            }
+            if (PHPDateArray["day"] == "") {
+                let PHPDateArray["day"] = strftime("%d");
+            }
+            
+            // @FIXME
+            let excelDateValue = floor(
+                \ZExcel\Shared\Date::FormattedPHPToExcel(
+                    PHPDateArray["year"],
+                    PHPDateArray["month"],
+                    PHPDateArray["day"],
+                    PHPDateArray["hour"],
+                    PHPDateArray["minute"],
+                    PHPDateArray["second"]
+                )
+            );
+
+            switch (\ZExcel\Calculation\Functions::getReturnDateType()) {
+                case \ZExcel\Calculation\Functions::RETURNDATE_EXCEL:
+                    return (float) excelDateValue;
+                case \ZExcel\Calculation\Functions::RETURNDATE_PHP_NUMERIC:
+                    return (int) \ZExcel\Shared\Date::ExcelToPHP(excelDateValue);
+                case \ZExcel\Calculation\Functions::RETURNDATE_PHP_OBJECT:
+                    return new \DateTime(PHPDateArray["year"]."-".PHPDateArray["month"]."-".PHPDateArray["day"]." 00:00:00");
+            }
+        }
+        
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -358,9 +521,9 @@ class DateTime
      *
      * @access    public
      * @category Date/Time Functions
-     * @param    mixed        $startDate        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed        $startDate        Excel date serial value (float), PHP date timestamp (int),
      *                                        PHP DateTime object, or a standard date string
-     * @param    mixed        $endDate        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed        $endDate        Excel date serial value (float), PHP date timestamp (int),
      *                                        PHP DateTime object, or a standard date string
      * @param    boolean        $method            US or European Method
      *                                        FALSE or omitted: U.S. (NASD) method. If the starting date is
@@ -394,9 +557,9 @@ class DateTime
      *
      * @access    public
      * @category Date/Time Functions
-     * @param    mixed    $startDate        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $startDate        Excel date serial value (float), PHP date timestamp (int),
      *                                    PHP DateTime object, or a standard date string
-     * @param    mixed    $endDate        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $endDate        Excel date serial value (float), PHP date timestamp (int),
      *                                    PHP DateTime object, or a standard date string
      * @param    integer    $method            Method used for the calculation
      *                                        0 or omitted    US (NASD) 30/360
@@ -425,12 +588,12 @@ class DateTime
      *
      * @access    public
      * @category Date/Time Functions
-     * @param    mixed            $startDate        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed            $startDate        Excel date serial value (float), PHP date timestamp (int),
      *                                            PHP DateTime object, or a standard date string
-     * @param    mixed            $endDate        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed            $endDate        Excel date serial value (float), PHP date timestamp (int),
      *                                            PHP DateTime object, or a standard date string
      * @param    mixed            $holidays,...    Optional series of Excel date serial value (float), PHP date
-     *                                            timestamp (integer), PHP DateTime object, or a standard date
+     *                                            timestamp (int), PHP DateTime object, or a standard date
      *                                            strings that will be excluded from the working calendar, such
      *                                            as state and federal holidays and floating holidays.
      * @return    integer            Interval between the dates
@@ -454,13 +617,13 @@ class DateTime
      *
      * @access    public
      * @category Date/Time Functions
-     * @param    mixed        $startDate        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed        $startDate        Excel date serial value (float), PHP date timestamp (int),
      *                                        PHP DateTime object, or a standard date string
      * @param    integer        $endDays        The number of nonweekend and nonholiday days before or after
      *                                        startDate. A positive value for days yields a future date; a
      *                                        negative value yields a past date.
      * @param    mixed        $holidays,...    Optional series of Excel date serial value (float), PHP date
-     *                                        timestamp (integer), PHP DateTime object, or a standard date
+     *                                        timestamp (int), PHP DateTime object, or a standard date
      *                                        strings that will be excluded from the working calendar, such
      *                                        as state and federal holidays and floating holidays.
      * @return    mixed    Excel date/time serial value, PHP date/time serial value or PHP date/time object,
@@ -481,7 +644,7 @@ class DateTime
      * Excel Function:
      *        DAY(dateValue)
      *
-     * @param    mixed    $dateValue        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $dateValue        Excel date serial value (float), PHP date timestamp (int),
      *                                    PHP DateTime object, or a standard date string
      * @return    int        Day of the month
      */
@@ -500,7 +663,7 @@ class DateTime
      * Excel Function:
      *        WEEKDAY(dateValue[,style])
      *
-     * @param    mixed    $dateValue        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $dateValue        Excel date serial value (float), PHP date timestamp (int),
      *                                    PHP DateTime object, or a standard date string
      * @param    int        $style            A number that determines the type of return value
      *                                        1 or omitted    Numbers 1 (Sunday) through 7 (Saturday).
@@ -527,7 +690,7 @@ class DateTime
      * Excel Function:
      *        WEEKNUM(dateValue[,style])
      *
-     * @param    mixed    $dateValue        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $dateValue        Excel date serial value (float), PHP date timestamp (int),
      *                                    PHP DateTime object, or a standard date string
      * @param    boolean    $method            Week begins on Sunday or Monday
      *                                        1 or omitted    Week begins on Sunday.
@@ -549,7 +712,7 @@ class DateTime
      * Excel Function:
      *        MONTH(dateValue)
      *
-     * @param    mixed    $dateValue        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $dateValue        Excel date serial value (float), PHP date timestamp (int),
      *                                    PHP DateTime object, or a standard date string
      * @return    int        Month of the year
      */
@@ -568,7 +731,7 @@ class DateTime
      * Excel Function:
      *        YEAR(dateValue)
      *
-     * @param    mixed    $dateValue        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $dateValue        Excel date serial value (float), PHP date timestamp (int),
      *                                    PHP DateTime object, or a standard date string
      * @return    int        Year
      */
@@ -587,7 +750,7 @@ class DateTime
      * Excel Function:
      *        HOUR(timeValue)
      *
-     * @param    mixed    $timeValue        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $timeValue        Excel date serial value (float), PHP date timestamp (int),
      *                                    PHP DateTime object, or a standard time string
      * @return    int        Hour
      */
@@ -606,7 +769,7 @@ class DateTime
      * Excel Function:
      *        MINUTE(timeValue)
      *
-     * @param    mixed    $timeValue        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $timeValue        Excel date serial value (float), PHP date timestamp (int),
      *                                    PHP DateTime object, or a standard time string
      * @return    int        Minute
      */
@@ -625,7 +788,7 @@ class DateTime
      * Excel Function:
      *        SECOND(timeValue)
      *
-     * @param    mixed    $timeValue        Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $timeValue        Excel date serial value (float), PHP date timestamp (int),
      *                                    PHP DateTime object, or a standard time string
      * @return    int        Second
      */
@@ -646,7 +809,7 @@ class DateTime
      * Excel Function:
      *        EDATE(dateValue,adjustmentMonths)
      *
-     * @param    mixed    $dateValue            Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $dateValue            Excel date serial value (float), PHP date timestamp (int),
      *                                        PHP DateTime object, or a standard date string
      * @param    int        $adjustmentMonths    The number of months before or after start_date.
      *                                        A positive value for months yields a future date;
@@ -670,7 +833,7 @@ class DateTime
      * Excel Function:
      *        EOMONTH(dateValue,adjustmentMonths)
      *
-     * @param    mixed    $dateValue            Excel date serial value (float), PHP date timestamp (integer),
+     * @param    mixed    $dateValue            Excel date serial value (float), PHP date timestamp (int),
      *                                        PHP DateTime object, or a standard date string
      * @param    int        $adjustmentMonths    The number of months before or after start_date.
      *                                        A positive value for months yields a future date;

@@ -523,7 +523,20 @@ class Stringg
      */
     public static function StrCaseReverse(pValue = "")
     {
-        throw new \Exception("Not implemented yet!");
+        var characters, character, k;
+        
+        if (self::getIsMbstringEnabled()) {
+            let characters = self::mb_str_split(pValue);
+            for k, character in characters {
+                if(self::mb_is_upper(character)) {
+                    let characters[k] = mb_strtolower(character, "UTF-8");
+                } else {
+                    let character = mb_strtoupper($character, "UTF-8");
+                }
+            }
+            return implode("", characters);
+        }
+        return strtolower(pValue) ^ strtoupper(pValue) ^ pValue;
     }
 
     /**
@@ -610,8 +623,16 @@ class Stringg
      * @param    string    $value
      * @return    mixed    string or only the leading numeric part of the string
      */
-    public static function testStringAsNumeric(value)
+    public static function testStringAsNumeric(var value)
     {
-        throw new \Exception("Not implemented yet!");
+        var v;
+    
+        if (is_numeric(value)) {
+            return value;
+        }
+        
+        let v = floatval(value);
+        
+        return ((is_numeric(substr(value, 0, strlen(v)))) ? v : value);
     }
 }
