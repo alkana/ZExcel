@@ -2,17 +2,37 @@ namespace ZExcel\Calculation;
 
 class MathTrig
 {
-    private static function factors(value)
+    /**
+     * Private method to return an array of the factors of the input value
+     * @return array
+     */
+    private static function factors(var value)
     {
-        throw new \Exception("Not implemented yet!");
+        var i, startVal = floor(sqrt(value)), factorArray = [];
+        
+        for i in range(startVal, 2) {
+            if ((value % i) == 0) {
+                let factorArray = array_merge(factorArray, self::factors(value / i));
+                let factorArray = array_merge(factorArray, self::factors(i));
+                
+                if (i <= sqrt(value)) {
+                    break;
+                }
+            }
+        }
+        
+        if (!empty(factorArray)) {
+            rsort(factorArray);
+            return factorArray;
+        } else {
+            return [(int) value];
+        }
     }
-
 
     private static function romanCut(num, n)
     {
         return (num - (num % n)) / n;
     }
-
 
     /**
      * ATAN2
@@ -36,9 +56,26 @@ class MathTrig
      * @param    float    yCoordinate        The y-coordinate of the point.
      * @return    float    The inverse tangent of the specified x- and y-coordinates.
      */
-    public static function ATan2(xCoordinate = null, yCoordinate = null)
+    public static function ATan2(var xCoordinate = null, var yCoordinate = null)
     {
-        throw new \Exception("Not implemented yet!");
+        let xCoordinate = \ZExcel\Calculation\Functions::flattenSingleValue(xCoordinate);
+        let yCoordinate = \ZExcel\Calculation\Functions::flattenSingleValue(yCoordinate);
+
+        let xCoordinate = (xCoordinate !== null) ? xCoordinate : 0.0;
+        let yCoordinate = (yCoordinate !== null) ? yCoordinate : 0.0;
+
+        if (((is_numeric(xCoordinate)) || (is_bool(xCoordinate))) &&
+            ((is_numeric(yCoordinate)))  || (is_bool(yCoordinate))) {
+            let xCoordinate    = (float) xCoordinate;
+            let yCoordinate    = (float) yCoordinate;
+
+            if ((xCoordinate == 0) && (yCoordinate == 0)) {
+                return \ZExcel\Calculation\Functions::DiV0();
+            }
+
+            return atan2(yCoordinate, xCoordinate);
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -59,9 +96,26 @@ class MathTrig
      * @param    float    significance    The multiple to which you want to round.
      * @return    float    Rounded Number
      */
-    public static function Ceiling(number, significance = null)
+    public static function Ceiling(float number, var significance = null)
     {
-        throw new \Exception("Not implemented yet!");
+        let number       = \ZExcel\Calculation\Functions::flattenSingleValue(number);
+        let significance = \ZExcel\Calculation\Functions::flattenSingleValue(significance);
+
+        if ((is_null(significance)) &&
+            (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_GNUMERIC)) {
+            let significance = number / abs(number);
+        }
+
+        if ((is_numeric(number)) && (is_numeric(significance))) {
+            if ((number == 0.0 ) || (significance == 0.0)) {
+                return 0.0;
+            } elseif (self::SiGN(number) == self::SiGN(significance)) {
+                return ceil(number / significance) * significance;
+            } else {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -80,9 +134,20 @@ class MathTrig
      * @param    int        numInSet    Number of objects in each combination
      * @return    int        Number of combinations
      */
-    public static function Combin(numObjs, numInSet)
+    public static function Combin(int numObjs, int numInSet)
     {
-        throw new \Exception("Not implemented yet!");
+        let numObjs  = \ZExcel\Calculation\Functions::flattenSingleValue(numObjs);
+        let numInSet = \ZExcel\Calculation\Functions::flattenSingleValue(numInSet);
+
+        if ((is_numeric(numObjs)) && (is_numeric(numInSet))) {
+            if (numObjs < numInSet) {
+                return \ZExcel\Calculation\Functions::NaN();
+            } elseif (numInSet < 0) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
+            return round(self::FaCT(numObjs) / self::FaCT(numObjs - numInSet)) / self::FaCT(numInSet);
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -103,9 +168,24 @@ class MathTrig
      * @param    float    number            Number to round
      * @return    int        Rounded Number
      */
-    public static function Even(number)
+    public static function Even(var number)
     {
-        throw new \Exception("Not implemented yet!");
+        var significance;
+        
+        let number = \ZExcel\Calculation\Functions::flattenSingleValue(number);
+
+        if (is_null(number)) {
+            return 0;
+        } elseif (is_bool(number)) {
+            let number = (int) number;
+        }
+
+        if (is_numeric(number)) {
+            let significance = 2 * self::SiGN(number);
+            return (int) self::CeILING(number, significance);
+        }
+        
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -125,7 +205,33 @@ class MathTrig
      */
     public static function Fact(factVal)
     {
-        throw new \Exception("Not implemented yet!");
+        var factLoop, factorial;
+        
+        let factVal = \ZExcel\Calculation\Functions::flattenSingleValue(factVal);
+
+        if (is_numeric(factVal)) {
+            if (factVal < 0) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
+            
+            let factLoop = floor(factVal);
+            
+            if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_GNUMERIC) {
+                if (factVal > factLoop) {
+                    return \ZExcel\Calculation\Functions::NaN();
+                }
+            }
+
+            let factorial = 1;
+            
+            while (factLoop > 1) {
+                let factLoop = factLoop - 1;
+                let factorial = factorial * factLoop;
+            }
+            
+            return factorial ;
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -142,9 +248,29 @@ class MathTrig
      * @param    float    factVal    Factorial Value
      * @return    int        Double Factorial
      */
-    public static function FactDOUBLE(factVal)
+    public static function FactDOUBLE(var factVal)
     {
-        throw new \Exception("Not implemented yet!");
+        var factLoop, factorial;
+        
+        let factLoop = \ZExcel\Calculation\Functions::flattenSingleValue(factVal);
+
+        if (is_numeric(factLoop)) {
+            let factLoop = floor(factLoop);
+            if (factVal < 0) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
+            
+            let factorial = 1;
+            
+            while (factLoop > 1) {
+                let factLoop = factLoop - 1;
+                let factorial = factorial * factLoop;
+                let factLoop = factLoop - 1;
+            }
+            
+            return factorial ;
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -162,9 +288,29 @@ class MathTrig
      * @param    float    significance    Significance
      * @return    float    Rounded Number
      */
-    public static function Floor(number, significance = null)
+    public static function Floor(var number, var significance = null)
     {
-        throw new \Exception("Not implemented yet!");
+        let number       = \ZExcel\Calculation\Functions::flattenSingleValue(number);
+        let significance = \ZExcel\Calculation\Functions::flattenSingleValue(significance);
+
+        if ((is_null(significance)) &&
+            (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_GNUMERIC)) {
+            let significance = number / abs(number);
+        }
+
+        if ((is_numeric(number)) && (is_numeric(significance))) {
+            if (significance == 0.0) {
+                return \ZExcel\Calculation\Functions::DiV0();
+            } elseif (number == 0.0) {
+                return 0.0;
+            } elseif (self::SiGN(number) == self::SiGN(significance)) {
+                return floor(number / significance) * significance;
+            } else {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
+        }
+
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -183,14 +329,83 @@ class MathTrig
      * @param    mixed    arg,...        Data values
      * @return    integer                    Greatest Common Divisor
      */
-    public static function Gcd(decimalPart, decimalDivisor)
+    public static function Gcd(var decimalPart, var decimalDivisor)
     {
-        throw new \Exception("Not implemented yet!");
+        /*
+        var i, myFactors, myCountedFactors, allValuesCount, mergedArray, mergedArrayValues,
+            highestPowerTest, testKey, testValue, mergedKey, mergedValue, key, value, keys,
+            returnValue = 1, allValuesFactors = [];
+        
+        // Loop through arguments
+        for value in \ZExcel\Calculation\Functions::flattenArray(func_get_args()) {
+            if (!is_numeric(value)) {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            } elseif (value == 0) {
+                continue;
+            } elseif (value < 0) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
+            let myFactors = self::factors(value);
+            let myCountedFactors = array_count_values(myFactors);
+            let allValuesFactors[] = myCountedFactors;
+        }
+        
+        let allValuesCount = count(allValuesFactors);
+        
+        if (allValuesCount == 0) {
+            return 0;
+        }
+
+        let mergedArray = allValuesFactors[0];
+        
+        for i in range(1, allValuesCount - 1) {
+            let mergedArray = array_intersect_key(mergedArray, allValuesFactors[i]);
+        }
+        
+        let mergedArrayValues = count(mergedArray);
+        
+        if (mergedArrayValues == 0) {
+            return returnValue;
+        } elseif (mergedArrayValues > 1) {
+            for mergedKey, mergedValue in mergedArray {
+                for highestPowerTest in allValuesFactors {
+                    for testKey, testValue in highestPowerTest {
+                        if ((testKey == mergedKey) && (testValue < mergedValue)) {
+                            let mergedArray[mergedKey] = testValue;
+                            let mergedValue = testValue;
+                        }
+                    }
+                }
+            }
+
+            let returnValue = 1;
+            
+            for key, value in mergedArray {
+                let returnValue = returnValue * pow(key, value);
+            }
+            
+            return returnValue;
+        } else {
+            let keys = array_keys(mergedArray);
+            let key = keys[0];
+            let value = mergedArray[key];
+            
+            for testValue in allValuesFactors {
+                for mergedKey, mergedValue in testValue {
+                    if ((mergedKey == key) && (mergedValue < value)) {
+                        let value = mergedValue;
+                    }
+                }
+            }
+            
+            return pow(key, value);
+        }
+        */
     }
 
 
     /**
-     * INT
+     * INT (rename Intt for zephir reserved word)
      *
      * Casts a floating point value to an integer
      *
@@ -202,9 +417,19 @@ class MathTrig
      * @param    float    number            Number to cast to an integer
      * @return    integer    Integer value
      */
-    public static function Inte(number)
+    public static function Intt(number)
     {
-        throw new \Exception("Not implemented yet!");
+        let number = \ZExcel\Calculation\Functions::flattenSingleValue(number);
+
+        if (is_null(number)) {
+            return 0;
+        } elseif (is_bool(number)) {
+            return (int) number;
+        }
+        if (is_numeric(number)) {
+            return (int) floor(number);
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -226,7 +451,48 @@ class MathTrig
      */
     public static function Lcm()
     {
-        throw new \Exception("Not implemented yet!");
+        /*
+        var value, myFactors, myCountedFactor, myCountedFactors,
+            myCountedPower, myPoweredFactors, myPoweredValue, allPoweredFactor,
+            myPoweredFactor, returnValue = 1, allPoweredFactors = [];
+        
+        // Loop through arguments
+        for value in \ZExcel\Calculation\Functions::flattenArray(func_get_args()) {
+            if (!is_numeric(value)) {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
+            
+            if (value == 0) {
+                return 0;
+            } elseif (value < 0) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
+            
+            let myFactors = self::factors(floor(value));
+            let myCountedFactors = array_count_values(myFactors);
+            let myPoweredFactors = [];
+            
+            for myCountedFactor, myCountedPower in myCountedFactors {
+                let myPoweredFactors[myCountedFactor] = pow(myCountedFactor, myCountedPower);
+            }
+            
+            for myPoweredValue, myPoweredFactor in myPoweredFactors {
+                if (array_key_exists(myPoweredValue, allPoweredFactors)) {
+                    if (allPoweredFactors[myPoweredValue] < myPoweredFactor) {
+                        let allPoweredFactors[myPoweredValue] = myPoweredFactor;
+                    }
+                } else {
+                    let allPoweredFactors[myPoweredValue] = myPoweredFactor;
+                }
+            }
+        }
+        
+        for allPoweredFactor in allPoweredFactors {
+            let returnValue = returnValue * (int) allPoweredFactor;
+        }
+        
+        return returnValue;
+        */
     }
 
 
@@ -244,9 +510,18 @@ class MathTrig
      * @param    float    base        The base of the logarithm. If base is omitted, it is assumed to be 10.
      * @return    float
      */
-    public static function Log_Base(number = null, base = 10)
+    public static function Log_Base(var number = null, var base = 10)
     {
-        throw new \Exception("Not implemented yet!");
+        let number = \ZExcel\Calculation\Functions::flattenSingleValue(number);
+        let base   = (is_null(base)) ? 10 : (float) \ZExcel\Calculation\Functions::flattenSingleValue(base);
+
+        if ((!is_numeric(base)) || (!is_numeric(number))) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        if ((base <= 0) || (number <= 0)) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        return log(number, base);
     }
 
 
@@ -263,9 +538,48 @@ class MathTrig
      * @param    array    matrixValues    A matrix of values
      * @return    float
      */
-    public static function MDeterm(matrixValues)
+    public static function MDeterm(var matrixValues)
     {
-        throw new \Exception("Not implemented yet!");
+        var matrixData = [], row = 0, column = 0, maxColumn = 0, matrix, matrixRow, matrixCell, ex;
+        
+        if (!is_array(matrixValues)) {
+            let matrixValues = [
+                [matrixValues]
+            ];
+        }
+
+        for matrixRow in matrixValues {
+            if (!is_array(matrixRow)) {
+                let matrixRow = [matrixRow];
+            }
+            
+            let column = 0;
+            
+            for matrixCell in matrixRow {
+                if ((is_string(matrixCell)) || (matrixCell === null)) {
+                    return \ZExcel\Calculation\Functions::VaLUE();
+                }
+                let matrixData[column][row] = matrixCell;
+                let column = column + 1;
+            }
+            
+            if (column > maxColumn) {
+                let maxColumn = column;
+            }
+            
+            let row = row + 1;
+        }
+        
+        if (row != maxColumn) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+
+        try {
+            let matrix = new \ZExcel\Shared\JAMA\Matrix([matrixData]);
+            return matrix->det();
+        } catch \ZExcel\Exception, ex {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
     }
 
 
@@ -282,9 +596,48 @@ class MathTrig
      * @param    array    matrixValues    A matrix of values
      * @return    array
      */
-    public static function MIinverse(matrixValues)
+    public static function MIinverse(var matrixValues)
     {
-        throw new \Exception("Not implemented yet!");
+        var matrixData = [], row = 0, column = 0, maxColumn = 0,
+            matrixRow, matrixCell, matrix, ex;
+        
+        if (!is_array(matrixValues)) {
+            let matrixValues = [
+                [matrixValues]
+            ];
+        }
+
+        
+        for matrixRow in matrixValues {
+            if (!is_array(matrixRow)) {
+                let matrixRow = [matrixRow];
+            }
+            
+            let column = 0;
+            
+            for matrixCell in matrixRow {
+                if ((is_string(matrixCell)) || (matrixCell === null)) {
+                    return \ZExcel\Calculation\Functions::VaLUE();
+                }
+                let matrixData[column][row] = matrixCell;
+                let column = column + 1;
+            }
+            
+            if (column > maxColumn) {
+                let maxColumn = column;
+            }
+            let row = row + 1;
+        }
+        if (row != maxColumn) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+
+        try {
+            let matrix = new \ZExcel\Shared\JAMA\Matrix([matrixData]);
+            return matrix->inverse()->getArray();
+        } catch \ZExcel\Exception, ex {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
     }
 
 
@@ -308,9 +661,20 @@ class MathTrig
      * @param    int        b        Divisor
      * @return    int        Remainder
      */
-    public static function Mod(a = 1, b = 1)
+    public static function Mod(var a = 1, var b = 1) -> int
     {
-        throw new \Exception("Not implemented yet!");
+        let a = \ZExcel\Calculation\Functions::flattenSingleValue(a);
+        let b = \ZExcel\Calculation\Functions::flattenSingleValue(b);
+
+        if (b == 0.0) {
+            return \ZExcel\Calculation\Functions::DiV0();
+        } elseif ((a < 0.0) && (b > 0.0)) {
+            return b - fmod(abs(a), b);
+        } elseif ((a > 0.0) && (b < 0.0)) {
+            return b + fmod(a, abs(b));
+        }
+
+        return fmod(a, b);
     }
 
 
@@ -323,9 +687,24 @@ class MathTrig
      * @param    int        multiple        Multiple to which you want to round number
      * @return    float    Rounded Number
      */
-    public static function MRound(number, multiple)
+    public static function MRound(var number, var multiple)
     {
-        throw new \Exception("Not implemented yet!");
+        var multiplier;
+        
+        let number   = \ZExcel\Calculation\Functions::flattenSingleValue(number);
+        let multiple = \ZExcel\Calculation\Functions::flattenSingleValue(multiple);
+
+        if ((is_numeric(number)) && (is_numeric(multiple))) {
+            if (multiple == 0) {
+                return 0;
+            }
+            if ((self::SiGN(number)) == (self::SiGN(multiple))) {
+                let multiplier = 1 / multiple;
+                return round((double) number * multiplier) / multiplier;
+            }
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 

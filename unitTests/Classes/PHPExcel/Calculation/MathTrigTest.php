@@ -174,7 +174,7 @@ class MathTrigTest extends PHPUnit_Framework_TestCase
     {
         $args = func_get_args();
         $expectedResult = array_pop($args);
-        $result = call_user_func_array(array('\ZExcel\Calculation\MathTrig','INT'), $args);
+        $result = call_user_func_array(array('\ZExcel\Calculation\MathTrig','INTT'), $args);
         $this->assertEquals($expectedResult, $result);
     }
 

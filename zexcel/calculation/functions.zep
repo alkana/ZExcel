@@ -152,9 +152,32 @@ class Functions
     }
 
 
-    public static function ifCondition(condition)
+    public static function ifCondition(var condition)
     {
-        throw new \Exception("Not implemented yet!");
+        var matches, operator, operand;
+        
+        let condition = \ZExcel\Calculation\Functions::flattenSingleValue(condition);
+        
+        if (strlen(condition) == 0) {
+            let condition = "=\"\"";
+        }
+        if (!in_array(substr(condition, 0, 1), [">", "<", "="])) {
+            if (!is_numeric(condition)) {
+                let condition = \ZExcel\Calculation::wrapResult(strtoupper(condition));
+            }
+            return "=" . condition;
+        } else {
+            preg_match("/([<>=]+)(.*)/", condition, matches);
+            let operator = matches[1];
+            let operand = matches[2];
+
+            if (!is_numeric(operand)) {
+                let operand = str_replace("\"", "\"\"", operand);
+                let operand = \ZExcel\Calculation::wrapResult(strtoupper(operand));
+            }
+
+            return operator . operand;
+        }
     }
 
     /**
@@ -236,6 +259,206 @@ class Functions
         return (value === self::na());
     }
     
+    /**
+     * IS_EVEN
+     *
+     * @param    mixed    $value    Value to check
+     * @return   boolean
+     */
+    public static function is_even(var value = null) -> boolean
+    {
+        let value = self::flattenSingleValue(value);
+
+        if (value === null) {
+            return self::NaME();
+        } elseif ((is_bool(value)) || ((is_string(value)) && (!is_numeric(value)))) {
+            return self::VaLUE();
+        }
+
+        return (value % 2 == 0);
+    }
+    
+    /**
+     * IS_ODD
+     *
+     * @param    mixed    $value    Value to check
+     * @return   boolean
+     */
+    public static function is_odd(var value = null) -> boolean
+    {
+        let value = self::flattenSingleValue(value);
+
+        if (value === null) {
+            return self::NaME();
+        } elseif ((is_bool(value)) || ((is_string(value)) && (!is_numeric(value)))) {
+            return self::VaLUE();
+        }
+
+        return (abs(value) % 2 == 1);
+    }
+    
+    /**
+     * IS_NUMBER
+     *
+     * @param    mixed    $value        Value to check
+     * @return   boolean
+     */
+    public static function is_number(var value = null) -> boolean
+    {
+        let value = self::flattenSingleValue(value);
+
+        if (is_string(value)) {
+            return false;
+        }
+        
+        return is_numeric(value);
+    }
+    
+    /**
+     * IS_LOGICAL
+     *
+     * @param    mixed    $value        Value to check
+     * @return   boolean
+     */
+    public static function is_logical(var value = null) -> boolean
+    {
+        let value = self::flattenSingleValue(value);
+
+        return is_bool(value);
+    }
+    
+    /**
+     * IS_TEXT
+     *
+     * @param    mixed    $value        Value to check
+     * @return   boolean
+     */
+    public static function is_text(var value = null) -> boolean
+    {
+        let value = self::flattenSingleValue(value);
+
+        return (is_string(value) && !self::iS_ERROR(value));
+    }
+    
+    /**
+     * IS_NONTEXT
+     *
+     * @param    mixed    $value        Value to check
+     * @return   boolean
+     */
+    public static function is_nontext(var value = null) -> boolean
+    {
+        return !self::is_text(value);
+    }
+    
+    /**
+     * VERSION
+     *
+     * @return    string    Version information
+     */
+    public static function version()
+    {
+        return "\ZExcel ##VERSION##, ##DATE##";
+    }
+    
+    /**
+     * N
+     *
+     * Returns a value converted to a number
+     *
+     * @param    value        The value you want converted
+     * @return    number        N converts values listed in the following table
+     *        If value is or refers to N returns
+     *        A number            That number
+     *        A date              The serial number of that date
+     *        TRUE                1
+     *        FALSE               0
+     *        An error value      The error value
+     *        Anything else       0
+     */
+    public static function n(var value = null)
+    {
+        while (is_array(value)) {
+            let value = array_shift(value);
+        }
+
+        switch (gettype(value)) {
+            case "double":
+            case "float":
+            case "integer":
+                return value;
+            case "boolean":
+                return (int) value;
+            case "string":
+                //    Errors
+                if ((strlen(value) > 0) && (substr(value, 0, 1) == "#")) {
+                    return value;
+                }
+                break;
+        }
+        return 0;
+    }
+    
+    /**
+     * TYPE
+     *
+     * Returns a number that identifies the type of a value
+     *
+     * @param    value        The value you want tested
+     * @return    number        N converts values listed in the following table
+     *        If value is or refers to N returns
+     *        A number            1
+     *        Text                2
+     *        Logical Value       4
+     *        An error value      16
+     *        Array or Matrix     64
+     */
+    public static function type(var value = null)
+    {
+        var a;
+        
+        let value = self::flattenArrayIndexed(value);
+        
+        if (is_array(value) && (count(value) > 1)) {
+            end(value);
+            let a = key(value);
+            //    Range of cells is an error
+            if (self::isCellValue(a)) {
+                return 16;
+            //    Test for Matrix
+            } elseif (self::isMatrixValue(a)) {
+                return 64;
+            }
+        } elseif (empty(value)) {
+            //    Empty Cell
+            return 1;
+        }
+        
+        let value = self::flattenSingleValue(value);
+
+        if ((value === null) || (is_float(value)) || (is_int(value))) {
+                return 1;
+        } elseif (is_bool(value)) {
+                return 4;
+        } elseif (is_array(value)) {
+                return 64;
+        } elseif (is_string(value)) {
+            //    Errors
+            if ((strlen(value) > 0) && (substr(value, 0, 1) == "#")) {
+                return 16;
+            }
+            return 2;
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Convert a multi-dimensional array to a simple 1-dimensional array
+     *
+     * @param    array    $array    Array to be flattened
+     * @return   array    Flattened array
+     */
     public static function flattenArray(var arry)
     {
         var value, val, v;
@@ -264,6 +487,47 @@ class Functions
         return arrayValues;
     }
     
+    /**
+     * Convert a multi-dimensional array to a simple 1-dimensional array, but retain an element of indexing
+     *
+     * @param    array    $array    Array to be flattened
+     * @return   array    Flattened array
+     */
+    public static function flattenArrayIndexed(var arr) -> array
+    {
+        var k1, k2, k3, val1, val2, val3, arrayValues;
+    
+        if (!is_array(arr)) {
+            return (array) arr;
+        }
+
+        let arrayValues = [];
+        
+        for k1, val1 in arr {
+            if (is_array(val1)) {
+                for k2, val2 in val1 {
+                    if (is_array(val2)) {
+                        for k3, val3 in val2 {
+                            let arrayValues[k1.".".k2.".".k3] = val3;
+                        }
+                    } else {
+                        let arrayValues[k1.".".k2] = val2;
+                    }
+                }
+            } else {
+                let arrayValues[k1] = val1;
+            }
+        }
+
+        return arrayValues;
+    }
+    
+    /**
+     * Convert an array to a single scalar value by extracting the first element
+     *
+     * @param    mixed $value Array or scalar value
+     * @return   mixed
+     */
     public static function flattenSingleValue(var value = "")
     {
         while (is_array(value)) {
