@@ -2,7 +2,7 @@ namespace ZExcel\Calculation;
 
 class Engineering
 {
-
+    const EULER = 2.71828182845904523536;
 
     /**
     /* Private method to calculate the erfc value
@@ -724,36 +724,103 @@ class Engineering
      *
      * Parses a complex number into its real and imaginary parts, and an I or J suffix
      *
-     * @param    string        $complexNumber    The complex number
+     * @param    string        complexNumber    The complex number
      * @return    string[]    Indexed on "real", "imaginary" and "suffix"
      */
     public static function parseComplex(complexNumber)
     {
-        throw new \Exception("Not implemented yet!");
+        var realNumber, imaginary, suffix, leadingSign, power;
+        string workString;
+        
+        let workString = (string) complexNumber;
+
+        let realNumber = 0;
+        let imaginary = 0;
+        //    Extract the suffix, if there is one
+        let suffix = substr(workString, -1);
+        if (!is_numeric(suffix)) {
+            let workString = substr(workString, 0, -1);
+        } else {
+            let suffix = "";
+        }
+
+        //    Split the input into its Real and Imaginary components
+        let leadingSign = 0;
+        if (strlen(workString) > 0) {
+            let leadingSign = ((substr(workString, 0, 1) == "+") || (substr(workString, 0, 1) == "-")) ? 1 : 0;
+        }
+        let power = "";
+        let realNumber = strtok(workString, "+-");
+        if (strtoupper(substr(realNumber, -1)) == "E") {
+            let power = strtok("+-");
+            let leadingSign = leadingSign + 1;
+        }
+
+        let realNumber = substr(workString, 0, strlen(realNumber) + strlen(power) + leadingSign);
+
+        if (suffix != "") {
+            let imaginary = substr(workString, strlen(realNumber));
+
+            if ((imaginary == "") && ((realNumber == "") || (realNumber == "+") || (realNumber == "-"))) {
+                let imaginary = realNumber . "1";
+                let realNumber = "0";
+            } elseif (imaginary == "") {
+                let imaginary = realNumber;
+                let realNumber = "0";
+            } elseif ((imaginary == "+") || (imaginary == "-")) {
+                let imaginary = imaginary . "1";
+            }
+        }
+
+        return [
+            "real": realNumber,
+            "imaginary": imaginary,
+            "suffix": suffix
+        ];
     }
 
 
     /**
      * Cleans the leading characters in a complex number string
      *
-     * @param    string        $complexNumber    The complex number to clean
+     * @param    string        complexNumber    The complex number to clean
      * @return    string        The "cleaned" complex number
      */
     private static function cleanComplex(complexNumber)
     {
-        throw new \Exception("Not implemented yet!");
+        if (substr(complexNumber, 0, 1) == "+") {
+            let complexNumber = substr(complexNumber, 1);
+        }
+        if (substr(complexNumber, 0, 1) == "0") {
+            let complexNumber = substr(complexNumber, 1);
+        }
+        if (substr(complexNumber, 0, 1) == ".") {
+            let complexNumber = "0".complexNumber;
+        }
+        if (substr(complexNumber, 0, 1) == "+") {
+            let complexNumber = substr(complexNumber, 1);
+        }
+        return complexNumber;
     }
 
     /**
      * Formats a number base string value with leading zeroes
      *
-     * @param    string        $xVal        The "number" to pad
-     * @param    integer        $places        The length that we want to pad this value
+     * @param    string        xVal        The "number" to pad
+     * @param    integer        places        The length that we want to pad this value
      * @return    string        The padded "number"
      */
     private static function nbrConversionFormat(xVal, places)
     {
-        throw new \Exception("Not implemented yet!");
+        if (!is_null(places)) {
+            if (strlen(xVal) <= places) {
+                return substr(str_pad(xVal, places, "0", STR_PAD_LEFT), -10);
+            } else {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
+        }
+
+        return substr(xVal, -10);
     }
 
     /**
@@ -767,18 +834,53 @@ class Engineering
      *
      *    @access    public
      *    @category Engineering Functions
-     *    @param    float        $x        The value at which to evaluate the function.
+     *    @param    float        x        The value at which to evaluate the function.
      *                                If x is nonnumeric, BESSELI returns the #VALUE! error value.
-     *    @param    integer        $ord    The order of the Bessel function.
+     *    @param    integer        ord    The order of the Bessel function.
      *                                If ord is not an integer, it is truncated.
-     *                                If $ord is nonnumeric, BESSELI returns the #VALUE! error value.
-     *                                If $ord < 0, BESSELI returns the #NUM! error value.
+     *                                If ord is nonnumeric, BESSELI returns the #VALUE! error value.
+     *                                If ord < 0, BESSELI returns the #NUM! error value.
      *    @return    float
      *
      */
     public static function besseli(x, ord)
     {
-        throw new \Exception("Not implemented yet!");
+        var fSqrX, f_2_PI, fXAbs;
+        int ordK;
+        double fResult, fTerm;
+        
+        let x   = (is_null(x))   ? 0.0 : \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let ord = (is_null(ord)) ? 0.0 : \ZExcel\Calculation\Functions::flattenSingleValue(ord);
+
+        if ((is_numeric(x)) && (is_numeric(ord))) {
+            let ord = floor(ord);
+            if (ord < 0) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
+
+            if (abs(x) <= 30) {
+                let fResult = pow(x / 2, ord) / \ZExcel\Calculation\MathTrig::FaCT(ord);
+                let fTerm = fResult;
+                let ordK = 1;
+                let fSqrX = (x * x) / 4;
+                do {
+                    let fTerm = fTerm * fSqrX;
+                    let fTerm = fTerm / (ordK * (ordK + ord));
+                    let fResult = fResult + fTerm;
+                    let ordK = ordK + 1;
+                } while ((abs(fTerm) > 0.0000000000001) && (ordK < 100));
+            } else {
+                let f_2_PI = 2 * M_PI;
+
+                let fXAbs = abs(x);
+                let fResult = exp(fXAbs) / sqrt(f_2_PI * fXAbs);
+                if ((ord & 1) && (x < 0)) {
+                    let fResult = -fResult;
+                }
+            }
+            return (is_nan(fResult)) ? \ZExcel\Calculation\Functions::NaN() : fResult;
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -792,11 +894,11 @@ class Engineering
      *
      *    @access    public
      *    @category Engineering Functions
-     *    @param    float        $x        The value at which to evaluate the function.
+     *    @param    float        x        The value at which to evaluate the function.
      *                                If x is nonnumeric, BESSELJ returns the #VALUE! error value.
-     *    @param    integer        $ord    The order of the Bessel function. If n is not an integer, it is truncated.
-     *                                If $ord is nonnumeric, BESSELJ returns the #VALUE! error value.
-     *                                If $ord < 0, BESSELJ returns the #NUM! error value.
+     *    @param    integer        ord    The order of the Bessel function. If n is not an integer, it is truncated.
+     *                                If ord is nonnumeric, BESSELJ returns the #VALUE! error value.
+     *                                If ord < 0, BESSELJ returns the #NUM! error value.
      *    @return    float
      *
      */
@@ -808,13 +910,34 @@ class Engineering
 
     private static function besselK0(fNum)
     {
-        throw new \Exception("Not implemented yet!");
+        var y, fRet, fNum2;
+        
+        if (fNum <= 2) {
+            let fNum2 = fNum * 0.5;
+            let y = (fNum2 * fNum2);
+            let fRet = -log(fNum2) * self::BeSSELI(fNum, 0) + (-0.57721566 + y * (0.42278420 + y * (0.23069756 + y * (0.0348859 + y * (0.00262698 + y * (0.0001075 + y * 0.0000074))))));
+        } else {
+            let y = 2 / fNum;
+            let fRet = exp(-fNum) / sqrt(fNum) * (1.25331414 + y * (-0.07832358 + y * (0.02189568 + y * (-0.01062446 + y * (0.00587872 + y * (-0.00251540 + y * 0.00053208))))));
+        }
+        return fRet;
     }
 
 
     private static function besselK1(fNum)
     {
-        throw new \Exception("Not implemented yet!");
+        var y, fRet, fNum2;
+        
+        if (fNum <= 2) {
+            let fNum2 = fNum * 0.5;
+            let y = (fNum2 * fNum2);
+            let fRet = log(fNum2) * self::BeSSELI(fNum, 1) + (1 + y * (0.15443144 + y * (-0.67278579 + y * (-0.18156897 + y * (-0.01919402 + y * (-0.00110404 + y * (-0.00004686))))))) / fNum;
+        } else {
+            let y = 2 / fNum;
+            let fRet = exp(-fNum) / sqrt(fNum) * (1.25331414 + y * (0.23498619 + y * (-0.0365562 + y * (0.01504268 + y * (-0.00780353 + y * (0.00325614 + y * (-0.00068245)))))));
+        }
+        
+        return fRet;
     }
 
 
@@ -829,11 +952,11 @@ class Engineering
      *
      *    @access    public
      *    @category Engineering Functions
-     *    @param    float        $x        The value at which to evaluate the function.
+     *    @param    float        x        The value at which to evaluate the function.
      *                                If x is nonnumeric, BESSELK returns the #VALUE! error value.
-     *    @param    integer        $ord    The order of the Bessel function. If n is not an integer, it is truncated.
-     *                                If $ord is nonnumeric, BESSELK returns the #VALUE! error value.
-     *                                If $ord < 0, BESSELK returns the #NUM! error value.
+     *    @param    integer        ord    The order of the Bessel function. If n is not an integer, it is truncated.
+     *                                If ord is nonnumeric, BESSELK returns the #VALUE! error value.
+     *                                If ord < 0, BESSELK returns the #NUM! error value.
      *    @return    float
      *
      */
@@ -845,13 +968,40 @@ class Engineering
 
     private static function besselY0(fNum)
     {
-        throw new \Exception("Not implemented yet!");
+        var y, z, xx, f1, f2, fRet;
+        
+        if (fNum < 8.0) {
+            let y = (fNum * fNum);
+            let f1 = -2957821389.0 + y * (7062834065.0 + y * (-512359803.6 + y * (10879881.29 + y * (-86327.92757 + y * 228.4622733))));
+            let f2 = 40076544269.0 + y * (745249964.8 + y * (7189466.438 + y * (47447.26470 + y * (226.1030244 + y))));
+            let fRet = f1 / f2 + 0.636619772 * self::desselj(fNum, 0) * log(fNum);
+        } else {
+            let z = 8.0 / fNum;
+            let y = (z * z);
+            let xx = fNum - 0.785398164;
+            let f1 = 1 + y * (-0.001098628627 + y * (0.00002734510407 + y * (-0.000002073370639 + y * 0.0000002093887211)));
+            let f2 = -0.01562499995 + y * (0.0001430488765 + y * (-0.000006911147651 + y * (0.0000007621095161 + y * (-0.0000000934945152))));
+            let fRet = sqrt(0.636619772 / fNum) * (sin(xx) * f1 + z * cos(xx) * f2);
+        }
+        
+        return fRet;
     }
 
 
     private static function besselY1(fNum)
     {
-        throw new \Exception("Not implemented yet!");
+        var y, f1, f2, fRet;
+        
+        if (fNum < 8.0) {
+            let y = (fNum * fNum);
+            let f1 = fNum * (-4900604943000 + y * (1275274390000 + y * (-51534381390 + y * (734926455.1 + y * (-4237922.726 + y * 8511.937935)))));
+            let f2 = 24995805700000 + y * (424441966400 + y * (3733650367 + y * (22459040.02 + y * (102042.605 + y * (354.9632885 + y)))));
+            let fRet = f1 / f2 + 0.636619772 * ( self::desselj(fNum, 1) * log(fNum) - 1 / fNum);
+        } else {
+            let fRet = sqrt(0.636619772 / fNum) * sin(fNum - 2.356194491);
+        }
+        
+        return fRet;
     }
 
 
@@ -865,17 +1015,46 @@ class Engineering
      *
      *    @access    public
      *    @category Engineering Functions
-     *    @param    float        $x        The value at which to evaluate the function.
+     *    @param    float        x        The value at which to evaluate the function.
      *                                If x is nonnumeric, BESSELK returns the #VALUE! error value.
-     *    @param    integer        $ord    The order of the Bessel function. If n is not an integer, it is truncated.
-     *                                If $ord is nonnumeric, BESSELK returns the #VALUE! error value.
-     *                                If $ord < 0, BESSELK returns the #NUM! error value.
+     *    @param    integer        ord    The order of the Bessel function. If n is not an integer, it is truncated.
+     *                                If ord is nonnumeric, BESSELK returns the #VALUE! error value.
+     *                                If ord < 0, BESSELK returns the #NUM! error value.
      *
      *    @return    float
      */
     public static function dessely(x, ord)
     {
-        throw new \Exception("Not implemented yet!");
+        var fBym, fBy;
+        double fTox, fByp;
+        int n;
+        
+        let x   = (is_null(x)) ? 0.0 : \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let ord = (is_null(ord)) ? 0.0 : \ZExcel\Calculation\Functions::flattenSingleValue(ord);
+
+        if ((is_numeric(x)) && (is_numeric(ord))) {
+            if ((ord < 0) || (x == 0.0)) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
+
+            switch(floor(ord)) {
+                case 0:
+                    return self::besselY0(x);
+                case 1:
+                    return self::besselY1(x);
+                default:
+                    let fTox = 2 / x;
+                    let fBym = self::besselY0(x);
+                    let fBy  = self::besselY1(x);
+                    for n in range(1, ord - 1) {
+                        let fByp = n * fTox * fBy - fBym;
+                        let fBym = fBy;
+                        let fBy  = fByp;
+                    }
+            }
+            return (is_nan(fBy)) ? \ZExcel\Calculation\Functions::NaN() : fBy;
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -889,7 +1068,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x        The binary number (as a string) that you want to convert. The number
+     * @param    string        x        The binary number (as a string) that you want to convert. The number
      *                                cannot contain more than 10 characters (10 bits). The most significant
      *                                bit of number is the sign bit. The remaining 9 bits are magnitude bits.
      *                                Negative numbers are represented using two"s-complement notation.
@@ -899,7 +1078,35 @@ class Engineering
      */
     public static function bintodec(x)
     {
-        throw new \Exception("Not implemented yet!");
+        array out = [];
+        
+        let x = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+
+        if (is_bool(x)) {
+            if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_OPENOFFICE) {
+                let x = (int) x;
+            } else {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
+        }
+        if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_GNUMERIC) {
+            let x = floor(x);
+        }
+        
+        let x = (string) x;
+        
+        if (strlen(x) > preg_match_all("/[01]/", x, out)) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        
+        if (strlen(x) > 10) {
+            return \ZExcel\Calculation\Functions::NaN();
+        } elseif (strlen(x) == 10) {
+            //    Two"s Complement
+            let x = substr(x, -9);
+            return "-" . (512-bindec(x));
+        }
+        return bindec(x);
     }
 
 
@@ -913,13 +1120,13 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x        The binary number (as a string) that you want to convert. The number
+     * @param    string        x        The binary number (as a string) that you want to convert. The number
      *                                cannot contain more than 10 characters (10 bits). The most significant
      *                                bit of number is the sign bit. The remaining 9 bits are magnitude bits.
      *                                Negative numbers are represented using two"s-complement notation.
      *                                If number is not a valid binary number, or if number contains more than
      *                                10 characters (10 bits), BIN2HEX returns the #NUM! error value.
-     * @param    integer        $places    The number of characters to use. If places is omitted, BIN2HEX uses the
+     * @param    integer        places    The number of characters to use. If places is omitted, BIN2HEX uses the
      *                                minimum number of characters necessary. Places is useful for padding the
      *                                return value with leading 0s (zeros).
      *                                If places is not an integer, it is truncated.
@@ -929,7 +1136,35 @@ class Engineering
      */
     public static function bintohex(x, places = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var hexVal;
+        array out = [];
+        
+        let x = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
+
+        if (is_bool(x)) {
+            if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_OPENOFFICE) {
+                let x = (int) x;
+            } else {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
+        }
+        if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_GNUMERIC) {
+            let x = floor(x);
+        }
+        let x = (string) x;
+        if (strlen(x) > preg_match_all("/[01]/", x, out)) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        if (strlen(x) > 10) {
+            return \ZExcel\Calculation\Functions::NaN();
+        } elseif (strlen(x) == 10) {
+            //    Two"s Complement
+            return str_repeat("F", 8).substr(strtoupper(dechex(bindec(substr(x, -9)))), -2);
+        }
+        let hexVal = (string) strtoupper(dechex(bindec(x)));
+
+        return self::nbrConversionFormat(hexVal, places);
     }
 
 
@@ -943,13 +1178,13 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x        The binary number (as a string) that you want to convert. The number
+     * @param    string        x        The binary number (as a string) that you want to convert. The number
      *                                cannot contain more than 10 characters (10 bits). The most significant
      *                                bit of number is the sign bit. The remaining 9 bits are magnitude bits.
      *                                Negative numbers are represented using two"s-complement notation.
      *                                If number is not a valid binary number, or if number contains more than
      *                                10 characters (10 bits), BIN2OCT returns the #NUM! error value.
-     * @param    integer        $places    The number of characters to use. If places is omitted, BIN2OCT uses the
+     * @param    integer        places    The number of characters to use. If places is omitted, BIN2OCT uses the
      *                                minimum number of characters necessary. Places is useful for padding the
      *                                return value with leading 0s (zeros).
      *                                If places is not an integer, it is truncated.
@@ -959,7 +1194,40 @@ class Engineering
      */
     public static function bintooct(x, places = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var octVal;
+        array out = [];
+        
+        let x = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
+
+        if (is_bool(x)) {
+            if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_OPENOFFICE) {
+                let x = (int) x;
+            } else {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
+        }
+        
+        if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_GNUMERIC) {
+            let x = floor(x);
+        }
+        
+        let x = (string) x;
+        
+        if (strlen(x) > preg_match_all("/[01]/", x, out)) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        
+        if (strlen(x) > 10) {
+            return \ZExcel\Calculation\Functions::NaN();
+        } elseif (strlen(x) == 10) {
+            //    Two"s Complement
+            return str_repeat("7", 7).substr(strtoupper(decoct(bindec(substr(x, -9)))), -3);
+        }
+        
+        let octVal = (string) decoct(bindec(x));
+
+        return self::nbrConversionFormat(octVal, places);
     }
 
 
@@ -973,7 +1241,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x        The decimal integer you want to convert. If number is negative,
+     * @param    string        x        The decimal integer you want to convert. If number is negative,
      *                                valid place values are ignored and DEC2BIN returns a 10-character
      *                                (10-bit) binary number in which the most significant bit is the sign
      *                                bit. The remaining 9 bits are magnitude bits. Negative numbers are
@@ -983,7 +1251,7 @@ class Engineering
      *                                If number is nonnumeric, DEC2BIN returns the #VALUE! error value.
      *                                If DEC2BIN requires more than places characters, it returns the #NUM!
      *                                error value.
-     * @param    integer        $places    The number of characters to use. If places is omitted, DEC2BIN uses
+     * @param    integer        places    The number of characters to use. If places is omitted, DEC2BIN uses
      *                                the minimum number of characters necessary. Places is useful for
      *                                padding the return value with leading 0s (zeros).
      *                                If places is not an integer, it is truncated.
@@ -1007,7 +1275,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x        The decimal integer you want to convert. If number is negative,
+     * @param    string        x        The decimal integer you want to convert. If number is negative,
      *                                places is ignored and DEC2HEX returns a 10-character (40-bit)
      *                                hexadecimal number in which the most significant bit is the sign
      *                                bit. The remaining 39 bits are magnitude bits. Negative numbers
@@ -1017,7 +1285,7 @@ class Engineering
      *                                If number is nonnumeric, DEC2HEX returns the #VALUE! error value.
      *                                If DEC2HEX requires more than places characters, it returns the
      *                                #NUM! error value.
-     * @param    integer        $places    The number of characters to use. If places is omitted, DEC2HEX uses
+     * @param    integer        places    The number of characters to use. If places is omitted, DEC2HEX uses
      *                                the minimum number of characters necessary. Places is useful for
      *                                padding the return value with leading 0s (zeros).
      *                                If places is not an integer, it is truncated.
@@ -1041,7 +1309,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x        The decimal integer you want to convert. If number is negative,
+     * @param    string        x        The decimal integer you want to convert. If number is negative,
      *                                places is ignored and DEC2OCT returns a 10-character (30-bit)
      *                                octal number in which the most significant bit is the sign bit.
      *                                The remaining 29 bits are magnitude bits. Negative numbers are
@@ -1051,7 +1319,7 @@ class Engineering
      *                                If number is nonnumeric, DEC2OCT returns the #VALUE! error value.
      *                                If DEC2OCT requires more than places characters, it returns the
      *                                #NUM! error value.
-     * @param    integer        $places    The number of characters to use. If places is omitted, DEC2OCT uses
+     * @param    integer        places    The number of characters to use. If places is omitted, DEC2OCT uses
      *                                the minimum number of characters necessary. Places is useful for
      *                                padding the return value with leading 0s (zeros).
      *                                If places is not an integer, it is truncated.
@@ -1075,7 +1343,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x            the hexadecimal number you want to convert. Number cannot
+     * @param    string        x            the hexadecimal number you want to convert. Number cannot
      *                                    contain more than 10 characters. The most significant bit of
      *                                    number is the sign bit (40th bit from the right). The remaining
      *                                    9 bits are magnitude bits. Negative numbers are represented
@@ -1088,7 +1356,7 @@ class Engineering
      *                                    the #NUM! error value.
      *                                    If HEX2BIN requires more than places characters, it returns
      *                                    the #NUM! error value.
-     * @param    integer        $places        The number of characters to use. If places is omitted,
+     * @param    integer        places        The number of characters to use. If places is omitted,
      *                                    HEX2BIN uses the minimum number of characters necessary. Places
      *                                    is useful for padding the return value with leading 0s (zeros).
      *                                    If places is not an integer, it is truncated.
@@ -1112,7 +1380,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x        The hexadecimal number you want to convert. This number cannot
+     * @param    string        x        The hexadecimal number you want to convert. This number cannot
      *                                contain more than 10 characters (40 bits). The most significant
      *                                bit of number is the sign bit. The remaining 39 bits are magnitude
      *                                bits. Negative numbers are represented using two"s-complement
@@ -1137,7 +1405,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x            The hexadecimal number you want to convert. Number cannot
+     * @param    string        x            The hexadecimal number you want to convert. Number cannot
      *                                    contain more than 10 characters. The most significant bit of
      *                                    number is the sign bit. The remaining 39 bits are magnitude
      *                                    bits. Negative numbers are represented using two"s-complement
@@ -1150,7 +1418,7 @@ class Engineering
      *                                    the #NUM! error value.
      *                                    If HEX2OCT requires more than places characters, it returns
      *                                    the #NUM! error value.
-     * @param    integer        $places        The number of characters to use. If places is omitted, HEX2OCT
+     * @param    integer        places        The number of characters to use. If places is omitted, HEX2OCT
      *                                    uses the minimum number of characters necessary. Places is
      *                                    useful for padding the return value with leading 0s (zeros).
      *                                    If places is not an integer, it is truncated.
@@ -1175,7 +1443,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x            The octal number you want to convert. Number may not
+     * @param    string        x            The octal number you want to convert. Number may not
      *                                    contain more than 10 characters. The most significant
      *                                    bit of number is the sign bit. The remaining 29 bits
      *                                    are magnitude bits. Negative numbers are represented
@@ -1188,7 +1456,7 @@ class Engineering
      *                                    the #NUM! error value.
      *                                    If OCT2BIN requires more than places characters, it
      *                                    returns the #NUM! error value.
-     * @param    integer        $places        The number of characters to use. If places is omitted,
+     * @param    integer        places        The number of characters to use. If places is omitted,
      *                                    OCT2BIN uses the minimum number of characters necessary.
      *                                    Places is useful for padding the return value with
      *                                    leading 0s (zeros).
@@ -1215,7 +1483,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x        The octal number you want to convert. Number may not contain
+     * @param    string        x        The octal number you want to convert. Number may not contain
      *                                more than 10 octal characters (30 bits). The most significant
      *                                bit of number is the sign bit. The remaining 29 bits are
      *                                magnitude bits. Negative numbers are represented using
@@ -1240,7 +1508,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $x            The octal number you want to convert. Number may not contain
+     * @param    string        x            The octal number you want to convert. Number may not contain
      *                                    more than 10 octal characters (30 bits). The most significant
      *                                    bit of number is the sign bit. The remaining 29 bits are
      *                                    magnitude bits. Negative numbers are represented using
@@ -1251,7 +1519,7 @@ class Engineering
      *                                    #NUM! error value.
      *                                    If OCT2HEX requires more than places characters, it returns
      *                                    the #NUM! error value.
-     * @param    integer        $places        The number of characters to use. If places is omitted, OCT2HEX
+     * @param    integer        places        The number of characters to use. If places is omitted, OCT2HEX
      *                                    uses the minimum number of characters necessary. Places is useful
      *                                    for padding the return value with leading 0s (zeros).
      *                                    If places is not an integer, it is truncated.
@@ -1275,13 +1543,13 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    float        $realNumber        The real coefficient of the complex number.
-     * @param    float        $imaginary        The imaginary coefficient of the complex number.
-     * @param    string        $suffix            The suffix for the imaginary component of the complex number.
+     * @param    float        realNumber        The real coefficient of the complex number.
+     * @param    float        imaginary        The imaginary coefficient of the complex number.
+     * @param    string        suffix            The suffix for the imaginary component of the complex number.
      *                                        If omitted, the suffix is assumed to be "i".
      * @return    string
      */
-    public static function coimplex(realNumber = 0.0, imaginary = 0.0, suffix = "i")
+    public static function complex(realNumber = 0.0, imaginary = 0.0, suffix = "i")
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -1297,7 +1565,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $complexNumber    The complex number for which you want the imaginary
+     * @param    string        complexNumber    The complex number for which you want the imaginary
      *                                         coefficient.
      * @return    float
      */
@@ -1317,7 +1585,7 @@ class Engineering
      *
      * @access    public
      * @category Engineering Functions
-     * @param    string        $complexNumber    The complex number for which you want the real coefficient.
+     * @param    string        complexNumber    The complex number for which you want the real coefficient.
      * @return    float
      */
     public static function imreal(complexNumber)
@@ -1334,7 +1602,7 @@ class Engineering
      * Excel Function:
      *        IMABS(complexNumber)
      *
-     * @param    string        $complexNumber    The complex number for which you want the absolute value.
+     * @param    string        complexNumber    The complex number for which you want the absolute value.
      * @return    float
      */
     public static function imabs(complexNumber)
@@ -1352,7 +1620,7 @@ class Engineering
      * Excel Function:
      *        IMARGUMENT(complexNumber)
      *
-     * @param    string        $complexNumber    The complex number for which you want the argument theta.
+     * @param    string        complexNumber    The complex number for which you want the argument theta.
      * @return    float
      */
     public static function imargument(complexNumber)
@@ -1369,7 +1637,7 @@ class Engineering
      * Excel Function:
      *        IMCONJUGATE(complexNumber)
      *
-     * @param    string        $complexNumber    The complex number for which you want the conjugate.
+     * @param    string        complexNumber    The complex number for which you want the conjugate.
      * @return    string
      */
     public static function imconjugate(complexNumber)
@@ -1386,7 +1654,7 @@ class Engineering
      * Excel Function:
      *        IMCOS(complexNumber)
      *
-     * @param    string        $complexNumber    The complex number for which you want the cosine.
+     * @param    string        complexNumber    The complex number for which you want the cosine.
      * @return    string|float
      */
     public static function imcos(complexNumber)
@@ -1403,7 +1671,7 @@ class Engineering
      * Excel Function:
      *        IMSIN(complexNumber)
      *
-     * @param    string        $complexNumber    The complex number for which you want the sine.
+     * @param    string        complexNumber    The complex number for which you want the sine.
      * @return    string|float
      */
     public static function imsin(complexNumber)
@@ -1420,7 +1688,7 @@ class Engineering
      * Excel Function:
      *        IMSQRT(complexNumber)
      *
-     * @param    string        $complexNumber    The complex number for which you want the square root.
+     * @param    string        complexNumber    The complex number for which you want the square root.
      * @return    string
      */
     public static function imsqrt(complexNumber)
@@ -1437,7 +1705,7 @@ class Engineering
      * Excel Function:
      *        IMLN(complexNumber)
      *
-     * @param    string        $complexNumber    The complex number for which you want the natural logarithm.
+     * @param    string        complexNumber    The complex number for which you want the natural logarithm.
      * @return    string
      */
     public static function imln(complexNumber)
@@ -1454,7 +1722,7 @@ class Engineering
      * Excel Function:
      *        IMLOG10(complexNumber)
      *
-     * @param    string        $complexNumber    The complex number for which you want the common logarithm.
+     * @param    string        complexNumber    The complex number for which you want the common logarithm.
      * @return    string
      */
     public static function imlog10(complexNumber)
@@ -1471,7 +1739,7 @@ class Engineering
      * Excel Function:
      *        IMLOG2(complexNumber)
      *
-     * @param    string        $complexNumber    The complex number for which you want the base-2 logarithm.
+     * @param    string        complexNumber    The complex number for which you want the base-2 logarithm.
      * @return    string
      */
     public static function imlog2(complexNumber)
@@ -1488,7 +1756,7 @@ class Engineering
      * Excel Function:
      *        IMEXP(complexNumber)
      *
-     * @param    string        $complexNumber    The complex number for which you want the exponential.
+     * @param    string        complexNumber    The complex number for which you want the exponential.
      * @return    string
      */
     public static function imexp(complexNumber)
@@ -1505,8 +1773,8 @@ class Engineering
      * Excel Function:
      *        IMPOWER(complexNumber,realNumber)
      *
-     * @param    string        $complexNumber    The complex number you want to raise to a power.
-     * @param    float        $realNumber        The power to which you want to raise the complex number.
+     * @param    string        complexNumber    The complex number you want to raise to a power.
+     * @param    float        realNumber        The power to which you want to raise the complex number.
      * @return    string
      */
     public static function impower(complexNumber, realNumber)
@@ -1523,8 +1791,8 @@ class Engineering
      * Excel Function:
      *        IMDIV(complexDividend,complexDivisor)
      *
-     * @param    string        $complexDividend    The complex numerator or dividend.
-     * @param    string        $complexDivisor        The complex denominator or divisor.
+     * @param    string        complexDividend    The complex numerator or dividend.
+     * @param    string        complexDivisor        The complex denominator or divisor.
      * @return    string
      */
     public static function imdiv(complexDividend, complexDivisor)
@@ -1541,8 +1809,8 @@ class Engineering
      * Excel Function:
      *        IMSUB(complexNumber1,complexNumber2)
      *
-     * @param    string        $complexNumber1        The complex number from which to subtract complexNumber2.
-     * @param    string        $complexNumber2        The complex number to subtract from complexNumber1.
+     * @param    string        complexNumber1        The complex number from which to subtract complexNumber2.
+     * @param    string        complexNumber2        The complex number to subtract from complexNumber1.
      * @return    string
      */
     public static function imsub(complexNumber1, complexNumber2)
@@ -1559,7 +1827,7 @@ class Engineering
      * Excel Function:
      *        IMSUM(complexNumber[,complexNumber[,...]])
      *
-     * @param    string        $complexNumber,...    Series of complex numbers to add
+     * @param    string        complexNumber,...    Series of complex numbers to add
      * @return    string
      */
     public static function imsum()
@@ -1576,7 +1844,7 @@ class Engineering
      * Excel Function:
      *        IMPRODUCT(complexNumber[,complexNumber[,...]])
      *
-     * @param    string        $complexNumber,...    Series of complex numbers to multiply
+     * @param    string        complexNumber,...    Series of complex numbers to multiply
      * @return    string
      */
     public static function improduct()
@@ -1596,8 +1864,8 @@ class Engineering
      *    Excel Function:
      *        DELTA(a[,b])
      *
-     *    @param    float        $a    The first number.
-     *    @param    float        $b    The second number. If omitted, b is assumed to be zero.
+     *    @param    float        a    The first number.
+     *    @param    float        b    The second number. If omitted, b is assumed to be zero.
      *    @return    int
      */
     public static function delta(a, b = 0)
@@ -1616,8 +1884,8 @@ class Engineering
      *    Use this function to filter a set of values. For example, by summing several GESTEP
      *    functions you calculate the count of values that exceed a threshold.
      *
-     *    @param    float        $number        The value to test against step.
-     *    @param    float        $step        The threshold value.
+     *    @param    float        number        The value to test against step.
+     *    @param    float        step        The threshold value.
      *                                    If you omit a value for step, GESTEP uses zero.
      *    @return    int
      */
@@ -1645,19 +1913,61 @@ class Engineering
      *    Excel Function:
      *        ERF(lower[,upper])
      *
-     *    @param    float        $lower    lower bound for integrating ERF
-     *    @param    float        $upper    upper bound for integrating ERF.
+     *    @param    float        lower    lower bound for integrating ERF
+     *    @param    float        upper    upper bound for integrating ERF.
      *                                If omitted, ERF integrates between zero and lower_limit
      *    @return    float
      */
     public static function erf(lower, upper = null)
     {
-        throw new \Exception("Not implemented yet!");
+        let lower = \ZExcel\Calculation\Functions::flattenSingleValue(lower);
+        let upper = \ZExcel\Calculation\Functions::flattenSingleValue(upper);
+
+        if (is_numeric(lower)) {
+            if (is_null(upper)) {
+                return self::erfVal(lower);
+            }
+            if (is_numeric(upper)) {
+                return self::erfVal(upper) - self::erfVal(lower);
+            }
+        }
+        
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
     private static function erfcVal(x)
     {
-        throw new \Exception("Not implemented yet!");
+        double a, n, b, c, d, q1, q2, t;
+        if (abs(x) < 2.2) {
+            return 1 - self::erfVal(x);
+        }
+        
+        if (x < 0) {
+            return 2 - self::erfc(-x);
+        }
+        
+        let a = 1;
+        let n = 1;
+        let b = x;
+        let c = x;
+        let d = (x * x) + 0.5;
+        let q1 = b / d;
+        let q2 = q1;
+        let t = 0;
+        
+        do {
+            let t = a * n + b * x;
+            let a = b;
+            let b = t;
+            let t = c * n + d * x;
+            let c = d;
+            let d = t;
+            let n += 0.5;
+            let q1 = q2;
+            let q2 = b / d;
+        } while ((abs(q1 - q2) / q2) > PRECISION);
+        
+        return (double) self::oneSqrtPi * exp(-x * x) * q2;
     }
 
 
@@ -1674,12 +1984,17 @@ class Engineering
      *    Excel Function:
      *        ERFC(x)
      *
-     *    @param    float    $x    The lower bound for integrating ERFC
+     *    @param    float    x    The lower bound for integrating ERFC
      *    @return    float
      */
     public static function erfc(x)
     {
-        throw new \Exception("Not implemented yet!");
+        let x = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+
+        if (is_numeric(x)) {
+            return self::erfcVal(x);
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
@@ -1691,7 +2006,14 @@ class Engineering
      */
     public static function getConversionGroups()
     {
-        throw new \Exception("Not implemented yet!");
+        var conversionUnit;
+        array conversionGroups = [];
+        
+        for conversionUnit in self::conversionUnits {
+            let conversionGroups[] = conversionUnit["Group"];
+        }
+        
+        return array_merge(array_unique(conversionGroups), []);
     }
 
 
@@ -1699,24 +2021,44 @@ class Engineering
      *    getConversionGroupUnits
      *    Returns an array of units of measure, for a specified conversion group, or for all groups
      *
-     *    @param    string    $group    The group whose units of measure you want to retrieve
+     *    @param    string    group    The group whose units of measure you want to retrieve
      *    @return    array
      */
     public static function getConversionGroupUnits(group = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var conversionUnit, conversionGroup;
+        array conversionGroups = [];
+        
+        for conversionUnit, conversionGroup in self::conversionUnits {
+            if ((is_null(group)) || (conversionGroup["Group"] == group)) {
+                let conversionGroups[conversionGroup["Group"]][] = conversionUnit;
+            }
+        }
+        
+        return conversionGroups;
     }
 
 
     /**
      *    getConversionGroupUnitDetails
      *
-     *    @param    string    $group    The group whose units of measure you want to retrieve
+     *    @param    string    group    The group whose units of measure you want to retrieve
      *    @return    array
      */
     public static function getConversionGroupUnitDetails(group = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var conversionUnit, conversionGroup;
+        array conversionGroups = [];
+        
+        for conversionUnit, conversionGroup in self::conversionUnits {
+            if ((is_null(group)) || (conversionGroup["Group"] == group)) {
+                let conversionGroups[conversionGroup["Group"]][] = [
+                    "unit": conversionUnit,
+                    "description": conversionGroup["Unit Name"]
+                ];
+            }
+        }
+        return conversionGroups;
     }
 
 
@@ -1742,14 +2084,101 @@ class Engineering
      *    Excel Function:
      *        CONVERT(value,fromUOM,toUOM)
      *
-     *    @param    float        $value        The value in fromUOM to convert.
-     *    @param    string        $fromUOM    The units for value.
-     *    @param    string        $toUOM        The units for the result.
+     *    @param    float        value        The value in fromUOM to convert.
+     *    @param    string        fromUOM    The units for value.
+     *    @param    string        toUOM        The units for the result.
      *
      *    @return    float
      */
     public static function converttuom(value, fromUOM, toUOM)
     {
-        throw new \Exception("Not implemented yet!");
+        var fromMultiplier, toMultiplier, unitGroup1, fromUOM, unitGroup2;
+        
+        let value   = \ZExcel\Calculation\Functions::flattenSingleValue(value);
+        let fromUOM = \ZExcel\Calculation\Functions::flattenSingleValue(fromUOM);
+        let toUOM   = \ZExcel\Calculation\Functions::flattenSingleValue(toUOM);
+
+        if (!is_numeric(value)) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        
+        let fromMultiplier = 1.0;
+        
+        if (isset(self::conversionUnits[fromUOM])) {
+            let unitGroup1 = self::conversionUnits[fromUOM]["Group"];
+        } else {
+            let fromMultiplier = substr(fromUOM, 0, 1);
+            let fromUOM = substr(fromUOM, 1);
+            
+            if (isset(self::conversionMultipliers[fromMultiplier])) {
+                let fromMultiplier = self::conversionMultipliers[fromMultiplier]["multiplier"];
+            } else {
+                return \ZExcel\Calculation\Functions::Na();
+            }
+            
+            if ((isset(self::conversionUnits[fromUOM])) && (self::conversionUnits[fromUOM]["AllowPrefix"])) {
+                let unitGroup1 = self::conversionUnits[fromUOM]["Group"];
+            } else {
+                return \ZExcel\Calculation\Functions::Na();
+            }
+        }
+        let value = value * fromMultiplier;
+
+        let toMultiplier = 1.0;
+        
+        if (isset(self::conversionUnits[toUOM])) {
+            let unitGroup2 = self::conversionUnits[toUOM]["Group"];
+        } else {
+            let toMultiplier = substr(toUOM, 0, 1);
+            let toUOM = substr(toUOM, 1);
+            
+            if (isset(self::conversionMultipliers[toMultiplier])) {
+                let toMultiplier = self::conversionMultipliers[toMultiplier]["multiplier"];
+            } else {
+                return \ZExcel\Calculation\Functions::Na();
+            }
+            
+            if ((isset(self::conversionUnits[toUOM])) && (self::conversionUnits[toUOM]["AllowPrefix"])) {
+                let unitGroup2 = self::conversionUnits[toUOM]["Group"];
+            } else {
+                return \ZExcel\Calculation\Functions::Na();
+            }
+        }
+        
+        if (unitGroup1 != unitGroup2) {
+            return \ZExcel\Calculation\Functions::Na();
+        }
+
+        if ((fromUOM == toUOM) && (fromMultiplier == toMultiplier)) {
+            // We"ve already factored fromMultiplier into the value, so we need to reverse it again
+            return value / fromMultiplier;
+        } elseif (unitGroup1 == "Temperature") {
+            if ((fromUOM == "F") || (fromUOM == "fah")) {
+                if ((toUOM == "F") || (toUOM == "fah")) {
+                    return value;
+                } else {
+                    let value = ((value - 32) / 1.8);
+                    if ((toUOM == "K") || (toUOM == "kel")) {
+                        let value = value + 273.15;
+                    }
+                    return value;
+                }
+            } elseif (((fromUOM == "K") || (fromUOM == "kel")) && ((toUOM == "K") || (toUOM == "kel"))) {
+                        return value;
+            } elseif (((fromUOM == "C") || (fromUOM == "cel")) && ((toUOM == "C") || (toUOM == "cel"))) {
+                    return value;
+            }
+            if ((toUOM == "F") || (toUOM == "fah")) {
+                if ((fromUOM == "K") || (fromUOM == "kel")) {
+                    let value = value - 273.15;
+                }
+                return (value * 1.8) + 32;
+            }
+            if ((toUOM == "C") || (toUOM == "cel")) {
+                return value - 273.15;
+            }
+            return value + 273.15;
+        }
+        return (value * self::unitConversions[unitGroup1][fromUOM][toUOM]) / toMultiplier;
     }
 }

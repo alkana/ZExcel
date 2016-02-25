@@ -14,7 +14,7 @@ class CellCollectionTest extends PHPUnit_Framework_TestCase
         $methods = \ZExcel\CachedObjectStorageFactory::getCacheStorageMethods();
         foreach ($methods as $method) {
             \ZExcel\CachedObjectStorageFactory::initialize($method);
-            $workbook = new PHPExcel();
+            $workbook = new \ZExcel\ZExcel();
             $cells = array('A1', 'A2');
             $worksheet = $workbook->getActiveSheet();
             $worksheet->setCellValue('A1', 1);
