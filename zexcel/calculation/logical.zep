@@ -177,7 +177,7 @@ class Logical
      * @param    mixed        $logical    A value or expression that can be evaluated to TRUE or FALSE
      * @return    boolean        The boolean inverse of the argument.
      */
-    public static function not(logical = false)
+    public static function not(var logical = false)
     {
         let logical = \ZExcel\Calculation\Functions::flattenSingleValue(logical);
         if (is_string(logical)) {
@@ -226,7 +226,7 @@ class Logical
      * @param    mixed    $returnIfFalse    Optional value to return when condition is false
      * @return    mixed    The value of returnIfTrue or returnIfFalse determined by condition
      */
-    public static function statement_if(condition = true, returnIfTrue = 0, returnIfFalse = false)
+    public static function statement_if(var condition = true, var returnIfTrue = 0, var returnIfFalse = false)
     {
         let condition     = (is_null(condition))     ? true :  (boolean) \ZExcel\Calculation\Functions::flattenSingleValue(condition);
         let returnIfTrue  = (is_null(returnIfTrue))  ? 0 :     \ZExcel\Calculation\Functions::flattenSingleValue(returnIfTrue);

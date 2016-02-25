@@ -99,6 +99,14 @@ class Calculation
 
     private cellStack = [];
 
+    /**
+     * Number of iterations for cyclic formulae
+     *
+     * @var integer
+     *
+     */
+    private cyclicFormulaCounter = 1;
+    
     private cyclicFormulaCell = "";
 
     /**
@@ -108,7 +116,7 @@ class Calculation
      *
      */
     public cyclicFormulaCount = 1;
-
+    
     /**
      * Precision used for calculations
      *
@@ -992,7 +1000,7 @@ class Calculation
         ],
         "INT": [
             "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
-            "functionCall": "\\ZExcel\\Calculation\\MathTrig::INT",
+            "functionCall": "\\ZExcel\\Calculation\\MathTrig::INTT",
             "argumentCount": "1"
         ],
         "INTERCEPT": [
@@ -1957,6 +1965,41 @@ class Calculation
         "NULL": null
     ];
     
+    //    Binary Operators
+    //    These operators always work on two values
+    //    Array key is the operator, the value indicates whether this is a left or right associative operator
+    private static operatorAssociativity= [
+        "^": 0,                                                            //    Exponentiation
+        "*": 0, "/": 0,                                                 //    Multiplication and Division
+        "+": 0, "-": 0,                                                    //    Addition and Subtraction
+        "&": 0,                                                            //    Concatenation
+        "|": 0, ":": 0,                                                    //    Intersect and Range
+        ">": 0, "<": 0, "=": 0, ">=": 0, "<=": 0, "<>": 0        //    Comparison
+    ];
+
+    //    Comparison (Boolean) Operators
+    //    These operators work on two values, but always return a boolean result
+    private static comparisonOperators = [">": true, "<": true, "=": true, ">=": true, "<=": true, "<>": true];
+
+    //    Operator Precedence
+    //    This list includes all valid operators, whether binary (including boolean) or unary (such as %)
+    //    Array key is the operator, the value is its precedence
+    private static operatorPrecedence = [
+        ":": 8,                                                                //    Range
+        "|": 7,                                                                //    Intersect
+        "~": 6,                                                                //    Negation
+        "%": 5,                                                                //    Percentage
+        "^": 4,                                                                //    Exponentiation
+        "*": 3, "/": 3,                                                     //    Multiplication and Division
+        "+": 2, "-": 2,                                                        //    Addition and Subtraction
+        "&": 1,                                                                //    Concatenation
+        ">": 0, "<": 0, "=": 0, ">=": 0, "<=": 0, "<>": 0            //    Comparison
+    ];
+
+    private static matrixReplaceFrom = ["{", ";", "}"];
+    
+    private static matrixReplaceTo = ["MKMATRIX(MKMATRIX(", "),MKMATRIX(", "))"];
+    
     private function __construct(<\ZExcel\ZExcel> workbook = null)
     {
         int setPrecision = 16;
@@ -2041,7 +2084,7 @@ class Calculation
      * __clone implementation. Cloning should not be allowed in a Singleton!
      *
      * @access    public
-     * @throws    \ZExcel\Calculation_Exception
+     * @throws    \ZExcel\Calculation\Exception
      */
     final public function __clone() -> <\ZExcel\Calculation\Exception>
     {
@@ -2075,7 +2118,7 @@ class Calculation
      * Set the Array Return Type (Array or Value of first element in the array)
      *
      * @access    public
-     * @param     string    $returnType            Array return type
+     * @param     string    returnType            Array return type
      * @return     boolean                    Success or failure
      */
     public static function setArrayReturnType(string returnType) -> boolean
@@ -2095,7 +2138,7 @@ class Calculation
      * Return the Array Return Type (Array or Value of first element in the array)
      *
      * @access    public
-     * @return     string        $returnType            Array return type
+     * @return     string        returnType            Array return type
      */
     public static function getArrayReturnType() -> string
     {
@@ -2118,7 +2161,7 @@ class Calculation
      * Enable/disable calculation cache
      *
      * @access    public
-     * @param boolean $pValue
+     * @param boolean pValue
      */
     public function setCalculationCacheEnabled(boolean pValue = true)
     {
@@ -2262,12 +2305,65 @@ class Calculation
         return value;
     }
     
-    public function _calculateFormulaValue(formula, cellID = null, <\ZExcel\Cell> pCell = null)
+    public function _calculateFormulaValue(string formula, var cellID = null, <\ZExcel\Cell> pCell = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var cellValue = null, pCellParent, wsTitle, wsCellReference;
+
+        //    Basic validation that this is indeed a formula
+        //    We simply return the cell value if not
+        let formula = trim(formula);
+        
+        if (substr(formula, 0, 1) != "=") {
+            return self::wrapResult(formula);
+        }
+        
+        let formula = ltrim(substr(formula, 1));
+        
+        if (strlen(formula) === 0) {
+            return self::wrapResult(formula);
+        }
+
+        let pCellParent = (pCell !== null) ? pCell->getWorksheet() : null;
+        let wsTitle = (pCellParent !== null) ? pCellParent->getTitle() : "\x00Wrk";
+        let wsCellReference = wsTitle . "!" . cellID;
+
+        if ((cellID !== null) && (this->getValueFromCache(wsCellReference, cellValue))) {
+            return cellValue;
+        }
+
+        if ((substr(wsTitle, 0, 1) !== "\x00") && (this->cyclicReferenceStack->onStack(wsCellReference))) {
+            if (this->cyclicFormulaCount <= 0) {
+                let this->cyclicFormulaCell = "";
+                return this->raiseFormulaError("Cyclic Reference in Formula");
+            } elseif (this->cyclicFormulaCell === wsCellReference) {
+                let this->cyclicFormulaCounter = this->cyclicFormulaCounter + 1;
+                if (this->cyclicFormulaCounter >= this->cyclicFormulaCount) {
+                    let this->cyclicFormulaCell = "";
+                    return cellValue;
+                }
+            } elseif (this->cyclicFormulaCell == "") {
+                if (this->cyclicFormulaCounter >= this->cyclicFormulaCount) {
+                    return cellValue;
+                }
+                let this->cyclicFormulaCell = wsCellReference;
+            }
+        }
+
+        //    Parse the formula onto the token stack and calculate the value
+        this->cyclicReferenceStack->push(wsCellReference);
+        let cellValue = this->processTokenStack(this->_parseFormula(formula, pCell), cellID, pCell);
+        this->cyclicReferenceStack->pop();
+
+        // Save to calculation cache
+        if (cellID !== null) {
+            this->saveValueToCache(wsCellReference, cellValue);
+        }
+
+        //    Return the calculated value
+        return cellValue;
     }
     
-    public static function wrapResult(value)
+    public static function wrapResult(var value)
     {
         if (is_string(value)) {
             //    Error values cannot be "wrapped"
@@ -2388,7 +2484,7 @@ class Calculation
                     }
                 }
                 return "{ " . implode(rpad,returnMatrix) . " }";
-            } elseif(is_string(value) && (trim(value,'"') == value)) {
+            } elseif(is_string(value) && (trim(value,"\"") == value)) {
                 return "\"" . value . "\"";
             } elseif(is_bool(value)) {
                 return (value) ? self::localeBoolean["TRUE"] : self::localeBoolean["FALSE"];
@@ -2398,9 +2494,10 @@ class Calculation
         return \ZExcel\Calculation\Functions::flattenSingleValue(value);
     }
     
-    private function showTypeDetails(value)
+    private function showTypeDetails(var value) -> string
     {
         var testArray, typeString;
+        string returnValue = null;
         
         if (this->debugLog->getWriteDebugLog()) {
             let testArray = \ZExcel\Calculation\Functions::flattenArray(value);
@@ -2412,7 +2509,7 @@ class Calculation
                 return "a NULL value";
             } elseif (is_float(value)) {
                 let typeString = "a floating point number";
-            } elseif(is_int($value)) {
+            } elseif(is_int(value)) {
                 let typeString = "an integer number";
             } elseif(is_bool(value)) {
                 let typeString = "a boolean";
@@ -2427,8 +2524,402 @@ class Calculation
                     let typeString = "a string";
                 }
             }
-            return typeString . " with a value of " . this->showValue(value);
+            
+            let returnValue = typeString . " with a value of " . this->showValue(value);
         }
+        
+        return returnValue;
+    }
+
+    private function convertMatrixReferences(var formula)
+    {
+        var temp, i, key, value, openCount, closeCount;
+        
+        //    Convert any Excel matrix references to the MKMATRIX() function
+        if (strpos(formula, "{") !== false) {
+            //    If there is the possibility of braces within a quoted string, then we don"t treat those as matrix indicators
+            if (strpos(formula, "\"") !== false) {
+                //    So instead we skip replacing in any quoted strings by only replacing in every other array element after we"ve exploded
+                //        the formula
+                let temp = explode("\"", formula);
+                //    Open and Closed counts used for trapping mismatched braces in the formula
+                let openCount = 0;
+                let closeCount = 0;
+                let i = false;
+                for key, value in temp {
+                    //    Only count/replace in alternating array entries
+                    let i = !i;
+                    if i {
+                        let openCount = openCount + substr_count(value, "{");
+                        let closeCount = closeCount + substr_count(value, "}");
+                        let temp[key] = str_replace(self::matrixReplaceFrom, self::matrixReplaceTo, value);
+                    }
+                }
+
+                //    Then rebuild the formula string
+                let formula = implode("\"", temp);
+            } else {
+                //    If there"s no quoted strings, then we do a simple count/replace
+                let openCount = substr_count(formula, "{");
+                let closeCount = substr_count(formula, "}");
+                let formula = str_replace(self::matrixReplaceFrom, self::matrixReplaceTo, formula);
+            }
+            //    Trap for mismatched braces and trigger an appropriate error
+            if (openCount < closeCount) {
+                if (openCount > 0) {
+                    return this->raiseFormulaError("Formula Error: Mismatched matrix braces '}'");
+                } else {
+                    return this->raiseFormulaError("Formula Error: Unexpected '}' encountered");
+                }
+            } elseif (openCount > closeCount) {
+                if (closeCount > 0) {
+                    return this->raiseFormulaError("Formula Error: Mismatched matrix braces '{'");
+                } else {
+                    return this->raiseFormulaError("Formula Error: Unexpected '{' encountered");
+                }
+            }
+        }
+
+        return formula;
+    }
+
+
+    private static function mkMatrix()
+    {
+        return func_get_args();
+    }
+
+    // Convert infix to postfix notation
+    private function _parseFormula(var formula, <\ZExcel\Cell> pCell = null)
+    {
+        throw new \Exception("Not implemented yet!");
+        /*
+        let formula = this->convertMatrixReferences(trim(formula));
+        
+        if (formula === false) {
+            return false;
+        }
+
+        //    If we're using cell caching, then pCell may well be flushed back to the cache (which detaches the parent worksheet),
+        //        so we store the parent worksheet so that we can re-attach it when necessary
+        let pCellParent = (pCell !== null) ? pCell->getWorksheet() : null;
+
+        let regexpMatchString = "/^(" . self::CALCULATION_REGEXP_FUNCTION .
+           "|" . self::CALCULATION_REGEXP_CELLREF .
+           "|" . self::CALCULATION_REGEXP_NUMBER .
+           "|" . self::CALCULATION_REGEXP_STRING .
+           "|" . self::CALCULATION_REGEXP_OPENBRACE .
+           "|" . self::CALCULATION_REGEXP_NAMEDRANGE .
+           "|" . self::CALCULATION_REGEXP_ERROR . ")/si";
+
+        //    Start with initialisation
+        let index = 0;
+        let stack = new \ZExcel\Calculation\Token\Stack;
+        let output = [];
+        let expectingOperator = false;                    //    We use this test in syntax-checking the expression to determine when a
+                                                    //        - is a negation or + is a positive operator rather than an operation
+        let expectingOperand = false;                    //    We use this test in syntax-checking the expression to determine whether an operand
+                                                    //        should be null in a function call
+        //    The guts of the lexical parser
+        //    Loop through the formula extracting each operator and operand in turn
+        while (true) {
+            let opCharacter = substr(formula, index, 1);    //    Get the first character of the value at the current index position
+            if ((isset(self::comparisonOperators[opCharacter])) && (strlen(formula) > index) && (isset(self::comparisonOperators[formula{index+1}]))) {
+                let index = index + 1;
+                let opCharacter = opCharacter . substr(formula, index, 1);
+            }
+
+            //    Find out if we"re currently at the beginning of a number, variable, cell reference, function, parenthesis or operand
+            let isOperandOrFunction = preg_match(regexpMatchString, substr(formula, index), match);
+
+            if (opCharacter == "-" && !expectingOperator) {                //    Is it a negation instead of a minus?
+                stack->push("Unary Operator", "~");                            //    Put a negation on the stack
+                let index = index + 1;                                                    //        and drop the negation symbol
+            } elseif (opCharacter == "%" && expectingOperator) {
+                stack->push("Unary Operator", "%");                            //    Put a percentage on the stack
+                let index = index + 1;
+            } elseif (opCharacter == "+" && !expectingOperator) {            //    Positive (unary plus rather than binary operator plus) can be discarded?
+                let index = index + 1;                                                    //    Drop the redundant plus symbol
+            } elseif (((opCharacter == "~") || (opCharacter == "|")) && (!isOperandOrFunction)) {    //    We have to explicitly deny a tilde or pipe, because they are legal
+                return this->raiseFormulaError("Formula Error: Illegal character "~"");                //        on the stack but not in the input expression
+
+            } elseif ((isset(self::operators[opCharacter]) or isOperandOrFunction) && expectingOperator) {    //    Are we putting an operator on the stack?
+                while (stack->count() > 0 &&
+                    (o2 = stack->last()) &&
+                    isset(self::operators[o2["value"]]) &&
+                    @(self::operatorAssociativity[opCharacter] ? self::operatorPrecedence[opCharacter] < self::operatorPrecedence[o2["value"]] : self::operatorPrecedence[opCharacter] <= self::operatorPrecedence[o2["value"]])) {
+                    let output[] = stack->pop();                                //    Swap operands and higher precedence operators from the stack to the output
+                }
+                stack->push("Binary Operator", opCharacter);    //    Finally put our current operator onto the stack
+                let index = index + 1;
+                let expectingOperator = false;
+
+            } elseif (opCharacter == ")" && expectingOperator) {            //    Are we expecting to close a parenthesis?
+                let expectingOperand = false;
+                while ((o2 = stack->pop()) && o2["value"] != "(") {        //    Pop off the stack back to the last (
+                    if (o2 === null) {
+                        return this->raiseFormulaError("Formula Error: Unexpected closing brace ")"");
+                    } else {
+                        let output[] = o2;
+                    }
+                }
+                let d = stack->last(2);
+                if (preg_match("/^".self::CALCULATION_REGEXP_FUNCTION."/i", d["value"], matches)) {    //    Did this parenthesis just close a function?
+                    let functionName = matches[1]; // Get the function name
+
+                    let d = stack->pop();
+                    let argumentCount = d["value"];        //    See how many arguments there were (argument count is the next value stored on the stack)
+
+                    let output[] = d;                        //    Dump the argument count on the output
+                    let output[] = stack->pop();            //    Pop the function and push onto the output
+                    if (isset(self::controlFunctions[functionName])) {
+                        let expectedArgumentCount = self::controlFunctions[functionName]["argumentCount"];
+                        let functionCall = self::controlFunctions[functionName]["functionCall"];
+                    } elseif (isset(self::PHPExcelFunctions[functionName])) {
+                        let expectedArgumentCount = self::PHPExcelFunctions[functionName]["argumentCount"];
+                        let functionCall = self::PHPExcelFunctions[functionName]["functionCall"];
+                    } else {    // did we somehow push a non-function on the stack? this should never happen
+                        return this->raiseFormulaError("Formula Error: Internal error, non-function on stack");
+                    }
+                    //    Check the argument count
+                    let argumentCountError = false;
+                    if (is_numeric(expectedArgumentCount)) {
+                        if (expectedArgumentCount < 0) {
+                            if (argumentCount > abs(expectedArgumentCount)) {
+                                let argumentCountError = true;
+                                let expectedArgumentCountString = "no more than ".abs(expectedArgumentCount);
+                            }
+                        } else {
+                            if (argumentCount != expectedArgumentCount) {
+                                let argumentCountError = true;
+                                let expectedArgumentCountString = expectedArgumentCount;
+                            }
+                        }
+                    } elseif (expectedArgumentCount != "*") {
+                        let isOperandOrFunction = preg_match("/(\d*)([-+,])(\d*)/", expectedArgumentCount, argMatch);
+                        switch (argMatch[2]) {
+                            case "+":
+                                if (argumentCount < argMatch[1]) {
+                                    let argumentCountError = true;
+                                    let expectedArgumentCountString = argMatch[1]." or more ";
+                                }
+                                break;
+                            case "-":
+                                if ((argumentCount < argMatch[1]) || (argumentCount > argMatch[3])) {
+                                    let argumentCountError = true;
+                                    let expectedArgumentCountString = "between ".argMatch[1]." and ".argMatch[3];
+                                }
+                                break;
+                            case ",":
+                                if ((argumentCount != argMatch[1]) && (argumentCount != argMatch[3])) {
+                                    let argumentCountError = true;
+                                    let expectedArgumentCountString = "either ".argMatch[1]." or ".argMatch[3];
+                                }
+                                break;
+                        }
+                    }
+                    if (argumentCountError) {
+                        return this->raiseFormulaError("Formula Error: Wrong number of arguments for " . functionName . "() function: " . argumentCount . " given, ".expectedArgumentCountString." expected");
+                    }
+                }
+                let index = index + 1;
+
+            } elseif (opCharacter == ",") {            //    Is this the separator for function arguments?
+                while ((o2 = stack->pop()) && o2["value"] != "(") {        //    Pop off the stack back to the last (
+                    if (o2 === null) {
+                        return this->raiseFormulaError("Formula Error: Unexpected ,");
+                    } else {
+                        let output[] = o2;    // pop the argument expression stuff and push onto the output
+                    }
+                }
+                //    If we"ve a comma when we"re expecting an operand, then what we actually have is a null operand;
+                //        so push a null onto the stack
+                if ((expectingOperand) || (!expectingOperator)) {
+                    let output[] = ["type": "NULL Value", "value": self::excelConstants["NULL"], "reference": null];
+                }
+                // make sure there was a function
+                let d = stack->last(2);
+                if (!preg_match("/^".self::CALCULATION_REGEXP_FUNCTION."/i", d["value"], matches)) {
+                    return this->raiseFormulaError("Formula Error: Unexpected ,");
+                }
+                let d = stack->pop();
+                stack->push(d["type"], ++d["value"], d["reference"]);    // increment the argument count
+                stack->push("Brace", "(");    // put the ( back on, we"ll need to pop back to it again
+                let expectingOperator = false;
+                let expectingOperand = true;
+                let index = index + 1;
+
+            } elseif (opCharacter == "(" && !expectingOperator) {
+                stack->push("Brace", "(");
+                let index = index + 1;
+
+            } elseif (isOperandOrFunction && !expectingOperator) {    // do we now have a function/variable/number?
+                let expectingOperator = true;
+                let expectingOperand = false;
+                let val = match[1];
+                let length = strlen(val);
+
+                if (preg_match("/^".self::CALCULATION_REGEXP_FUNCTION."/i", val, matches)) {
+                    let val = preg_replace("/\s/u", "", val);
+                    if (isset(self::PHPExcelFunctions[strtoupper(matches[1])]) || isset(self::controlFunctions[strtoupper(matches[1])])) {    // it"s a function
+                        stack->push("Function", strtoupper(val));
+                        let ax = preg_match("/^\s*(\s*\))/ui", substr(formula, index+length), amatch);
+                        if (ax) {
+                            stack->push("Operand Count for Function ".strtoupper(val).")", 0);
+                            let expectingOperator = true;
+                        } else {
+                            stack->push("Operand Count for Function ".strtoupper(val).")", 1);
+                            let expectingOperator = false;
+                        }
+                        stack->push("Brace", "(");
+                    } else {    // it"s a var w/ implicit multiplication
+                        let output[] = ["type": "Value", "value": matches[1], "reference": null];
+                    }
+                } elseif (preg_match("/^".self::CALCULATION_REGEXP_CELLREF."/i", val, matches)) {
+                    // Watch for this case-change when modifying to allow cell references in different worksheets...
+                    // Should only be applied to the actual cell column, not the worksheet name
+
+                    // If the last entry on the stack was a : operator, then we have a cell range reference
+                    let testPrevOp = stack->last(1);
+                    if (testPrevOp["value"] == ":") {
+                        // If we have a worksheet reference, then we"re playing with a 3D reference
+                        if (matches[2] == "") {
+                            // Otherwise, we "inherit" the worksheet reference from the start cell reference
+                            // The start of the cell range reference should be the last entry in output
+                            let startCellRef = output[count(output)-1]["value"];
+                            preg_match("/^".self::CALCULATION_REGEXP_CELLREF."/i", startCellRef, startMatches);
+                            if (startMatches[2] > "") {
+                                let val = startMatches[2] . "!" . val;
+                            }
+                        } else {
+                            return this->raiseFormulaError("3D Range references are not yet supported");
+                        }
+                    }
+
+                    let output[] = ["type": "Cell Reference", "value": val, "reference": val];
+                } else {    // it"s a variable, constant, string, number or boolean
+                    //    If the last entry on the stack was a : operator, then we may have a row or column range reference
+                    let testPrevOp = stack->last(1);
+                    if (testPrevOp["value"] == ":") {
+                        let startRowColRef = output[count(output)-1]["value"];
+                        let rangeWS1 = "";
+                        
+                        if (strpos("!", startRowColRef) !== false) {
+                            list(rangeWS1, startRowColRef) = explode("!", startRowColRef);
+                        }
+                        
+                        if (rangeWS1 != "") {
+                            let rangeWS1 = rangeWS1 . "!";
+                        }
+                        
+                        let rangeWS2 = rangeWS1;
+                        
+                        if (strpos("!", val) !== false) {
+                            list(rangeWS2, val) = explode("!", val);
+                        }
+                        
+                        if (rangeWS2 != "") {
+                            let rangeWS2 = rangeWS2 . "!";
+                        }
+                        
+                        if ((is_integer(startRowColRef)) && (ctype_digit(val)) && (startRowColRef <= 1048576) && (val <= 1048576)) {
+                            //    Row range
+                            let endRowColRef = (pCellParent !== null) ? pCellParent->getHighestColumn() : "XFD";    //    Max 16,384 columns for Excel2007
+                            let output[count(output)-1]["value"] = rangeWS1."A".startRowColRef;
+                            let val = rangeWS2.endRowColRef.val;
+                        } elseif ((ctype_alpha(startRowColRef)) && (ctype_alpha(val)) && (strlen(startRowColRef) <= 3) && (strlen(val) <= 3)) {
+                            //    Column range
+                            let endRowColRef = (pCellParent !== null) ? pCellParent->getHighestRow() : 1048576;        //    Max 1,048,576 rows for Excel2007
+                            let output[count(output)-1]["value"] = rangeWS1.strtoupper(startRowColRef)."1";
+                            let val = rangeWS2 . val . endRowColRef;
+                        }
+                    }
+
+                    let localeConstant = false;
+                    
+                    if (opCharacter == "\"") {
+                        //    UnEscape any quotes within the string
+                        let val = self::wrapResult(str_replace("\"\"", "\"", self::unwrapResult(val)));
+                    } elseif (is_numeric(val)) {
+                        if ((strpos(val, ".") !== false) || (stripos(val, "e") !== false) || (val > PHP_INT_MAX) || (val < -PHP_INT_MAX)) {
+                            let val = (float) val;
+                        } else {
+                            let val = (integer) val;
+                        }
+                    } elseif (isset(self::excelConstants[trim(strtoupper(val))])) {
+                        let excelConstant = trim(strtoupper(val));
+                        let val = self::excelConstants[excelConstant];
+                    } elseif ((localeConstant = array_search(trim(strtoupper(val)), self::localeBoolean)) !== false) {
+                        let val = self::excelConstants[localeConstant];
+                    }
+                    
+                    let details = ["type": "Value", "value": val, "reference": null];
+                    
+                    if (localeConstant) {
+                        let details["localeValue"] = localeConstant;
+                    }
+                    
+                    let output[] = details;
+                }
+                let index = index + length;
+
+            } elseif (opCharacter == "") {    // absolute row or column range
+                let index = index + 1;
+            } elseif (opCharacter == ")") {    // miscellaneous error checking
+                if (expectingOperand) {
+                    let output[] = ["type": "NULL Value", "value": self::excelConstants["NULL"], "reference": null];
+                    let expectingOperand = false;
+                    let expectingOperator = true;
+                } else {
+                    return this->raiseFormulaError("Formula Error: Unexpected ")"");
+                }
+            } elseif (isset(self::operators[opCharacter]) && !expectingOperator) {
+                return this->raiseFormulaError("Formula Error: Unexpected operator "opCharacter"");
+            } else {    // I don"t even want to know what you did to get here
+                return this->raiseFormulaError("Formula Error: An unexpected error occured");
+            }
+            
+            //    Test for end of formula string
+            if (index == strlen(formula)) {
+                //    Did we end with an operator?.
+                //    Only valid for the % unary operator
+                if ((isset(self::operators[opCharacter])) && (opCharacter != "%")) {
+                    return this->raiseFormulaError("Formula Error: Operator "opCharacter" has no operands");
+                } else {
+                    break;
+                }
+            }
+            
+            //    Ignore white space
+            while ((formula{index} == "\n") || (formula{index} == "\r")) {
+                let index = index + 1;
+            }
+            
+            if (formula{index} == " ") {
+                while (formula{index} == " ") {
+                    let index = index + 1;
+                }
+                // If we're expecting an operator, but only have a space between the previous and next operands (and both are Cell References) then we have an INTERSECTION operator
+                if ((expectingOperator) && (preg_match("/^" . self::CALCULATION_REGEXP_CELLREF . "./Ui", substr(formula, index), match)) && (output[count(output)-1]["type"] == "Cell Reference")) {
+                    while (stack->count() > 0 && (o2 = stack->last()) && isset(self::operators[o2["value"]]) &&
+                            @(self::operatorAssociativity[opCharacter] ? self::operatorPrecedence[opCharacter] < self::operatorPrecedence[o2["value"]] : self::operatorPrecedence[opCharacter] <= self::operatorPrecedence[o2["value"]])) {
+                        let output[] = stack->pop();                                //    Swap operands and higher precedence operators from the stack to the output
+                    }
+                    stack->push("Binary Operator", "|");    //    Put an Intersect Operator on the stack
+                    let expectingOperator = false;
+                }
+            }
+        }
+
+        while ((op = stack->pop()) !== null) {    // pop everything off the stack and push onto output
+            if ((is_array(op) && op["value"] == "(") || (op === "(")) {
+                return this->raiseFormulaError("Formula Error: Expecting ')'");    // if there are any opening braces on the stack, then braces were unbalanced
+            }
+            let output[] = op;
+        }
+        
+        return output;
+        */
     }
     
     private static function dataTestReference(operandData)

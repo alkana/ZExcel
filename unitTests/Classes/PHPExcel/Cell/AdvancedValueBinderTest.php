@@ -4,7 +4,7 @@ class AdvancedValueBinderTest extends PHPUnit_Framework_TestCase
 {
     public function provider()
     {
-        if (!class_exists('\ZExcel\Style_NumberFormat')) {
+        if (!class_exists('\ZExcel\Style\NumberFormat')) {
             $this->setUp();
         }
         $currencyUSD = \ZExcel\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE;

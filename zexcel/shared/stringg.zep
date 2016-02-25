@@ -24,21 +24,21 @@ class Stringg
      *
      * @var string
      */
-    private static _decimalSeparator;
+    private static decimalSeparator;
 
     /**
      * Thousands separator
      *
      * @var string
      */
-    private static _thousandsSeparator;
+    private static thousandsSeparator;
 
     /**
      * Currency code
      *
      * @var string
      */
-    private static _currencyCode;
+    private static currencyCode;
 
     /**
      * Is mbstring extension avalable?
@@ -305,7 +305,7 @@ class Stringg
      * @param     string    $value    Value to unescape
      * @return     string
      */
-    public static function ControlCharacterOOXML2PHP(value = "")
+    public static function controlCharacterOOXML2PHP(value = "")
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -324,7 +324,7 @@ class Stringg
      * @param     string    $value    Value to escape
      * @return     string
      */
-    public static function ControlCharacterPHP2OOXML(value = "")
+    public static function controlCharacterPHP2OOXML(value = "")
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -335,7 +335,7 @@ class Stringg
      * @param string $value
      * @return string
      */
-    public static function SanitizeUTF8(value)
+    public static function sanitizeUTF8(value)
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -346,7 +346,7 @@ class Stringg
      * @param string $value
      * @return boolean
      */
-    public static function IsUTF8(value = "")
+    public static function isUTF8(value = "")
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -358,7 +358,7 @@ class Stringg
      * @param mixed $value
      * @return string
      */
-    public static function FormatNumber(value)
+    public static function formatNumber(value)
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -374,7 +374,7 @@ class Stringg
      * @param mixed[] $arrcRuns Details of rich text runs in $value
      * @return string
      */
-    public static function UTF8toBIFF8UnicodeShort(value, arrcRuns = [])
+    public static function utf8toBIFF8UnicodeShort(value, arrcRuns = [])
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -389,7 +389,7 @@ class Stringg
      * @param string $value UTF-8 encoded string
      * @return string
      */
-    public static function UTF8toBIFF8UnicodeLong(value)
+    public static function utf8toBIFF8UnicodeLong(value)
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -402,7 +402,7 @@ class Stringg
      * @param string $from Encoding to convert from, e.g. 'UTF-16LE'
      * @return string
      */
-    public static function ConvertEncoding(value, to, from)
+    public static function convertEncoding(value, to, from)
     {
         throw new \Exception("Not implemented yet!");
     }
@@ -434,7 +434,7 @@ class Stringg
      * @param string $enc Encoding
      * @return int Character count
      */
-    public static function CountCharacters(value, enc = "UTF-8")
+    public static function countCharacters(value, enc = "UTF-8")
     {
         if (self::getIsMbstringEnabled()) {
             return mb_strlen(value, enc);
@@ -456,7 +456,7 @@ class Stringg
      * @param int $pLength Maximum number of characters in substring
      * @return string
      */
-    public static function Substring(pValue = "", pStart = 0, pLength = 0)
+    public static function substring(pValue = "", pStart = 0, pLength = 0)
     {
         if (self::getIsMbstringEnabled()) {
             return mb_substr(pValue, pStart, pLength, "UTF-8");
@@ -476,9 +476,13 @@ class Stringg
      * @param string $pValue UTF-8 encoded string
      * @return string
      */
-    public static function StrToUpper(pValue = "")
+    public static function strToUpper(string pValue = "") -> string
     {
-        throw new \Exception("Not implemented yet!");
+        if (function_exists("mb_convert_case")) {
+            return mb_convert_case(pValue, MB_CASE_UPPER, "UTF-8");
+        }
+        
+        return strtoupper(pValue);
     }
 
     /**
@@ -487,9 +491,13 @@ class Stringg
      * @param string $pValue UTF-8 encoded string
      * @return string
      */
-    public static function StrToLower(pValue = "")
+    public static function strToLower(string pValue = "") -> string
     {
-        throw new \Exception("Not implemented yet!");
+        if (function_exists("mb_convert_case")) {
+            return mb_convert_case(pValue, MB_CASE_LOWER, "UTF-8");
+        }
+        
+        return strtolower(pValue);
     }
 
     /**
@@ -499,9 +507,12 @@ class Stringg
      * @param string $pValue UTF-8 encoded string
      * @return string
      */
-    public static function StrToTitle(pValue = "")
+    public static function strToTitle(string pValue = "") -> string
     {
-        throw new \Exception("Not implemented yet!");
+        if (function_exists("mb_convert_case")) {
+            return mb_convert_case(pValue, MB_CASE_TITLE, "UTF-8");
+        }
+        return ucwords(pValue);
     }
 
     public static function mb_is_upper(chr)
@@ -545,9 +556,25 @@ class Stringg
      *
      * @return string
      */
-    public static function getDecimalSeparator()
+    public static function getDecimalSeparator() -> string
     {
-        throw new \Exception("Not implemented yet!");
+        var localeconv;
+        
+        if (!isset(self::decimalSeparator)) {
+            let localeconv = localeconv();
+            
+            if (localeconv["decimal_point"] != "") {
+                let self::decimalSeparator = localeconv["decimal_point"];
+            } else {
+                let self::decimalSeparator = localeconv["mon_decimal_point"];
+            }
+
+            if (self::decimalSeparator == "") {
+                // Default to .
+                let self::decimalSeparator = ".";
+            }
+        }
+        return self::decimalSeparator;
     }
 
     /**
@@ -556,9 +583,9 @@ class Stringg
      *
      * @param string $pValue Character for decimal separator
      */
-    public static function setDecimalSeparator(pValue = ".")
+    public static function setDecimalSeparator(string pValue = ".")
     {
-        let self::_decimalSeparator = pValue;
+        let self::decimalSeparator = pValue;
     }
 
     /**
@@ -567,9 +594,25 @@ class Stringg
      *
      * @return string
      */
-    public static function getThousandsSeparator()
+    public static function getThousandsSeparator() -> string
     {
-        throw new \Exception("Not implemented yet!");
+        var localeconv;
+        
+        if (!isset(self::thousandsSeparator)) {
+            let localeconv = localeconv();
+            
+            if (localeconv["thousands_sep"] != "") {
+                let self::thousandsSeparator = localeconv["thousands_sep"];
+            } else {
+                let self::thousandsSeparator = localeconv["mon_thousands_sep"];
+            }
+
+            if (self::thousandsSeparator == "") {
+                // Default to .
+                let self::thousandsSeparator = ",";
+            }
+        }
+        return self::thousandsSeparator;
     }
 
     /**
@@ -578,9 +621,9 @@ class Stringg
      *
      * @param string $pValue Character for thousands separator
      */
-    public static function setThousandsSeparator(pValue = ",")
+    public static function setThousandsSeparator(string pValue = ",")
     {
-        let self::_thousandsSeparator = pValue;
+        let self::thousandsSeparator = pValue;
     }
 
     /**
@@ -589,9 +632,26 @@ class Stringg
      *
      * @return string
      */
-    public static function getCurrencyCode()
+    public static function getCurrencyCode() -> string
     {
-        throw new \Exception("Not implemented yet!");
+        var localeconv;
+        
+        if (!isset(self::currencyCode)) {
+            let localeconv = localeconv();
+            
+            if (localeconv["currency_symbol"] != "") {
+                let self::currencyCode = localeconv["currency_symbol"];
+            } else {
+                let self::currencyCode = localeconv["int_curr_symbol"];
+            }
+
+            if (self::currencyCode == "") {
+                // Default to 
+                let self::currencyCode = "$";
+            }
+        }
+        
+        return self::currencyCode;
     }
 
     /**
@@ -600,9 +660,9 @@ class Stringg
      *
      * @param string $pValue Character for currency code
      */
-    public static function setCurrencyCode(pValue = "$")
+    public static function setCurrencyCode(string pValue = "$")
     {
-        throw new \Exception("Not implemented yet!");
+        let self::currencyCode = pValue;
     }
 
     /**

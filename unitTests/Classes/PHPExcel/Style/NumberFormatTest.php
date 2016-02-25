@@ -21,7 +21,7 @@ class NumberFormatTest extends PHPUnit_Framework_TestCase
     {
         $args = func_get_args();
         $expectedResult = array_pop($args);
-        $result = call_user_func_array(array('\ZExcel\Style_NumberFormat','toFormattedString'), $args);
+        $result = call_user_func_array(array('\ZExcel\Style\NumberFormat','toFormattedString'), $args);
         $this->assertEquals($expectedResult, $result);
     }
 

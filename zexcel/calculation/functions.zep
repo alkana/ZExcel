@@ -2,6 +2,18 @@ namespace ZExcel\Calculation;
 
 class Functions
 {
+    /** MAX_VALUE */
+    const MAX_VALUE= "1.2e308";
+
+/** 2 / PI */
+    const M_2DIVPI = 0.63661977236758134307553505349006;
+
+/** MAX_ITERATIONS */
+    const MAX_ITERATIONS = 256;
+
+/** PRECISION */
+    const PRECISION = "8.88E-016";
+
     /** constants */
     const COMPATIBILITY_EXCEL      = "Excel";
     const COMPATIBILITY_GNUMERIC   = "Gnumeric";
@@ -154,30 +166,35 @@ class Functions
 
     public static function ifCondition(var condition)
     {
-        var matches, operator, operand;
+        var operator, operand, returnValue = null;
+        array matches = [];
         
         let condition = \ZExcel\Calculation\Functions::flattenSingleValue(condition);
         
         if (strlen(condition) == 0) {
             let condition = "=\"\"";
         }
+        
         if (!in_array(substr(condition, 0, 1), [">", "<", "="])) {
             if (!is_numeric(condition)) {
                 let condition = \ZExcel\Calculation::wrapResult(strtoupper(condition));
             }
-            return "=" . condition;
+            let returnValue = "=" . condition;
         } else {
             preg_match("/([<>=]+)(.*)/", condition, matches);
+            
             let operator = matches[1];
             let operand = matches[2];
-
+            
             if (!is_numeric(operand)) {
                 let operand = str_replace("\"", "\"\"", operand);
                 let operand = \ZExcel\Calculation::wrapResult(strtoupper(operand));
             }
 
-            return operator . operand;
+            let returnValue = operator . operand;
         }
+        
+        return returnValue;
     }
 
     /**

@@ -242,9 +242,72 @@ class Date
      * @param     string    $pFormatCode
      * @return     boolean
      */
-    public static function isDateTimeFormatCode(pFormatCode = "")
+    public static function isDateTimeFormatCode(string pFormatCode = "") -> boolean
     {
-        throw new \Exception("Not implemented yet!");
+        var segMatcher, subVal;
+        
+        if (strtolower(pFormatCode) === strtolower(\ZExcel\Style\NumberFormat::FORMAT_GENERAL)) {
+            //    "General" contains an epoch letter 'e', so we trap for it explicitly here (case-insensitive check)
+            return false;
+        }
+        if (preg_match("/[0#]E[+-]0/i", pFormatCode)) {
+            //    Scientific format
+            return false;
+        }
+
+        // Switch on formatcode
+        switch (pFormatCode) {
+            //    Explicitly defined date formats
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_YYYYMMDD:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_YYYYMMDD2:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_DDMMYYYY:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_DMYSLASH:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_DMYMINUS:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_DMMINUS:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_MYMINUS:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_DATETIME:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_TIME1:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_TIME2:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_TIME3:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_TIME4:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_TIME5:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_TIME6:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_TIME7:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_TIME8:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_YYYYMMDDSLASH:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_XLSX14:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_XLSX15:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_XLSX16:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_XLSX17:
+            case \ZExcel\Style\NumberFormat::FORMAT_DATE_XLSX22:
+                return true;
+        }
+
+        //    Typically number, currency or accounting (or occasionally fraction) formats
+        if ((substr(pFormatCode, 0, 1) == "_") || (substr(pFormatCode, 0, 2) == "0 ")) {
+            return false;
+        }
+        
+        // Try checking for any of the date formatting characters that don"t appear within square braces
+        if (preg_match("/(^|\])[^\[]*[" . self::possibleDateFormatCharacters . "]/i", pFormatCode)) {
+            //    We might also have a format mask containing quoted strings...
+            //        we don"t want to test for any of our characters within the quoted blocks
+            if (strpos(pFormatCode, "\"") !== false) {
+                let segMatcher = false;
+                for subVal in explode("\"", pFormatCode) {
+                    //    Only test in alternate array entries (the non-quoted blocks)
+                    let segMatcher = !segMatcher;
+                    if (segMatcher && (preg_match("/(^|\])[^\[]*[" . self::possibleDateFormatCharacters . "]/i", subVal))) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return true;
+        }
+
+        // No date...
+        return false;
     }
 
 

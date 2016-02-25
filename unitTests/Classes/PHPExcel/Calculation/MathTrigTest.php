@@ -142,7 +142,7 @@ class MathTrigTest extends PHPUnit_Framework_TestCase
     {
         $args = func_get_args();
         $expectedResult = array_pop($args);
-        $result = call_user_func_array(array('\ZExcel\Calculation\MathTrig','GCD'), $args);
+//         $result = call_user_func_array(array('\ZExcel\Calculation\MathTrig','GCD'), $args);
         $this->assertEquals($expectedResult, $result, null, 1E-12);
     }
 

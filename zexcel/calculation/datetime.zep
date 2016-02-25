@@ -487,9 +487,39 @@ class DateTime
      * @return    mixed    Excel date/time serial value, PHP date/time serial value or PHP date/time object,
      *                        depending on the value of the ReturnDateType flag
      */
-    public static function timevalue($timeValue)
+    public static function timevalue(var timeValue)
     {
-        throw new \Exception("Not implemented yet!");
+        var PHPDateArray, excelDateValue;
+        
+        let timeValue = trim(\ZExcel\Calculation\Functions::flattenSingleValue(timeValue), "\"");
+        let timeValue = str_replace(["/", "."], ["-", "-"], timeValue);
+
+        let PHPDateArray = date_parse(timeValue);
+        
+        if ((PHPDateArray !== false) && (PHPDateArray["error_count"] == 0)) {
+            if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_OPENOFFICE) {
+                let excelDateValue = \ZExcel\Shared\Date::FormattedPHPToExcel(
+                    PHPDateArray["year"],
+                    PHPDateArray["month"],
+                    PHPDateArray["day"],
+                    PHPDateArray["hour"],
+                    PHPDateArray["minute"],
+                    PHPDateArray["second"]
+                );
+            } else {
+                let excelDateValue = \ZExcel\Shared\Date::FormattedPHPToExcel(1900, 1, 1, PHPDateArray["hour"], PHPDateArray["minute"], PHPDateArray["second"]) - 1;
+            }
+
+            switch (\ZExcel\Calculation\Functions::getReturnDateType()) {
+                case \ZExcel\Calculation\Functions::RETURNDATE_EXCEL:
+                    return (float) excelDateValue;
+                case \ZExcel\Calculation\Functions::RETURNDATE_PHP_NUMERIC:
+                    return (int) (\ZExcel\Shared\Date::ExcelToPHP(excelDateValue + 25569) - 3600);
+                case \ZExcel\Calculation\Functions::RETURNDATE_PHP_OBJECT:
+                    return new DateTime("1900-01-01 " . PHPDateArray["hour"] . ":" . PHPDateArray["minute"] . ":" . PHPDateArray["second"]);
+            }
+        }
+        return \ZExcel\Calculation\Functions::VaLUE();
     }
 
 
