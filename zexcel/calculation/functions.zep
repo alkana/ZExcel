@@ -12,7 +12,7 @@ class Functions
     const MAX_ITERATIONS = 256;
 
 /** PRECISION */
-    const PRECISION = "8.88E-016";
+    const PRECISION = 0.000000000000000888;
 
     /** constants */
     const COMPATIBILITY_EXCEL      = "Excel";

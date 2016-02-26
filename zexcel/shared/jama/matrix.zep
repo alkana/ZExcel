@@ -35,15 +35,67 @@ class Matrix
     /**
      *    Polymorphic constructor
      *
-     *    As PHP has no support for polymorphic constructors, we hack our own sort of polymorphism using func_num_args, func_get_arg, and gettype. In essence, we're just implementing a simple RTTI filter and calling the appropriate constructor.
+     *    As PHP has no support for polymorphic constructors, we hack our own sort of polymorphism using func_num_args, func_get_arg, and gettype. In essence, we"re just implementing a simple RTTI filter and calling the appropriate constructor.
      */
-    public function __construct(var args)
+    public function __construct()
     {
-        if (!is_array(args)) {
-            let args = [args];
-        }
+    }
+    
+    public function initialize()
+    {
+        var args, match;
+        int i, j;
         
-        throw new \Exception("Not implemented yet!");
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                // Rectangular matrix - m x n initialized from 2D array
+                case "array":
+                    let this->m = count(args[0]);
+                    let this->n = count(args[0][0]);
+                    let this->a = args[0];
+                    break;
+                // Square matrix - n x n
+                case "integer":
+                    let this->m = args[0];
+                    let this->n = args[0];
+                    let this->a = array_fill(0, this->m, array_fill(0, this->n, 0));
+                    break;
+                // Rectangular matrix - m x n
+                case "integer,integer":
+                    let this->m = args[0];
+                    let this->n = args[1];
+                    let this->a = array_fill(0, this->m, array_fill(0, this->n, 0));
+                    break;
+                // Rectangular matrix - m x n initialized from packed array
+                case "array,integer":
+                    let this->m = args[1];
+                    
+                    if (this->m != 0) {
+                        let this->n = count(args[0]) / this->m;
+                    } else {
+                        let this->n = 0;
+                    }
+                    
+                    if ((this->m * this->n) == count(args[0])) {
+                        for i in range(0, this->m - 1) {
+                            for j in range(0, this->n - 1) {
+                                let this->a[i][j] = args[0][i + j * this->m];
+                            }
+                        }
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::ARRAY_LENGTH_EXCEPTION);
+                    }
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::POLYMORPHIC_ARGUMENT_EXCEPTION);
+                    break;
+            }
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::POLYMORPHIC_ARGUMENT_EXCEPTION);
+        }
     }
 
     /**
@@ -80,8 +132,8 @@ class Matrix
      *    get
      *
      *    Get the i,j-th element of the matrix.
-     *    @param int $i Row position
-     *    @param int $j Column position
+     *    @param int i Row position
+     *    @param int j Column position
      *    @return mixed Element (int/float/double)
      */
     public function get(var i = null, var j = null)
@@ -93,10 +145,10 @@ class Matrix
      *    getMatrix
      *
      *    Get a submatrix
-     *    @param int $i0 Initial row index
-     *    @param int $iF Final row index
-     *    @param int $j0 Initial column index
-     *    @param int $jF Final column index
+     *    @param int i0 Initial row index
+     *    @param int iF Final row index
+     *    @param int j0 Initial column index
+     *    @param int jF Final column index
      *    @return Matrix Submatrix
      */
     public function getMatrix()
@@ -108,7 +160,7 @@ class Matrix
      *    checkMatrixDimensions
      *
      *    Is matrix B the same size?
-     *    @param Matrix $B Matrix B
+     *    @param Matrix B Matrix B
      *    @return boolean
      */
     public function checkMatrixDimensions(var b = null)
@@ -120,9 +172,9 @@ class Matrix
      *    set
      *
      *    Set the i,j-th element of the matrix.
-     *    @param int $i Row position
-     *    @param int $j Column position
-     *    @param mixed $c Int/float/double value
+     *    @param int i Row position
+     *    @param int j Column position
+     *    @param mixed c Int/float/double value
      *    @return mixed Element (int/float/double)
      */
     public function set(var i = null, var j = null, var c = null)
@@ -135,8 +187,8 @@ class Matrix
      *    identity
      *
      *    Generate an identity matrix.
-     *    @param int $m Row dimension
-     *    @param int $n Column dimension
+     *    @param int m Row dimension
+     *    @param int n Column dimension
      *    @return Matrix Identity matrix
      */
     public function identity(var m = null, var n = null)
@@ -148,9 +200,9 @@ class Matrix
      *    diagonal
      *
      *    Generate a diagonal matrix
-     *    @param int $m Row dimension
-     *    @param int $n Column dimension
-     *    @param mixed $c Diagonal value
+     *    @param int m Row dimension
+     *    @param int n Column dimension
+     *    @param mixed c Diagonal value
      *    @return Matrix Diagonal matrix
      */
     public function diagonal(var m = null, var n = null, var c = 1)
@@ -162,8 +214,8 @@ class Matrix
      *    getMatrixByRow
      *
      *    Get a submatrix by row index/range
-     *    @param int $i0 Initial row index
-     *    @param int $iF Final row index
+     *    @param int i0 Initial row index
+     *    @param int iF Final row index
      *    @return Matrix Submatrix
      */
     public function getMatrixByRow(var i0 = null, var iFF = null)
@@ -175,8 +227,8 @@ class Matrix
      *    getMatrixByCol
      *
      *    Get a submatrix by column index/range
-     *    @param int $i0 Initial column index
-     *    @param int $iF Final column index
+     *    @param int i0 Initial column index
+     *    @param int iF Final column index
      *    @return Matrix Submatrix
      */
     public function getMatrixByCol(var j0 = null, var jF = null)
@@ -220,7 +272,7 @@ class Matrix
      *    plus
      *
      *    A + B
-     *    @param mixed $B Matrix/Array
+     *    @param mixed B Matrix/Array
      *    @return Matrix Sum
      */
     public function plus()
@@ -232,7 +284,7 @@ class Matrix
      *    plusEquals
      *
      *    A = A + B
-     *    @param mixed $B Matrix/Array
+     *    @param mixed B Matrix/Array
      *    @return Matrix Sum
      */
     public function plusEquals()
@@ -244,7 +296,7 @@ class Matrix
      *    minus
      *
      *    A - B
-     *    @param mixed $B Matrix/Array
+     *    @param mixed B Matrix/Array
      *    @return Matrix Sum
      */
     public function minus()
@@ -256,7 +308,7 @@ class Matrix
      *    minusEquals
      *
      *    A = A - B
-     *    @param mixed $B Matrix/Array
+     *    @param mixed B Matrix/Array
      *    @return Matrix Sum
      */
     public function minusEquals()
@@ -269,7 +321,7 @@ class Matrix
      *
      *    Element-by-element multiplication
      *    Cij = Aij * Bij
-     *    @param mixed $B Matrix/Array
+     *    @param mixed B Matrix/Array
      *    @return Matrix Matrix Cij
      */
     public function arrayTimes()
@@ -282,7 +334,7 @@ class Matrix
      *
      *    Element-by-element multiplication
      *    Aij = Aij * Bij
-     *    @param mixed $B Matrix/Array
+     *    @param mixed B Matrix/Array
      *    @return Matrix Matrix Aij
      */
     public function arrayTimesEquals()
@@ -295,7 +347,7 @@ class Matrix
      *
      *    Element-by-element right division
      *    A / B
-     *    @param Matrix $B Matrix B
+     *    @param Matrix B Matrix B
      *    @return Matrix Division result
      */
     public function arrayRightDivide()
@@ -309,7 +361,7 @@ class Matrix
      *
      *    Element-by-element right division
      *    Aij = Aij / Bij
-     *    @param mixed $B Matrix/Array
+     *    @param mixed B Matrix/Array
      *    @return Matrix Matrix Aij
      */
     public function arrayRightDivideEquals()
@@ -323,7 +375,7 @@ class Matrix
      *
      *    Element-by-element Left division
      *    A / B
-     *    @param Matrix $B Matrix B
+     *    @param Matrix B Matrix B
      *    @return Matrix Division result
      */
     public function arrayLeftDivide()
@@ -337,7 +389,7 @@ class Matrix
      *
      *    Element-by-element Left division
      *    Aij = Aij / Bij
-     *    @param mixed $B Matrix/Array
+     *    @param mixed B Matrix/Array
      *    @return Matrix Matrix Aij
      */
     public function arrayLeftDivideEquals()
@@ -350,7 +402,7 @@ class Matrix
      *    times
      *
      *    Matrix multiplication
-     *    @param mixed $n Matrix/Array/Scalar
+     *    @param mixed n Matrix/Array/Scalar
      *    @return Matrix Product
      */
     public function times()
@@ -362,7 +414,7 @@ class Matrix
      *    power
      *
      *    A = A ^ B
-     *    @param mixed $B Matrix/Array
+     *    @param mixed B Matrix/Array
      *    @return Matrix Sum
      */
     public function power()
@@ -374,7 +426,7 @@ class Matrix
      *    concat
      *
      *    A = A & B
-     *    @param mixed $B Matrix/Array
+     *    @param mixed B Matrix/Array
      *    @return Matrix Sum
      */
     public function concat()
@@ -385,7 +437,7 @@ class Matrix
     /**
      *    Solve A*X = B.
      *
-     *    @param Matrix $B Right hand side
+     *    @param Matrix B Right hand side
      *    @return Matrix ... Solution if A is square, least squares solution otherwise
      */
     public function solve(b)

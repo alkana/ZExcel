@@ -221,8 +221,12 @@ class PolynomialBestFit extends \ZExcel\Shared\Trend\BestFit
             let b[i] = [yValues[i]];
         }
         
-        let matrixA = new \ZExcel\Shared\JAMA\Matrix(a);
-        let matrixB = new \ZExcel\Shared\JAMA\Matrix(b);
+        let matrixA = new \ZExcel\Shared\JAMA\Matrix();
+        call_user_func([matrixA, "initialize"], a);
+        
+        let matrixB = new \ZExcel\Shared\JAMA\Matrix();
+        call_user_func([matrixB, "initialize"], b);
+
         let c = matrixA->solve(matrixB);
 
         let coefficients = [];

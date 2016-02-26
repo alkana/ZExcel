@@ -94,7 +94,7 @@ class MathTrig
      * @category Mathematical and Trigonometric Functions
      * @param    float    number            The number you want to round.
      * @param    float    significance    The multiple to which you want to round.
-     * @return    float    Rounded Number
+     * @return   float    Rounded Number
      */
     public static function ceiling(float number, var significance = null)
     {
@@ -132,7 +132,7 @@ class MathTrig
      * @category Mathematical and Trigonometric Functions
      * @param    int        numObjs    Number of different objects
      * @param    int        numInSet    Number of objects in each combination
-     * @return    int        Number of combinations
+     * @return   int        Number of combinations
      */
     public static function combin(var numObjs, var numInSet)
     {
@@ -167,7 +167,7 @@ class MathTrig
      * @access    public
      * @category Mathematical and Trigonometric Functions
      * @param    float    number            Number to round
-     * @return    int        Rounded Number
+     * @return   int      Rounded Number
      */
     public static function even(var number)
     {
@@ -204,9 +204,10 @@ class MathTrig
      * @param    float    factVal    Factorial Value
      * @return    int        Factorial
      */
-    public static function fact(factVal)
+    public static function fact(var factVal)
     {
-        var factLoop, factorial;
+        var factLoop;
+        double factorial;
         
         let factVal = \ZExcel\Calculation\Functions::flattenSingleValue(factVal);
 
@@ -252,7 +253,8 @@ class MathTrig
      */
     public static function factDouble(var factVal)
     {
-        var factLoop, factorial;
+        var factLoop;
+        double factorial;
         
         let factLoop = \ZExcel\Calculation\Functions::flattenSingleValue(factVal);
 
@@ -574,7 +576,9 @@ class MathTrig
         }
 
         try {
-            let matrix = new \ZExcel\Shared\JAMA\Matrix([matrixData]);
+            let matrix = new \ZExcel\Shared\JAMA\Matrix();
+            call_user_func([matrix, "initialize"], matrixData);
+            
             return matrix->det();
         } catch \ZExcel\Exception, ex {
             return \ZExcel\Calculation\Functions::VaLUE();
@@ -632,7 +636,9 @@ class MathTrig
         }
 
         try {
-            let matrix = new \ZExcel\Shared\JAMA\Matrix([matrixData]);
+            let matrix = new \ZExcel\Shared\JAMA\Matrix();
+            call_user_func([matrix, "initialize"], matrixData);
+            
             return matrix->inverse()->getArray();
         } catch \ZExcel\Exception, ex {
             return \ZExcel\Calculation\Functions::VaLUE();
@@ -679,8 +685,9 @@ class MathTrig
                 let rowA = rowA + 1;
             }
             
-            let matrixA = new \ZExcel\Shared\JAMA\Matrix(matrixAData);
             let rowB = 0;
+            let matrixA = new \ZExcel\Shared\JAMA\Matrix();
+            call_user_func([matrixA, "initialize"], matrixAData);
             
             for matrixRow in matrixData2 {
                 if (!is_array(matrixRow)) {
@@ -700,7 +707,8 @@ class MathTrig
                 let rowB = rowB + 1;
             }
             
-            let matrixB = new \ZExcel\Shared\JAMA\Matrix(matrixBData);
+            let matrixB = new \ZExcel\Shared\JAMA\Matrix();
+            call_user_func([matrixB, "initialize"], matrixBData);
 
             if (columnA != rowB) {
                 return \ZExcel\Calculation\Functions::VaLUE();
@@ -1292,6 +1300,71 @@ class MathTrig
         return returnValue;
     }
 
+    /**
+     *  SUMIFS
+     *
+     *  Counts the number of cells that contain numbers within the list of arguments
+     *
+     *  Excel Function:
+     *      SUMIFS(value1[,value2[, ...]],condition)
+     *
+     *  @access public
+     *  @category Mathematical and Trigonometric Functions
+     *  @param  mixed       arg,...        Data values
+     *  @param  string      condition      The criteria that defines which cells will be summed.
+     *  @return float
+     */
+    public static function sumIfs() {
+        var arrayList, sumArgs, aArgsArray, conditions, condition, testCondition, index, aArgs, key, arg;
+        boolean wildcard;
+    
+        let arrayList = func_get_args();
+
+        let sumArgs = \ZExcel\Calculation\Functions::flattenArray(array_shift(arrayList));
+
+        let aArgsArray = [];
+        let conditions = [];
+        while (count(arrayList) > 0) {
+            let aArgsArray[] = \ZExcel\Calculation\Functions::flattenArray(array_shift(arrayList));
+            let conditions[] = \ZExcel\Calculation\Functions::ifCondition(array_shift(arrayList));
+        }
+
+        // Loop through each set of arguments and conditions
+        for index, condition in conditions {
+            let aArgs = aArgsArray[index];
+            let wildcard = false;
+            if ((strpos(condition, "*") !== false) || (strpos(condition, "?") !== false)) {
+                // * and ? are wildcard characters.
+                // Use ~* and ~? for literal star and question mark
+                // Code logic doesn"t yet handle escaping
+                let condition = trim(ltrim(condition, "=<>"), "\"");
+                let wildcard = true;
+            }
+            // Loop through arguments
+            for key, arg in aArgs {
+                if (wildcard) {
+                    if (!fnmatch(condition, arg, FNM_CASEFOLD)) {
+                        // Is it a value within our criteria
+                        let sumArgs[key] = 0.0;
+                    }
+                } else {
+                    if (!is_numeric(arg)) {
+                        let arg = \ZExcel\Calculation::wrapResult(strtoupper(arg));
+                    }
+                    
+                    let testCondition = "=" . arg . condition;
+                    
+                    if (!\ZExcel\Calculation::getInstance()->_calculateFormulaValue(testCondition)) {
+                        // Is it a value within our criteria
+                        let sumArgs[key] = 0.0;
+                    }
+                }
+            }
+        }
+
+        // Return
+        return array_sum(sumArgs);
+    }
 
     /**
      * SUMPRODUCT

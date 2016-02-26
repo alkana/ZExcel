@@ -275,7 +275,7 @@ class Calculation
         ],
         "BESSELJ": [
             "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
-            "functionCall": "\\ZExcel\\Calculation\\Engineering::BESSELJ",
+            "functionCall": "\\ZExcel\\Calculation\\Engineering::desselj",
             "argumentCount": "2"
         ],
         "BESSELK": [
