@@ -878,7 +878,12 @@ class Engineering
                     let fResult = -fResult;
                 }
             }
-            return (is_nan(fResult)) ? \ZExcel\Calculation\Functions::NaN() : fResult;
+            
+            if (!is_nan(fResult)) {
+                return fResult;
+            } else {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
         return \ZExcel\Calculation\Functions::VaLUE();
     }
@@ -946,9 +951,9 @@ class Engineering
     }
 
 
-    private static function besselK0(fNum)
+    private static function besselK0(double fNum) -> double
     {
-        var y, fRet, fNum2;
+        double y, fRet, fNum2;
         
         if (fNum <= 2) {
             let fNum2 = fNum * 0.5;
@@ -962,9 +967,9 @@ class Engineering
     }
 
 
-    private static function besselK1(fNum)
+    private static function besselK1(double fNum) -> double
     {
-        var y, fRet, fNum2;
+        double y, fRet, fNum2;
         
         if (fNum <= 2) {
             let fNum2 = fNum * 0.5;
@@ -1000,9 +1005,8 @@ class Engineering
      */
     public static function besselk(var x, var ord)
     {
-        var fBkm, fBk;
+        double fBkm, fBkp, fBk, fTox;
         int n;
-        double fTox, fBkp;
         
         let x   = (is_null(x))   ? 0.0 : \ZExcel\Calculation\Functions::flattenSingleValue(x);
         let ord = (is_null(ord)) ? 0.0 : \ZExcel\Calculation\Functions::flattenSingleValue(ord);
@@ -1019,16 +1023,21 @@ class Engineering
                     return self::besselK1(x);
                 default:
                     let fTox = 2 / x;
-                    let fBkm = self::besselK0(x);
-                    let fBk  = self::besselK1(x);
+                    let fBkm = 0 + self::besselK0(x);
+                    let fBk  = 0 + self::besselK1(x);
                     
                     for n in range(1, ord - 1) {
-                        let fBkp = fBkm + n * fTox * fBk;
+                        let fBkp = fBkm + (n * fTox * fBk);
                         let fBkm = fBk;
                         let fBk  = fBkp;
                     }
             }
-            return (is_nan(fBk)) ? \ZExcel\Calculation\Functions::NaN() : fBk;
+            
+            if (!is_nan(fBk)) {
+                return fBk;
+            } else {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
         return \ZExcel\Calculation\Functions::VaLUE();
     }
@@ -1657,7 +1666,7 @@ class Engineering
                 let imaginary = "+" . (string) imaginary;
             }
             
-            return (string) realNumber . imaginary . suffix;
+            return (string) realNumber . (string) imaginary . suffix;
         }
 
         return \ZExcel\Calculation\Functions::VaLUE();
@@ -2503,7 +2512,7 @@ class Engineering
      *
      *    @return    float
      */
-    public static function converttuom(value, fromUOM, toUOM)
+    public static function convertuom(value, fromUOM, toUOM)
     {
         var fromMultiplier, toMultiplier, unitGroup1, fromUOM, unitGroup2;
         
