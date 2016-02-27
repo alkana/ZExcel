@@ -857,14 +857,16 @@ class DateTime
      */
     public static function yearfrac(var startDate = 0, var endDate = 0, var method = 0)
     {
-        var days, startDay, startMonth, startYear, endYear, years, year, leapDays, endDay, endMonth;
+        var startDay, startMonth, year, endDay, endMonth;
+        int days, startYear, endYear, years;
+        double leapDays;
         
         let startDate = \ZExcel\Calculation\Functions::flattenSingleValue(startDate);
         let endDate   = \ZExcel\Calculation\Functions::flattenSingleValue(endDate);
         let method    = \ZExcel\Calculation\Functions::flattenSingleValue(method);
 
         let startDate = self::getDateValue(startDate);
-        let endDate = self::getDateValue(endDate);
+        let endDate   = self::getDateValue(endDate);
         
         if (is_string(startDate)) {
             return \ZExcel\Calculation\Functions::VaLUE();
@@ -879,11 +881,12 @@ class DateTime
                 case 0:
                     return self::DaYS360(startDate, endDate) / 360;
                 case 1:
-                    let days = self::DaTEDIF(startDate, endDate);
-                    let startYear = self::YeAR(startDate);
-                    let endYear = self::YeAR(endDate);
+                    let days = 0 + self::DaTEDIF(startDate, endDate);
+                    let startYear = 0 + self::YeAR(startDate);
+                    let endYear = 0 + self::YeAR(endDate);
                     let years = endYear - startYear + 1;
                     let leapDays = 0;
+                    
                     if (years == 1) {
                         if (self::isLeapYear(endYear)) {
                             let startMonth = self::MoNTHOFYEAR(startDate);
@@ -899,6 +902,7 @@ class DateTime
                             if (year == startYear) {
                                 let startMonth = self::MoNTHOFYEAR(startDate);
                                 let startDay = self::DaYOFMONTH(startDate);
+                                
                                 if (startMonth < 3 && self::isLeapYear(year)) {
                                     let leapDays = leapDays + 1;
                                 }
@@ -906,13 +910,14 @@ class DateTime
                                 let endMonth = self::MoNTHOFYEAR(endDate);
                                 let endDay = self::DaYOFMONTH(endDate);
                                 
-                                if ((endMonth * 100 + endDay) >= (2 * 100 + 29)) {
-                                    let leapDays = leapDays + (self::isLeapYear(year)) ? 1 : 0;
+                                if ((endMonth * 100 + endDay) >= 229 && self::isLeapYear(year)) {
+                                    let leapDays = leapDays + 1;
                                 }
-                            } else {
-                                let leapDays = leapDays +(self::isLeapYear(year)) ? 1 : 0;
+                            } elseif (self::isLeapYear(year)) {
+                                let leapDays = leapDays + 1;
                             }
                         }
+                        
                         if (years == 2) {
                             if ((leapDays == 0) && (self::isLeapYear(startYear)) && (days > 365)) {
                                 let leapDays = 1;
@@ -920,8 +925,10 @@ class DateTime
                                 let years = 1;
                             }
                         }
+
                         let leapDays = leapDays / years;
                     }
+                    
                     return days / (365 + leapDays);
                 case 2:
                     return self::DaTEDIF(startDate, endDate) / 360;
@@ -961,7 +968,8 @@ class DateTime
      */
     public static function networkdays()
     {
-        var startDate, endDate, dateArgs, sDate, eDate, startDoW, endDoW, wholeWeekDays, partWeekDays, holidayDate;
+        var startDate, endDate, dateArgs, sDate, eDate, holidayDate;
+        double startDoW, endDoW, wholeWeekDays, partWeekDays;
         array holidayCountedArray = [];
         
         //    Flush the mandatory start and end date that are referenced in the function definition, and get the optional days
@@ -1000,12 +1008,12 @@ class DateTime
             let startDoW = 0;
         }
         
-        let endDoW = self::DaYOFWEEK(endDate, 2);
+        let endDoW = 0 + self::DaYOFWEEK(endDate, 2);
         if (endDoW >= 6) {
             let endDoW = 0;
         }
 
-        let wholeWeekDays = floor((endDate - startDate) / 7) * 5;
+        let wholeWeekDays = 5 * floor((endDate - startDate) / 7);
         let partWeekDays = endDoW + startDoW;
         if (partWeekDays > 5) {
             let partWeekDays = partWeekDays - 5;
@@ -1062,16 +1070,20 @@ class DateTime
      */
     public static function workday()
     {
-        var startDate, endDays, dateArgs, startDoW, endDoW, holidayDate, endDate;
+        var startDate, endDays, dateArgs, holidayDate;
         array holidayCountedArray = [], holidayDates = [];
+        double startDoW, endDoW, endDate;
         boolean decrementing;
         
         //    Flush the mandatory start date and days that are referenced in the function definition, and get the optional days
         let dateArgs = \ZExcel\Calculation\Functions::flattenArray(func_get_args());
         
         //    Retrieve the mandatory start date and days that are referenced in the function definition
-        let startDate = \ZExcel\Calculation\Functions::flattenSingleValue(array_shift(dateArgs));
-        let endDays   = \ZExcel\Calculation\Functions::flattenSingleValue(array_shift(dateArgs));
+        let startDate = array_shift(dateArgs);
+        let endDays = array_shift(dateArgs);
+        
+        let startDate = \ZExcel\Calculation\Functions::flattenSingleValue(startDate);
+        let endDays   = \ZExcel\Calculation\Functions::flattenSingleValue(endDays);
 
         let startDate = self::getDateValue(startDate);
 
@@ -1081,6 +1093,7 @@ class DateTime
         
         let startDate = (float) floor(startDate);
         let endDays = (int) floor(endDays);
+        
         //    If endDays is 0, we always return startDate
         if (endDays == 0) {
             return startDate;
@@ -1093,28 +1106,20 @@ class DateTime
 
         //    Adjust the start date if it falls over a weekend
 
-        let startDoW = self::DaYOFWEEK(startDate, 3);
-        if (self::DaYOFWEEK(startDate, 3) >= 5) {
-            if decrementing {
-                let startDate = startDate + (-1 * startDoW) + 4;
-                let endDays = endDays + 1;
-            } else {
-                let startDate = startDate + 7 - startDoW;
-                let endDays = endDays - 1;
-            }
+        let startDoW = 0 + self::DaYOFWEEK(startDate, 3);
+        
+        if (startDoW >= 5) {
+            let startDate = decrementing ? (startDate + 4 - startDoW) : (startDate + 7 - startDoW);
+            let endDays = decrementing ? (endDays + 1) : (endDays - 1);
         }
 
         //    Add endDays
         let endDate = (float) startDate + (intval(endDays / 5) * 7) + (endDays % 5);
 
         //    Adjust the calculated end date if it falls over a weekend
-        let endDoW = self::DaYOFWEEK(endDate, 3);
+        let endDoW = 0 + self::DaYOFWEEK(endDate, 3);
         if (endDoW >= 5) {
-            if (decrementing) {
-                let endDate = endDate + (-1 * endDoW) + 4;
-            } else {
-                let endDate = endDate + 7 - endDoW;
-            }
+            let endDate = decrementing ? (endDate + 4 - endDoW) : (endDate + 7 - endDoW);
         }
 
         //    Test any extra holiday parameters
@@ -1156,7 +1161,7 @@ class DateTime
                     }
                 }
                 //    Adjust the calculated end date if it falls over a weekend
-                let endDoW = self::DaYOFWEEK(endDate, 3);
+                let endDoW = 0 + self::DaYOFWEEK(endDate, 3);
                 if (endDoW >= 5) {
                     if (decrementing) {
                         let endDate = endDate + (-1 * endDoW) + 4;
@@ -1512,6 +1517,7 @@ class DateTime
                 return \ZExcel\Calculation\Functions::VaLUE();
             }
         }
+        
         // Execute function
         if (timeValue >= 1) {
             let timeValue = fmod(timeValue, 1);

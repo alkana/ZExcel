@@ -88,7 +88,7 @@ class Date
      *    @param        string         $timezone            The timezone for finding the adjustment from UST
      *    @return        long        PHP serialized date/time
      */
-    public static function ExcelToPHP(var dateValue = 0, boolean adjustToTimezone = false, var timezone = null)
+    public static function ExcelToPHP(double dateValue = 0, boolean adjustToTimezone = false, var timezone = null)
     {
         var returnValue, hours, mins, secs, timezoneAdjustment;
         double myexcelBaseDate, utcDays;
@@ -105,7 +105,7 @@ class Date
 
         // Perform conversion
         if (dateValue >= 1) {
-            let utcDays = (double) dateValue - myexcelBaseDate;
+            let utcDays = dateValue - myexcelBaseDate;
             let returnValue = round(utcDays * 86400);
             
             if ((returnValue <= PHP_INT_MAX) && (returnValue >= -PHP_INT_MAX)) {
