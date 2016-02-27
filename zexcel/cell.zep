@@ -592,12 +592,14 @@ class Cell
             // Split out any worksheet name from the reference
             let worksheet = "";
             let cellAddress = explode("!", pCoordinateString);
+            
             if (count(cellAddress) > 1) {
                 let worksheet = cellAddress[0];
                 let pCoordinateString = cellAddress[1];
             }
-            if (worksheet > "") {
-                let worksheet .= "!";
+            
+            if (strlen(worksheet) > 0) {
+                let worksheet = worksheet . "!";
             }
 
             // Create absolute coordinate
@@ -606,6 +608,7 @@ class Cell
             } elseif (ctype_alpha(pCoordinateString)) {
                 return worksheet . "" . strtoupper(pCoordinateString);
             }
+            
             return worksheet . self::absoluteCoordinate(pCoordinateString);
         }
 
@@ -631,7 +634,7 @@ class Cell
                 let worksheet = cellAddress[0];
                 let pCoordinateString = cellAddress[1];
             }
-            if (worksheet > "") {
+            if (strlen(worksheet) > 0) {
                 let worksheet .= "!";
             }
 

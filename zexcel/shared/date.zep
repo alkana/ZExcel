@@ -90,7 +90,8 @@ class Date
      */
     public static function ExcelToPHP(var dateValue = 0, boolean adjustToTimezone = false, var timezone = null)
     {
-        var myexcelBaseDate, utcDays, returnValue, hours, mins, secs, timezoneAdjustment;
+        var returnValue, hours, mins, secs, timezoneAdjustment;
+        double myexcelBaseDate, utcDays;
         
         if (self::excelBaseDate == self::CALENDAR_WINDOWS_1900) {
             let myexcelBaseDate = 25569;
@@ -104,19 +105,25 @@ class Date
 
         // Perform conversion
         if (dateValue >= 1) {
-            let utcDays = dateValue - myexcelBaseDate;
+            let utcDays = (double) dateValue - myexcelBaseDate;
             let returnValue = round(utcDays * 86400);
+            
             if ((returnValue <= PHP_INT_MAX) && (returnValue >= -PHP_INT_MAX)) {
-                let returnValue = (int) returnValue;
+                let returnValue = intval((string) returnValue);
             }
         } else {
             let hours = round(dateValue * 24);
-            let mins = round(dateValue * 1440) - round(hours * 60);
-            let secs = round(dateValue * 86400) - round(hours * 3600) - round(mins * 60);
+            let mins =  round(dateValue * 1440) - round(hours * 60);
+            let secs =  round(dateValue * 86400) - round(hours * 3600) - round(mins * 60);
+            
             let returnValue = (int) gmmktime(hours, mins, secs);
         }
 
-        let timezoneAdjustment = (adjustToTimezone) ? \ZExcel\Shared\TimeZone::getTimezoneAdjustment(timezone, returnValue) : 0;
+        let timezoneAdjustment = 0;
+        
+        if (adjustToTimezone === true) {
+            let timezoneAdjustment = \ZExcel\Shared\TimeZone::getTimezoneAdjustment(timezone, returnValue);
+        }
 
         return returnValue + timezoneAdjustment;
     }
@@ -131,8 +138,9 @@ class Date
     public static function ExcelToPHPObject(int dateValue = 0) -> <\DateTime>
     {
         var dateTime, days, time, hours, minutes, seconds, dateObj;
-    
+        
         let dateTime = self::ExcelToPHP(dateValue);
+        
         let days = floor(dateTime / 86400);
         let time = round(((dateTime / 86400) - days) * 86400);
         let hours = round(time / 3600);
@@ -140,6 +148,7 @@ class Date
         let seconds = round(time) - (hours * 3600) - (minutes * 60);
 
         let dateObj = date_create("1-Jan-1970+" . days . " days");
+        
         dateObj->setTime(hours,minutes,seconds);
 
         return dateObj;
@@ -156,9 +165,39 @@ class Date
      *    @return    mixed        Excel date/time value
      *                            or boolean FALSE on failure
      */
-    public static function PHPToExcel(dateValue = 0, adjustToTimezone = false, timezone = null)
+    public static function PHPToExcel(var dateValue = 0, var adjustToTimezone = false, var timezone = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var saveTimeZone, retValue;
+        
+        let saveTimeZone = date_default_timezone_get();
+        
+        date_default_timezone_set("UTC");
+        
+        let retValue = false;
+        
+        if ((is_object(dateValue)) && (dateValue instanceof \DateTime)) {
+            let retValue = self::FormattedPHPToExcel(
+                dateValue->format("Y"),
+                dateValue->format("m"),
+                dateValue->format("d"),
+                dateValue->format("H"),
+                dateValue->format("i"),
+                dateValue->format("s")
+            );
+        } elseif (is_numeric(dateValue)) {
+            let retValue = self::FormattedPHPToExcel(
+                date("Y",dateValue),
+                date("m",dateValue),
+                date("d",dateValue),
+                date("H",dateValue),
+                date("i",dateValue),
+                date("s",dateValue)
+            );
+        }
+        
+        date_default_timezone_set(saveTimeZone);
+
+        return retValue;
     }
 
 
@@ -175,7 +214,8 @@ class Date
      */
     public static function FormattedPHPToExcel(var year, var month, var day, var hours = 0, var minutes = 0, var seconds = 0) -> double
     {
-        var excel1900isLeapYear, myexcelBaseDate, century, decade, excelDate, excelTime;
+        var excel1900isLeapYear, myexcelBaseDate, century, decade;
+        double excelDate, excelTime;
     
         if (self::excelBaseDate == self::CALENDAR_WINDOWS_1900) {
             //

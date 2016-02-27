@@ -101,6 +101,10 @@ class TimeZone
         let objTimezone = new \DateTimeZone(timezone);
         let transitions = objTimezone->getTransitions(timestamp,timestamp);
         
-        return (count(transitions) > 0) ? transitions[0]["offset"] : 0;
+        if (count(transitions) > 0) {
+            return transitions[0]["offset"];
+        }
+        
+        return 0;
     }
 }
