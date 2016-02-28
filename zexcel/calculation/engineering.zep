@@ -1273,7 +1273,7 @@ class Engineering
      *                                If places is negative, BIN2OCT returns the #NUM! error value.
      * @return    string
      */
-    public static function bintooct(x, places = null)
+    public static function bintooct(var x, var places = null)
     {
         var octVal;
         array out = [];
@@ -1340,9 +1340,38 @@ class Engineering
      *                                If places is zero or negative, DEC2BIN returns the #NUM! error value.
      * @return    string
      */
-    public static function dectobin(x, places = null)
+    public static function dectobin(var x, var places = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var r;
+        
+        let x      = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
+
+        if (is_bool(x)) {
+            if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_OPENOFFICE) {
+                let x = (int) x;
+            } else {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
+        }
+        
+        let x = (string) x;
+        
+        if (strlen(x) > preg_match_all("/[-0123456789.]/", x)) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        
+        let x = strval(floor(x));
+        let r = decbin(x);
+        
+        if (strlen(r) == 32) {
+            //    Two's Complement
+            let r = substr(r, -10);
+        } elseif (strlen(r) > 11) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+
+        return self::nbrConversionFormat(r, places);
     }
 
 
@@ -1374,9 +1403,36 @@ class Engineering
      *                                If places is zero or negative, DEC2HEX returns the #NUM! error value.
      * @return    string
      */
-    public static function dectohex(x, places = null)
+    public static function dectohex(var x, var places = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var r;
+        
+        let x      = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
+
+        if (is_bool(x)) {
+            if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_OPENOFFICE) {
+                let x = (int) x;
+            } else {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
+        }
+        
+        let x = (string) x;
+        
+        if (strlen(x) > preg_match_all("/[-0123456789.]/", x)) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        
+        let x = strval(floor(x));
+        let r = strtoupper(dechex(x));
+        
+        if (strlen(r) == 8) {
+            //    Two's Complement
+            let r = "FF" . r;
+        }
+
+        return self::nbrConversionFormat(r, places);
     }
 
 
@@ -1408,9 +1464,35 @@ class Engineering
      *                                If places is zero or negative, DEC2OCT returns the #NUM! error value.
      * @return    string
      */
-    public static function dectooct(x, places = null)
+    public static function dectooct(var x, var places = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var r;
+        
+        let x      = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
+
+        if (is_bool(x)) {
+            if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_OPENOFFICE) {
+                let x = (int) x;
+            } else {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
+        }
+        
+        let x = (string) x;
+        
+        if (strlen(x) > preg_match_all("/[-0123456789.]/", x)) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        
+        let x = strval(floor(x));
+        let r = decoct(x);
+        if (strlen(r) == 11) {
+            //    Two's Complement
+            let r = substr(r, -10);
+        }
+
+        return self::nbrConversionFormat(r, places);
     }
 
 
@@ -1447,7 +1529,24 @@ class Engineering
      */
     public static function hextobin(x, places = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var binVal;
+        
+        let x      = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
+
+        if (is_bool(x)) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        
+        let x = (string) x;
+        
+        if (strlen(x) > preg_match_all("/[0123456789ABCDEF]/", strtoupper(x))) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        
+        let binVal = decbin(hexdec(x));
+
+        return substr(self::nbrConversionFormat(binVal, places), -10);
     }
 
 
@@ -1470,9 +1569,21 @@ class Engineering
      *                                #NUM! error value.
      * @return    string
      */
-    public static function hewtodec(x)
+    public static function hexToDec(var x)
     {
-        throw new \Exception("Not implemented yet!");
+        let x = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+
+        if (is_bool(x)) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        
+        let x = (string) x;
+        
+        if (strlen(x) > preg_match_all("/[0123456789ABCDEF]/", strtoupper(x))) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        
+        return hexdec(x);
     }
 
 
@@ -1508,9 +1619,21 @@ class Engineering
      *                                    If places is negative, HEX2OCT returns the #NUM! error value.
      * @return    string
      */
-    public static function hextooct(x, places = null)
+    public static function hextooct(var x, var places = null)
     {
-        throw new \Exception("Not implemented yet!");
+        let x = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+
+        if (is_bool(x)) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        
+        let x = (string) x;
+        
+        if (strlen(x) > preg_match_all("/[0123456789ABCDEF]/", strtoupper(x))) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        
+        return hexdec(x);
     }    //    function HEXTOOCT()
 
 
@@ -1548,9 +1671,26 @@ class Engineering
      *                                    value.
      * @return    string
      */
-    public static function octtobin(x, places = null)
+    public static function octtobin(var x, var places = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var octVal;
+        
+        let x      = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
+
+        if (is_bool(x)) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        
+        let x = (string) x;
+        
+        if (strlen(x) > preg_match_all("/[0123456789ABCDEF]/", strtoupper(x))) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        
+        let octVal = decoct(hexdec(x));
+
+        return self::nbrConversionFormat(octVal, places);
     }
 
 
@@ -1575,7 +1715,24 @@ class Engineering
      */
     public static function octtodec(x)
     {
-        throw new \Exception("Not implemented yet!");
+        var r;
+        
+        let x      = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
+
+        if (is_bool(x)) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        
+        let x = (string) x;
+        
+        if (preg_match_all("/[01234567]/", x) != strlen(x)) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        
+        let r = decbin(octdec(x));
+
+        return self::nbrConversionFormat(r, places);
     }
 
 
@@ -1608,9 +1765,26 @@ class Engineering
      *                                    If places is negative, OCT2HEX returns the #NUM! error value.
      * @return    string
      */
-    public static function octtphex(x, places = null)
+    public static function octToHex(var x, var places = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var hexVal;
+        
+        let x      = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
+
+        if (is_bool(x)) {
+            return \ZExcel\Calculation\Functions::VaLUE();
+        }
+        
+        let x = (string) x;
+        
+        if (preg_match_all("/[01234567]/", x) != strlen(x)) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        
+        let hexVal = strtoupper(dechex(octdec(x)));
+
+        return self::nbrConversionFormat(hexVal, places);
     }
 
 
@@ -1973,7 +2147,7 @@ class Engineering
             return log10(parsedComplex["real"]);
         }
 
-        return call_user_func("self::IMPRODUCT", log10(self::EULER), self::imln(complexNumber));
+        return call_user_func(["\\ZExcel\\Calculation\\Engineering", "IMPRODUCT"], log10(self::EULER), self::imln(complexNumber));
     }
 
 
@@ -2002,7 +2176,7 @@ class Engineering
             return log(parsedComplex["real"], 2);
         }
 
-        return call_user_func("self::IMPRODUCT", log(self::EULER, 2), self::imln(complexNumber));
+        return call_user_func(["\\ZExcel\\Calculation\\Engineering", "IMPRODUCT"], log(self::EULER, 2), self::imln(complexNumber));
     }
 
 
@@ -2314,7 +2488,7 @@ class Engineering
             if (sum == 0.0) {
                 break;
             }
-        } while (abs(term / sum) > \ZEXcel\Calculation\Functions::PRECISION);
+        } while (abs(term * (1 / sum)) > \ZEXcel\Calculation\Functions::PRECISION);
         
         return (double) self::twoSqrtPi * sum;
     }
