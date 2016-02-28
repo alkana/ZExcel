@@ -746,25 +746,28 @@ class Engineering
 
         //    Split the input into its Real and Imaginary components
         let leadingSign = 0;
-        if (strlen(workString) > 0) {
-            let leadingSign = ((substr(workString, 0, 1) == "+") || (substr(workString, 0, 1) == "-")) ? 1 : 0;
+        
+        if (strlen(workString) > 0 && ((substr(workString, 0, 1) == "+") || (substr(workString, 0, 1) == "-"))) {
+            let leadingSign = 1;
         }
+        
         let power = "";
-        let realNumber = strtok(workString, "+-");
+        let realNumber = call_user_func("strtok", workString, "+-");
+        
         if (strtoupper(substr(realNumber, -1)) == "E") {
-            let power = strtok("+-");
+            let power = call_user_func("strtok", "+-");
             let leadingSign = leadingSign + 1;
         }
 
         let realNumber = substr(workString, 0, strlen(realNumber) + strlen(power) + leadingSign);
-
+        
         if (suffix != "") {
             let imaginary = substr(workString, strlen(realNumber));
 
-            if ((imaginary == "") && ((realNumber == "") || (realNumber == "+") || (realNumber == "-"))) {
+            if (empty(imaginary) && (empty(realNumber) || (realNumber == "+") || (realNumber == "-"))) {
                 let imaginary = realNumber . "1";
                 let realNumber = "0";
-            } elseif (imaginary == "") {
+            } elseif (empty(imaginary)) {
                 let imaginary = realNumber;
                 let realNumber = "0";
             } elseif ((imaginary == "+") || (imaginary == "-")) {
@@ -786,20 +789,26 @@ class Engineering
      * @param    string        complexNumber    The complex number to clean
      * @return    string        The "cleaned" complex number
      */
-    private static function cleanComplex(complexNumber)
+    private static function cleanComplex(string complexNumber)
     {
-        if (substr(complexNumber, 0, 1) == "+") {
+        var firstLetter = substr(complexNumber, 0, 1);
+        
+        if (firstLetter == "+") {
             let complexNumber = substr(complexNumber, 1);
         }
-        if (substr(complexNumber, 0, 1) == "0") {
+        
+        if (firstLetter == "\0") {
             let complexNumber = substr(complexNumber, 1);
         }
-        if (substr(complexNumber, 0, 1) == ".") {
-            let complexNumber = "0".complexNumber;
+        
+        if (firstLetter == ".") {
+            let complexNumber = "0" . complexNumber;
         }
-        if (substr(complexNumber, 0, 1) == "+") {
+        
+        if (firstLetter == "+") {
             let complexNumber = substr(complexNumber, 1);
         }
+        
         return complexNumber;
     }
 
@@ -1621,7 +1630,10 @@ class Engineering
      */
     public static function hextooct(var x, var places = null)
     {
-        let x = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        var octVal;
+        
+        let x      = \ZExcel\Calculation\Functions::flattenSingleValue(x);
+        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
 
         if (is_bool(x)) {
             return \ZExcel\Calculation\Functions::VaLUE();
@@ -1633,7 +1645,9 @@ class Engineering
             return \ZExcel\Calculation\Functions::NaN();
         }
         
-        return hexdec(x);
+        let octVal = decoct(hexdec(x));
+
+        return self::nbrConversionFormat(octVal, places);
     }    //    function HEXTOOCT()
 
 
@@ -1673,7 +1687,7 @@ class Engineering
      */
     public static function octtobin(var x, var places = null)
     {
-        var octVal;
+        var r;
         
         let x      = \ZExcel\Calculation\Functions::flattenSingleValue(x);
         let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
@@ -1684,13 +1698,13 @@ class Engineering
         
         let x = (string) x;
         
-        if (strlen(x) > preg_match_all("/[0123456789ABCDEF]/", strtoupper(x))) {
+        if (preg_match_all("/[01234567]/", x) != strlen(x)) {
             return \ZExcel\Calculation\Functions::NaN();
         }
         
-        let octVal = decoct(hexdec(x));
+        let r = decbin(octdec(x));
 
-        return self::nbrConversionFormat(octVal, places);
+        return self::nbrConversionFormat(r, places);
     }
 
 
@@ -1715,10 +1729,7 @@ class Engineering
      */
     public static function octtodec(x)
     {
-        var r;
-        
-        let x      = \ZExcel\Calculation\Functions::flattenSingleValue(x);
-        let places = \ZExcel\Calculation\Functions::flattenSingleValue(places);
+        let x = \ZExcel\Calculation\Functions::flattenSingleValue(x);
 
         if (is_bool(x)) {
             return \ZExcel\Calculation\Functions::VaLUE();
@@ -1730,9 +1741,7 @@ class Engineering
             return \ZExcel\Calculation\Functions::NaN();
         }
         
-        let r = decbin(octdec(x));
-
-        return self::nbrConversionFormat(r, places);
+        return octdec(x);
     }
 
 
@@ -1810,8 +1819,7 @@ class Engineering
         let imaginary  = (is_null(imaginary))  ? 0.0 : \ZExcel\Calculation\Functions::flattenSingleValue(imaginary);
         let suffix     = (is_null(suffix))     ? "i" : \ZExcel\Calculation\Functions::flattenSingleValue(suffix);
 
-        if (((is_numeric(realNumber)) && (is_numeric(imaginary))) &&
-            ((suffix == "i") || (suffix == "j") || (suffix == ""))) {
+        if (((is_numeric(realNumber)) && (is_numeric(imaginary))) && ((suffix == "i") || (suffix == "j") || (suffix == ""))) {
             let realNumber   = (float) realNumber;
             let imaginary    = (float) imaginary;
 
@@ -1820,27 +1828,28 @@ class Engineering
             }
             
             if (realNumber == 0.0) {
-                if (imaginary == 0.0) {
+                if ((imaginary) == 0.0) {
                     return "0";
-                } elseif (imaginary == 1.0) {
-                    return suffix;
-                } elseif (imaginary == -1.0) {
-                    return "-" . suffix;
+                } elseif ((imaginary) == 1.0) {
+                    return (suffix);
+                } elseif ((imaginary) == -1.0) {
+                    return ("-" . suffix);
                 }
-                return (string) imaginary . suffix;
+                
+                return (strval(imaginary) . suffix);
             } elseif (imaginary == 0.0) {
-                return (string) realNumber;
+                return (strval(realNumber));
             } elseif (imaginary == 1.0) {
-                return (string) realNumber . "+" . suffix;
+                return (strval(realNumber) . "+" . suffix);
             } elseif (imaginary == -1.0) {
-                return (string) realNumber . "-" . suffix;
+                return (strval(realNumber) . "-" . suffix);
             }
             
-            if (imaginary > 0) {
-                let imaginary = "+" . (string) imaginary;
+            if (imaginary > 0.0) {
+                let imaginary = "+" . strval(imaginary);
             }
             
-            return (string) realNumber . (string) imaginary . suffix;
+            return strval(realNumber) . strval(imaginary) . suffix;
         }
 
         return \ZExcel\Calculation\Functions::VaLUE();
@@ -1972,7 +1981,7 @@ class Engineering
      */
     public static function imconjugate(var complexNumber)
     {
-        var parsedComplex;
+        var parsedComplex, tmp;
         
         let complexNumber = \ZExcel\Calculation\Functions::flattenSingleValue(complexNumber);
 
@@ -1981,13 +1990,15 @@ class Engineering
         if (parsedComplex["imaginary"] == 0.0) {
             return parsedComplex["real"];
         } else {
-            return self::cleanComplex(
-                self::CoMPLEX(
-                    parsedComplex["real"],
-                    0 - parsedComplex["imaginary"],
-                    parsedComplex["suffix"]
-                )
+            let parsedComplex["imaginary"] = 0 - (double) parsedComplex["imaginary"];
+            
+            let tmp = self::CoMPLEX(
+                parsedComplex["real"],
+                parsedComplex["imaginary"],
+                parsedComplex["suffix"]
             );
+            
+            return self::cleanComplex(tmp);
         }
     }
 
@@ -2363,8 +2374,8 @@ class Engineering
                 return \ZExcel\Calculation\Functions::VaLUE();
             }
 
-            let returnValue["real"] += parsedComplex["real"];
-            let returnValue["imaginary"] += parsedComplex["imaginary"];
+            let returnValue["real"] = returnValue["real"] + parsedComplex["real"];
+            let returnValue["imaginary"] = returnValue["imaginary"] + parsedComplex["imaginary"];
         }
 
         if (returnValue["imaginary"] == 0.0) {
@@ -2476,7 +2487,7 @@ class Engineering
         let term = x;
         let xsqr = (x * x);
         let j = 1;
-        
+
         do {
             let term = term * (xsqr / j);
             let sum = sum - (term / (2 * j + 1));
@@ -2521,6 +2532,7 @@ class Engineering
             if (is_null(upper)) {
                 return self::erfVal(lower);
             }
+            
             if (is_numeric(upper)) {
                 return self::erfVal(upper) - self::erfVal(lower);
             }
@@ -2529,7 +2541,7 @@ class Engineering
         return \ZExcel\Calculation\Functions::VaLUE();
     }
 
-    private static function erfcVal(x) -> double
+    private static function erfcVal(double x) -> double
     {
         double a, n, b, c, d, q1, q2, t;
         
@@ -2546,7 +2558,7 @@ class Engineering
         let b = x;
         let c = x;
         let d = (x * x) + 0.5;
-        let q1 = b / d;
+        let q1 = b * (1 / d);
         let q2 = q1;
         let t = 0;
         
@@ -2557,10 +2569,12 @@ class Engineering
             let t = c * n + d * x;
             let c = d;
             let d = t;
-            let n += 0.5;
+            let n = n + 0.5;
             let q1 = q2;
-            let q2 = b / d;
-        } while ((abs(q1 - q2) / q2) > \ZEXcel\Calculation\Functions::PRECISION);
+            let q2 = b * (1 / d);
+            
+            let t = ((double) abs(q1 - q2) / q2);
+        } while (t > \ZEXcel\Calculation\Functions::PRECISION);
         
         return (double) self::oneSqrtPi * exp(-x * x) * q2;
     }

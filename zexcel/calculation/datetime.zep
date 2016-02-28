@@ -493,7 +493,7 @@ class DateTime
      */
     public static function datevalue(var dateValue = 1)
     {
-        var t1, t, k, PHPDateArray, testVal, excelDateValue;
+        var t1, t, k, PHPDateArray, testVal1, testVal2, testVal3, excelDateValue;
         boolean yearFound = false;
     
         let dateValue = trim(\ZExcel\Calculation\Functions::flattenSingleValue(dateValue), "\"");
@@ -535,19 +535,28 @@ class DateTime
         let PHPDateArray = date_parse(dateValue);
         
         if ((PHPDateArray === false) || (PHPDateArray["error_count"] > 0)) {
-            let testVal = explode(" ", dateValue);
+            let testVal1 = call_user_func("strtok" , dateValue, "- ");
             
-            if (count(testVal) < 2) {
+            if (testVal1 !== false) {
+                let testVal2 = call_user_func("strtok", "- ");
+                
+                if (testVal2 !== false) {
+                    let testVal3 = call_user_func("strtok", "- ");
+                    
+                    if (testVal3 === false) {
+                        let testVal3 = strftime("%Y");
+                    }
+                } else {
+                    return \ZExcel\Calculation\Functions::VaLUE();
+                }
+            } else {
                 return \ZExcel\Calculation\Functions::VaLUE();
-            } elseif (!isset(testVal[2])) {
-                let testVal[2] = strftime("%Y");
             }
             
-            let PHPDateArray = date_parse(implode("-", testVal));
+            let PHPDateArray = date_parse(testVal1 . "-" . testVal2 . "-" . testVal3);
             
             if ((PHPDateArray === false) || (PHPDateArray["error_count"] > 0)) {
-                
-                let PHPDateArray = date_parse(testVal[1] . "-" . testVal[0] . "-" . testVal[2]);
+                let PHPDateArray = date_parse(testVal2 . "-" . testVal1 . "-" . testVal3);
                 
                 if ((PHPDateArray === false) || (PHPDateArray["error_count"] > 0)) {
                     return \ZExcel\Calculation\Functions::VaLUE();
@@ -1459,7 +1468,7 @@ class DateTime
 
         if (!is_numeric(timeValue)) {
             if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_GNUMERIC) {
-                let testVal = strtok(timeValue, "/-: ");
+                let testVal = call_user_func("strtok", timeValue, "/-: ");
                 if (strlen(testVal) < strlen(timeValue)) {
                     return \ZExcel\Calculation\Functions::VaLUE();
                 }
@@ -1505,7 +1514,7 @@ class DateTime
         
         if (!is_numeric(timeValue)) {
             if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_GNUMERIC) {
-                let testVal = strtok(timeValue, "/-: ");
+                let testVal = call_user_func("strtok", timeValue, "/-: ");
                 if (strlen(testVal) < strlen(timeValue)) {
                     return \ZExcel\Calculation\Functions::VaLUE();
                 }
@@ -1552,7 +1561,7 @@ class DateTime
 
         if (!is_numeric(timeValue)) {
             if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_GNUMERIC) {
-                let testVal = strtok(timeValue, "/-: ");
+                let testVal = call_user_func("strtok", timeValue, "/-: ");
                 if (strlen(testVal) < strlen(timeValue)) {
                     return \ZExcel\Calculation\Functions::VaLUE();
                 }
