@@ -2,6 +2,13 @@ namespace ZExcel;
 
 class Calculation
 {
+    //    @FIXME conditional constants (@see PHPExcel_Calculation class)
+    //    Cell reference (cell or range of cells, with or without a sheet reference)
+    const CALCULATION_REGEXP_CELLREF = "((([^\s,!&%^\/\*\+<>=-]*)|(\'[^\']*\')|(\"[^\"]*\"))!)?\$?([a-z]{1,3})\$?(\d{1,7})";
+    //    Named Range of cells
+    const CALCULATION_REGEXP_NAMEDRANGE = "((([^\s,!&%^\/\*\+<>=-]*)|(\'[^\']*\')|(\"[^\"]*\"))!)?([_A-Z][_A-Z0-9\.]*)";
+            
+            
     //    Numeric operand
     const CALCULATION_REGEXP_NUMBER        = "[-+]?\d*\.?\d+(e[-+]?\d+)?";
     //    String operand
@@ -57,7 +64,7 @@ class Calculation
      * @access    private
      * @var array
      */
-    private calculationCache = [];
+    private _calculationCache = [];
 
 
     /**
@@ -132,7 +139,7 @@ class Calculation
      * @var string
      *
      */
-    private static localeLanguage = "en_us";                    //    US English    (default locale)
+    private static _localeLanguage = "en_us";                    //    US English    (default locale)
     
     /**
      * Locale-specific argument separator for function arguments
@@ -2033,6 +2040,10 @@ class Calculation
         }
     }
     
+    private static function _loadLocales() {
+        throw new \Exception("Not implemented yet!");
+    }
+    
     /**
      * Get an instance of this class
      *
@@ -2055,6 +2066,21 @@ class Calculation
         }
         
         return self::instance;
+    }
+    
+    /**
+     * Unset an instance of this class
+     *
+     * @access    public
+     * @param   PHPExcel workbook  Injected workbook identifying the instance to unset
+     */
+    public static function unsetInstance(<\ZExcel\ZExcel> workbook = null)
+    {
+        if (workbook !== null) {
+            if (isset(self::workbookSets[workbook->getID()])) {
+                unset(self::workbookSets[workbook->getID()]);
+            }
+        }
     }
 
     /**
@@ -2193,29 +2219,140 @@ class Calculation
      */
     public function clearCalculationCache()
     {
-        let this->calculationCache = [];
+        let this->_calculationCache = [];
+    }
+
+    /**
+     * Clear calculation cache for a specified worksheet
+     *
+     * @param string $worksheetName
+     */
+    public function clearCalculationCacheForWorksheet(var worksheetName)
+    {
+        if (isset(this->_calculationCache[worksheetName])) {
+            unset(this->_calculationCache[worksheetName]);
+        }
     }
     
-    /**
-     * Unset an instance of this class
-     *
-     * @access    public
-     * @param   PHPExcel workbook  Injected workbook identifying the instance to unset
-     */
-    public static function unsetInstance(<\ZExcel\ZExcel> workbook = null)
+    public function renameCalculationCacheForWorksheet(fromWorksheetName, toWorksheetName)
     {
-        if (workbook !== null) {
-            if (isset(self::workbookSets[workbook->getID()])) {
-                unset(self::workbookSets[workbook->getID()]);
+        if (isset(this->_calculationCache[fromWorksheetName])) {
+            let this->_calculationCache[toWorksheetName] = this->_calculationCache[fromWorksheetName];
+            unset(this->_calculationCache[fromWorksheetName]);
+        }
+    }
+
+    /**
+     * Get the currently defined locale code
+     *
+     * @return string
+     */
+    public function getLocale()
+    {
+        return self::_localeLanguage;
+    }
+
+    /**
+     * Set the locale code
+     *
+     * @param string $locale  The locale to use for formula translation
+     * @return boolean
+     */
+    public function setLocale($locale = "en_us")
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    public static function _translateSeparator(fromSeparator, toSeparator, formula, inBraces)
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+
+    private static function _translateFormula(from, to, formula, fromSeparator, toSeparator)
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    public function _translateFormulaToLocale(formula)
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    public function _translateFormulaToEnglish(formula)
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    public static function _localeFunc(functionn)
+    {
+        var functionName, brace;
+    
+        if (self::_localeLanguage !== "en_us") {
+            let functionName = trim(functionn, "(");
+            if (isset(self::localeFunctions[functionName])) {
+                let brace = (functionName != functionn);
+                let functionn = self::localeFunctions[functionName];
+                
+                if (brace) {
+                    let functionn = functionn . "(";
+                }
             }
         }
+        return functionn;
     }
-    
-    public function renameCalculationCacheForWorksheet(fromWorksheetName, toWorksheetName) {
-        if (isset(this->calculationCache[fromWorksheetName])) {
-            let this->calculationCache[toWorksheetName] = this->calculationCache[fromWorksheetName];
-            unset(this->calculationCache[fromWorksheetName]);
+    /**
+     * Wrap string values in quotes
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    public static function _wrapResult(value)
+    {
+        if (is_string(value)) {
+            //    Error values cannot be "wrapped"
+            if (preg_match("/^" . self::CALCULATION_REGEXP_ERROR . "/i", value)) {
+                //    Return Excel errors "as is"
+                return value;
+            }
+            //    Return strings wrapped in quotes
+            return "\"" . value . "\"";
+        //    Convert numeric errors to NaN error
+        } elseif ((is_float(value)) && ((is_nan(value)) || (is_infinite(value)))) {
+            return \ZExcel\Calculation\Functions::NaN();
         }
+
+        return value;
+    }
+    /**
+     * Remove quotes used as a wrapper to identify string values
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    public static function _unwrapResult(value)
+    {
+        if (is_string(value)) {
+            if ((isset(value[0])) && (value[0] == '"') && (substr(value,-1) == '"')) {
+                return substr(value,1,-1);
+            }
+        //    Convert numeric errors to NaN error
+        } elseif((is_float(value)) && ((is_nan(value)) || (is_infinite(value)))) {
+            return \ZExcel\Calculation\Functions::NaN();
+        }
+        return value;
+    }
+    /**
+     * Calculate cell value (using formula from a cell ID)
+     * Retained for backward compatibility
+     *
+     * @access    public
+     * @param    PHPExcel_Cell    $pCell    Cell to calculate
+     * @return    mixed
+     * @throws    PHPExcel_Calculation_Exception
+     */
+    public function calculate(<\ZExcel\Cell> pCell = null)
+    {
+        throw new \Exception("Not implemented yet!");
     }
     
     public function calculateCellValue(<\ZExcel\Cell> pCell = null, resetLog = null)
@@ -2244,7 +2381,7 @@ class Calculation
             "cell": pCell->getCoordinate()
         ];
         try {
-            let result = self::unwrapResult(this->_calculateFormulaValue(pCell->getValue(), pCell->getCoordinate(), pCell));
+            let result = self::_unwrapResult(this->_calculateFormulaValue(pCell->getValue(), pCell->getCoordinate(), pCell));
             let cellAddress = array_pop(this->cellStack);
             this->workbook->getSheetByName(cellAddress["sheet"])->getCell(cellAddress["cell"]);
         } catch \ZExcel\Exception, e {
@@ -2291,18 +2428,52 @@ class Calculation
         
         return result;
     }
-    
-    public static function unwrapResult(value)
+    /**
+     * Validate and parse a formula string
+     *
+     * @param    string        $formula        Formula to parse
+     * @return    array
+     * @throws    PHPExcel_Calculation_Exception
+     */
+    public function parseFormula(formula)
     {
-        if (is_string(value)) {
-            if ((isset(value[0])) && (value[0] == '"') && (substr(value,-1) == '"')) {
-                return substr(value,1,-1);
-            }
-        //    Convert numeric errors to NaN error
-        } elseif((is_float(value)) && ((is_nan(value)) || (is_infinite(value)))) {
-            return \ZExcel\Calculation\Functions::NaN();
+        throw new \Exception("Not implemented yet!");
+    }
+    /**
+     * Calculate the value of a formula
+     *
+     * @param    string            $formula    Formula to parse
+     * @param    string            $cellID        Address of the cell to calculate
+     * @param    PHPExcel_Cell    $pCell        Cell to calculate
+     * @return    mixed
+     * @throws    PHPExcel_Calculation_Exception
+     */
+    public function calculateFormula(formula, cellID = null, <\ZExcel\Cell> pCell = null)
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    public function getValueFromCache(cellReference, cellValue)
+    {
+        var returnValue;
+        
+        // Is calculation cacheing enabled?
+        // Is the value present in calculation cache?
+        this->debugLog->writeDebugLog("Testing cache value for cell ", cellReference);
+        if ((this->calculationCacheEnabled) && (isset(this->_calculationCache[cellReference]))) {
+            this->debugLog->writeDebugLog("Retrieving value for cell ", cellReference, " from cache");
+            // Return the cached result
+            return (returnValue === false) ? true : this->_calculationCache[cellReference];
         }
-        return value;
+        
+        return (returnValue === false) ? false : null;
+    }
+    
+    public function saveValueToCache(cellReference, cellValue)
+    {
+        if (this->calculationCacheEnabled) {
+            let this->_calculationCache[cellReference] = cellValue;
+        }
     }
     
     public function _calculateFormulaValue(string formula, var cellID = null, <\ZExcel\Cell> pCell = null)
@@ -2314,13 +2485,13 @@ class Calculation
         let formula = trim(formula);
         
         if (substr(formula, 0, 1) != "=") {
-            return self::wrapResult(formula);
+            return self::_wrapResult(formula);
         }
         
         let formula = ltrim(substr(formula, 1));
         
         if (strlen(formula) === 0) {
-            return self::wrapResult(formula);
+            return self::_wrapResult(formula);
         }
 
         let pCellParent = (pCell !== null) ? pCell->getWorksheet() : null;
@@ -2334,7 +2505,7 @@ class Calculation
         if ((substr(wsTitle, 0, 1) !== "\x00") && (this->cyclicReferenceStack->onStack(wsCellReference))) {
             if (this->cyclicFormulaCount <= 0) {
                 let this->cyclicFormulaCell = "";
-                return this->raiseFormulaError("Cyclic Reference in Formula");
+                return this->_raiseFormulaError("Cyclic Reference in Formula");
             } elseif (this->cyclicFormulaCell === wsCellReference) {
                 let this->cyclicFormulaCounter = this->cyclicFormulaCounter + 1;
                 if (this->cyclicFormulaCounter >= this->cyclicFormulaCount) {
@@ -2363,105 +2534,70 @@ class Calculation
         return cellValue;
     }
     
-    public static function wrapResult(var value)
+    /**
+     * Ensure that paired matrix operands are both matrices and of the same size
+     *
+     * @param    mixed        &$operand1    First matrix operand
+     * @param    mixed        &$operand2    Second matrix operand
+     * @param    integer        $resize        Flag indicating whether the matrices should be resized to match
+     *                                        and (if so), whether the smaller dimension should grow or the
+     *                                        larger should shrink.
+     *                                            0 = no resize
+     *                                            1 = shrink to fit
+     *                                            2 = extend to fit
+     */
+    private static function _checkMatrixOperands(operand1, operand2, resize = 1)
     {
-        if (is_string(value)) {
-            //    Error values cannot be "wrapped"
-            if (preg_match("/^" . self::CALCULATION_REGEXP_ERROR . "/i", value)) {
-                //    Return Excel errors "as is"
-                return value;
-            }
-            //    Return strings wrapped in quotes
-            return "\"" . value . "\"";
-        //    Convert numeric errors to NaN error
-        } elseif ((is_float(value)) && ((is_nan(value)) || (is_infinite(value)))) {
-            return \ZExcel\Calculation\Functions::NaN();
-        }
-
-        return value;
-    }
-    
-    public function getValueFromCache(cellReference, cellValue = null, boolean returnValue = false)
-    {
-        // Is calculation cacheing enabled?
-        // Is the value present in calculation cache?
-        this->debugLog->writeDebugLog("Testing cache value for cell ", cellReference);
-        if ((this->calculationCacheEnabled) && (isset(this->calculationCache[cellReference]))) {
-            this->debugLog->writeDebugLog("Retrieving value for cell ", cellReference, " from cache");
-            // Return the cached result
-            return (returnValue === false) ? true : this->calculationCache[cellReference];
-        }
-        
-        return (returnValue === false) ? false : null;
-    }
-    
-    public function saveValueToCache(cellReference, cellValue)
-    {
-        if (this->calculationCacheEnabled) {
-            let this->calculationCache[cellReference] = cellValue;
-        }
-    }
-    
-    public function extractCellRange(pRange = "A1", <\ZExcel\Worksheet> pSheet = null, resetLog = true)
-    {
-        
         throw new \Exception("Not implemented yet!");
     }
-    
-    public function clearCalculationCacheForWorksheet(string worksheetName)
-    {
-        if (isset(this->calculationCache[worksheetName])) {
-            unset(this->calculationCache[worksheetName]);
-        }
-    }
-    
-    public static function _localeFunc(functon)
-    {
-        var functionName, brace;
-    
-        if (self::localeLanguage !== "en_us") {
-            let functionName = trim(functon, "(");
-            if (isset(self::localeFunctions[functionName])) {
-                let brace = (functionName != functon);
-                let functon = self::localeFunctions[functionName];
-                
-                if (brace) {
-                    let functon = functon . "(";
-                }
-            }
-        }
-        return functon;
-    }
-    
-    protected function raiseFormulaError(string errorMessage)
-    {
-        let this->formulaError = errorMessage;
-        
-        this->cyclicReferenceStack->clear();
-        
-        if (!this->suppressFormulaErrors) {
-            throw new \ZExcel\Calculation\Exception(errorMessage);
-        }
-        
-        trigger_error(errorMessage, E_USER_ERROR);
-    }
-    
-    public function extractNamedRange(var pRange = "A1", <\ZExcel\Worksheet> pSheet = null, boolean resetLog = true)
+    /**
+     * Read the dimensions of a matrix, and re-index it with straight numeric keys starting from row 0, column 0
+     *
+     * @param    mixed        &$matrix        matrix operand
+     * @return    array        An array comprising the number of rows, and number of columns
+     */
+    public static function _getMatrixDimensions(matrix)
     {
         throw new \Exception("Not implemented yet!");
     }
     
-    private function processTokenStack(tokens, cellID = null, <\ZExcel\Cell> pCell = null)
+    /**
+     * Ensure that paired matrix operands are both matrices of the same size
+     *
+     * @param    mixed        &$matrix1        First matrix operand
+     * @param    mixed        &$matrix2        Second matrix operand
+     * @param    integer        $matrix1Rows    Row size of first matrix operand
+     * @param    integer        $matrix1Columns    Column size of first matrix operand
+     * @param    integer        $matrix2Rows    Row size of second matrix operand
+     * @param    integer        $matrix2Columns    Column size of second matrix operand
+     */
+    private static function _resizeMatricesShrink(matrix1, matrix2, matrix1Rows, matrix1Columns, matrix2Rows, matrix2Columns)
     {
         throw new \Exception("Not implemented yet!");
     }
     
-    private function parseFormula(formula, <\ZExcel\Cell> pCell = null)
+    /**
+     * Ensure that paired matrix operands are both matrices of the same size
+     *
+     * @param    mixed        &$matrix1    First matrix operand
+     * @param    mixed        &$matrix2    Second matrix operand
+     * @param    integer        $matrix1Rows    Row size of first matrix operand
+     * @param    integer        $matrix1Columns    Column size of first matrix operand
+     * @param    integer        $matrix2Rows    Row size of second matrix operand
+     * @param    integer        $matrix2Columns    Column size of second matrix operand
+     */
+    private static function _resizeMatricesExtend(matrix1, matrix2, matrix1Rows, matrix1Columns, matrix2Rows, matrix2Columns)
     {
         throw new \Exception("Not implemented yet!");
     }
     
-    private function showValue(value)
+    /**
+     * Format details of an operand for display in the log (based on operand type)
+     *
+     * @param    mixed        $value    First matrix operand
+     * @return    mixed
+     */
+    private function _showValue(value)
     {
         var row, testArray, returnMatrix, pad, rpad;
         
@@ -2480,7 +2616,7 @@ class Calculation
                         let returnMatrix[] = implode(pad,array_map([this, "showValue"],row));
                         let rpad = "; ";
                     } else {
-                        let returnMatrix[] = this->showValue(row);
+                        let returnMatrix[] = this->_showValue(row);
                     }
                 }
                 return "{ " . implode(rpad,returnMatrix) . " }";
@@ -2494,7 +2630,7 @@ class Calculation
         return \ZExcel\Calculation\Functions::flattenSingleValue(value);
     }
     
-    private function showTypeDetails(var value) -> string
+    private function _showTypeDetails(var value) -> string
     {
         var testArray, typeString;
         string returnValue = null;
@@ -2525,13 +2661,13 @@ class Calculation
                 }
             }
             
-            let returnValue = typeString . " with a value of " . this->showValue(value);
+            let returnValue = typeString . " with a value of " . this->_showValue(value);
         }
         
         return returnValue;
     }
 
-    private function convertMatrixReferences(var formula)
+    private function _convertMatrixReferences(var formula)
     {
         var temp, i, key, value, openCount, closeCount;
         
@@ -2567,24 +2703,23 @@ class Calculation
             //    Trap for mismatched braces and trigger an appropriate error
             if (openCount < closeCount) {
                 if (openCount > 0) {
-                    return this->raiseFormulaError("Formula Error: Mismatched matrix braces '}'");
+                    return this->_raiseFormulaError("Formula Error: Mismatched matrix braces '}'");
                 } else {
-                    return this->raiseFormulaError("Formula Error: Unexpected '}' encountered");
+                    return this->_raiseFormulaError("Formula Error: Unexpected '}' encountered");
                 }
             } elseif (openCount > closeCount) {
                 if (closeCount > 0) {
-                    return this->raiseFormulaError("Formula Error: Mismatched matrix braces '{'");
+                    return this->_raiseFormulaError("Formula Error: Mismatched matrix braces '{'");
                 } else {
-                    return this->raiseFormulaError("Formula Error: Unexpected '{' encountered");
+                    return this->_raiseFormulaError("Formula Error: Unexpected '{' encountered");
                 }
             }
         }
 
         return formula;
     }
-
-
-    private static function mkMatrix()
+    
+    private static function _mkMatrix()
     {
         return func_get_args();
     }
@@ -2641,7 +2776,7 @@ class Calculation
             } elseif (opCharacter == "+" && !expectingOperator) {            //    Positive (unary plus rather than binary operator plus) can be discarded?
                 let index = index + 1;                                                    //    Drop the redundant plus symbol
             } elseif (((opCharacter == "~") || (opCharacter == "|")) && (!isOperandOrFunction)) {    //    We have to explicitly deny a tilde or pipe, because they are legal
-                return this->raiseFormulaError("Formula Error: Illegal character "~"");                //        on the stack but not in the input expression
+                return this->_raiseFormulaError("Formula Error: Illegal character "~"");                //        on the stack but not in the input expression
 
             } elseif ((isset(self::operators[opCharacter]) or isOperandOrFunction) && expectingOperator) {    //    Are we putting an operator on the stack?
                 while (stack->count() > 0 &&
@@ -2658,7 +2793,7 @@ class Calculation
                 let expectingOperand = false;
                 while ((o2 = stack->pop()) && o2["value"] != "(") {        //    Pop off the stack back to the last (
                     if (o2 === null) {
-                        return this->raiseFormulaError("Formula Error: Unexpected closing brace ")"");
+                        return this->_raiseFormulaError("Formula Error: Unexpected closing brace ")"");
                     } else {
                         let output[] = o2;
                     }
@@ -2679,7 +2814,7 @@ class Calculation
                         let expectedArgumentCount = self::PHPExcelFunctions[functionName]["argumentCount"];
                         let functionCall = self::PHPExcelFunctions[functionName]["functionCall"];
                     } else {    // did we somehow push a non-function on the stack? this should never happen
-                        return this->raiseFormulaError("Formula Error: Internal error, non-function on stack");
+                        return this->_raiseFormulaError("Formula Error: Internal error, non-function on stack");
                     }
                     //    Check the argument count
                     let argumentCountError = false;
@@ -2719,7 +2854,7 @@ class Calculation
                         }
                     }
                     if (argumentCountError) {
-                        return this->raiseFormulaError("Formula Error: Wrong number of arguments for " . functionName . "() function: " . argumentCount . " given, ".expectedArgumentCountString." expected");
+                        return this->_raiseFormulaError("Formula Error: Wrong number of arguments for " . functionName . "() function: " . argumentCount . " given, ".expectedArgumentCountString." expected");
                     }
                 }
                 let index = index + 1;
@@ -2727,7 +2862,7 @@ class Calculation
             } elseif (opCharacter == ",") {            //    Is this the separator for function arguments?
                 while ((o2 = stack->pop()) && o2["value"] != "(") {        //    Pop off the stack back to the last (
                     if (o2 === null) {
-                        return this->raiseFormulaError("Formula Error: Unexpected ,");
+                        return this->_raiseFormulaError("Formula Error: Unexpected ,");
                     } else {
                         let output[] = o2;    // pop the argument expression stuff and push onto the output
                     }
@@ -2740,7 +2875,7 @@ class Calculation
                 // make sure there was a function
                 let d = stack->last(2);
                 if (!preg_match("/^".self::CALCULATION_REGEXP_FUNCTION."/i", d["value"], matches)) {
-                    return this->raiseFormulaError("Formula Error: Unexpected ,");
+                    return this->_raiseFormulaError("Formula Error: Unexpected ,");
                 }
                 let d = stack->pop();
                 stack->push(d["type"], ++d["value"], d["reference"]);    // increment the argument count
@@ -2792,7 +2927,7 @@ class Calculation
                                 let val = startMatches[2] . "!" . val;
                             }
                         } else {
-                            return this->raiseFormulaError("3D Range references are not yet supported");
+                            return this->_raiseFormulaError("3D Range references are not yet supported");
                         }
                     }
 
@@ -2839,7 +2974,7 @@ class Calculation
                     
                     if (opCharacter == "\"") {
                         //    UnEscape any quotes within the string
-                        let val = self::wrapResult(str_replace("\"\"", "\"", self::unwrapResult(val)));
+                        let val = self::_wrapResult(str_replace("\"\"", "\"", self::_unwrapResult(val)));
                     } elseif (is_numeric(val)) {
                         if ((strpos(val, ".") !== false) || (stripos(val, "e") !== false) || (val > PHP_INT_MAX) || (val < -PHP_INT_MAX)) {
                             let val = (float) val;
@@ -2871,12 +3006,12 @@ class Calculation
                     let expectingOperand = false;
                     let expectingOperator = true;
                 } else {
-                    return this->raiseFormulaError("Formula Error: Unexpected ")"");
+                    return this->_raiseFormulaError("Formula Error: Unexpected ")"");
                 }
             } elseif (isset(self::operators[opCharacter]) && !expectingOperator) {
-                return this->raiseFormulaError("Formula Error: Unexpected operator "opCharacter"");
+                return this->_raiseFormulaError("Formula Error: Unexpected operator "opCharacter"");
             } else {    // I don"t even want to know what you did to get here
-                return this->raiseFormulaError("Formula Error: An unexpected error occured");
+                return this->_raiseFormulaError("Formula Error: An unexpected error occured");
             }
             
             //    Test for end of formula string
@@ -2884,7 +3019,7 @@ class Calculation
                 //    Did we end with an operator?.
                 //    Only valid for the % unary operator
                 if ((isset(self::operators[opCharacter])) && (opCharacter != "%")) {
-                    return this->raiseFormulaError("Formula Error: Operator "opCharacter" has no operands");
+                    return this->_raiseFormulaError("Formula Error: Operator "opCharacter" has no operands");
                 } else {
                     break;
                 }
@@ -2913,7 +3048,7 @@ class Calculation
 
         while ((op = stack->pop()) !== null) {    // pop everything off the stack and push onto output
             if ((is_array(op) && op["value"] == "(") || (op === "(")) {
-                return this->raiseFormulaError("Formula Error: Expecting ')'");    // if there are any opening braces on the stack, then braces were unbalanced
+                return this->_raiseFormulaError("Formula Error: Expecting ')'");    // if there are any opening braces on the stack, then braces were unbalanced
             }
             let output[] = op;
         }
@@ -2942,39 +3077,66 @@ class Calculation
         return [operand, operandData];
     }
     
-    private function executeBinaryComparisonOperation(cellID, operand1, operand2, operation, stack, recursingArrays = false)
+    private function processTokenStack(tokens, cellID = null, <\ZExcel\Cell> pCell = null)
     {
         throw new \Exception("Not implemented yet!");
     }
     
-    private function executeNumericBinaryOperation(cellID, operand1, operand2, operation, matrixFunction, stack)
+    private function _validateBinaryOperand(cellID, operand, stack)
     {
         throw new \Exception("Not implemented yet!");
     }
     
-    private static function checkMatrixOperands(operand1, operand2, resize = 1)
+    private function _executeBinaryComparisonOperation(cellID, operand1, operand2, operation, stack, recursingArrays = false)
     {
         throw new \Exception("Not implemented yet!");
     }
     
-    /**
-     * Authorize to init constant in zephir (but you must to call this function)
-     */
-    private static function defineConstant()
+    private function strcmpLowercaseFirst(str1, str2)
     {
-        if (!defined("CALCULATION_REGEXP_CELLREF")) {
-            //    Test for support of \P (multibyte options) in PCRE
-            if(defined("PREG_BAD_UTF8_ERROR")) {
-                //    Cell reference (cell or range of cells, with or without a sheet reference)
-                define("\\ZExcel\\Calculation::CALCULATION_REGEXP_CELLREF","((([^\s,!&%^\/\*\+<>=-]*)|(\'[^\']*\')|(\"[^\"]*\"))!)?\$?([a-z]{1,3})\$?(\d{1,7})", false);
-                //    Named Range of cells
-                define("\\ZExcel\\Calculation::CALCULATION_REGEXP_NAMEDRANGE","((([^\s,!&%^\/\*\+<>=-]*)|(\'[^\']*\')|(\"[^\"]*\"))!)?([_A-Z][_A-Z0-9\.]*)", false);
-            } else {
-                //    Cell reference (cell or range of cells, with or without a sheet reference)
-                define("\\ZExcel\\Calculation::CALCULATION_REGEXP_CELLREF","(((\w*)|(\'[^\']*\')|(\"[^\"]*\"))!)?\$?([a-z]{1,3})\$?(\d+)", false);
-                //    Named Range of cells
-                define("\\ZExcel\\Calculation::CALCULATION_REGEXP_NAMEDRANGE","(((\w*)|(\'.*\')|(\".*\"))!)?([_A-Z][_A-Z0-9\.]*)", false);
-            }
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    private function _executeNumericBinaryOperation(cellID, operand1, operand2, operation, matrixFunction, stack)
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    protected function _raiseFormulaError(errorMessage)
+    {
+        let this->formulaError = errorMessage;
+        
+        this->cyclicReferenceStack->clear();
+        
+        if (!this->suppressFormulaErrors) {
+            throw new \ZExcel\Calculation\Exception(errorMessage);
         }
+        
+        trigger_error(errorMessage, E_USER_ERROR);
+    }
+    
+    public function extractNamedRange(pRange = "A1", <\ZExcel\Worksheet> pSheet = NULL, resetLog = true)
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    public function extractCellRange(pRange = "A1", <\ZExcel\Worksheet> pSheet = null, resetLog = true)
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    public function isImplemented(pFunction = "")
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    public function listFunctions()
+    {
+        throw new \Exception("Not implemented yet!");
+    }
+    
+    public function listFunctionNames()
+    {
+        throw new \Exception("Not implemented yet!");
     }
 }

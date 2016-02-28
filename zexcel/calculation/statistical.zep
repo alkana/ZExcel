@@ -879,7 +879,7 @@ class Statistical
         let aCount = 0;
         for arg in aArgs {
             if (!is_numeric(arg)) {
-                let arg = \ZExcel\Calculation::wrapResult(strtoupper(arg));
+                let arg = \ZExcel\Calculation::_wrapResult(strtoupper(arg));
             }
             
             let testCondition = "=".arg.condition;
@@ -1337,7 +1337,7 @@ class Statistical
         // Loop through arguments
         for arg in aArgs {
             if (!is_numeric(arg)) {
-                let arg = \ZExcel\Calculation::wrapResult(strtoupper(arg));
+                let arg = \ZExcel\Calculation::_wrapResult(strtoupper(arg));
             }
             
             let testCondition = "=" . arg.condition;
@@ -2439,7 +2439,7 @@ class Statistical
         // Loop through arguments
         for arg in aArgs {
             if (!is_numeric(arg)) {
-                let arg = \ZExcel\Calculation::wrapResult(strtoupper(arg));
+                let arg = \ZExcel\Calculation::_wrapResult(strtoupper(arg));
             }
             
             let testCondition = "=" . arg . condition;
@@ -2610,7 +2610,7 @@ class Statistical
         // Loop through arguments
         for arg in aArgs {
             if (!is_numeric(arg)) {
-                let arg = \ZExcel\Calculation::wrapResult(strtoupper(arg));
+                let arg = \ZExcel\Calculation::_wrapResult(strtoupper(arg));
             }
             
             let testCondition = "=" . arg . condition;
