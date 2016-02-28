@@ -2,10 +2,24 @@
 The goal of ZExcel is to rewrite PHPExcel with the Zephir language (http://zephir-lang.com/index.html) to create an php extension.
 
 # Status
-05/12/2015: At this time, the library is not useable at all.
+2015-12-05: The library is not useable at all.
+2016-02-28: The library is already not useable but lot of classes has been implemented (~80%, you can easily test with ) 
 
-# How to compile ?
-@TODO (@see https://github.com/phalcon/zephir#readme)
+# How to install ?
+1. Install zephir under your server/vagrant/docker (@see https://github.com/phalcon/zephir#readme)
+2. Clone ZExcel project (git clone https://github.com/alkana/ZExcel.git)
+3. Execute zephir to compile the extension (zephir build)
+4. Add the extension to your php.ini
+```
+  [ZExcel]
+  extension=zexcel.(so|dll)
+``` 
+
+# How to test ?
+When the extension has been installed, you can easily check the advencement with phpunit:
+```
+cd {project/folder} && phpunit -c unitTests/
+```
 
 # Usage
 @TODO
