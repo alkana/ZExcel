@@ -1,6 +1,6 @@
 namespace ZExcel\Calculation;
 
-class Functio
+class Functionn
 {
 	/* Function categories */
     const CATEGORY_CUBE                 = "Cube";

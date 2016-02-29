@@ -166,212 +166,212 @@ class Calculation
     
     private static PHPExcelFunctions = [
         "ABS": [
-            "category": \zExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "abs",
             "argumentCount": "1"
         ],
         "ACCRINT": [
-            "category": \zExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::ACCRINT",
             "argumentCount": "4-7"
         ],
         "ACCRINTM": [
-            "category": \zExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::ACCRINTM",
             "argumentCount": "3-5"
         ],
         "ACOS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "acos",
             "argumentCount": "1"
         ],
         "ACOSH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "acosh",
             "argumentCount": "1"
         ],
         "ADDRESS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::CELL_ADDRESS",
             "argumentCount": "2-5"
         ],
         "AMORDEGRC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::AMORDEGRC",
             "argumentCount": "6,7"
         ],
         "AMORLINC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::AMORLINC",
             "argumentCount": "6,7"
         ],
         "AND": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOGICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOGICAL,
             "functionCall": "\\ZExcel\\Calculation\\Logical::LOGICAL_AND",
             "argumentCount": "1+"
         ],
         "AREAS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "1"
         ],
         "ASC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "1"
         ],
         "ASIN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "asin",
             "argumentCount": "1"
         ],
         "ASINH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "asinh",
             "argumentCount": "1"
         ],
         "ATAN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "atan",
             "argumentCount": "1"
         ],
         "ATAN2": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::ATAN2",
             "argumentCount": "2"
         ],
         "ATANH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "atanh",
             "argumentCount": "1"
         ],
         "AVEDEV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::AVEDEV",
             "argumentCount": "1+"
         ],
         "AVERAGE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::AVERAGE",
             "argumentCount": "1+"
         ],
         "AVERAGEA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::AVERAGEA",
             "argumentCount": "1+"
         ],
         "AVERAGEIF": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::AVERAGEIF",
             "argumentCount": "2,3"
         ],
         "AVERAGEIFS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "3+"
         ],
         "BAHTTEXT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "1"
         ],
         "BESSELI": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::BESSELI",
             "argumentCount": "2"
         ],
         "BESSELJ": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::desselj",
             "argumentCount": "2"
         ],
         "BESSELK": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::BESSELK",
             "argumentCount": "2"
         ],
         "BESSELY": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::BESSELY",
             "argumentCount": "2"
         ],
         "BETADIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::BETADIST",
             "argumentCount": "3-5"
         ],
         "BETAINV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::BETAINV",
             "argumentCount": "3-5"
         ],
         "BIN2DEC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::BINTODEC",
             "argumentCount": "1"
         ],
         "BIN2HEX": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::BINTOHEX",
             "argumentCount": "1,2"
         ],
         "BIN2OCT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::BINTOOCT",
             "argumentCount": "1,2"
         ],
         "BINOMDIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::BINOMDIST",
             "argumentCount": "4"
         ],
         "CEILING": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::CEILING",
             "argumentCount": "2"
         ],
         "CELL": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "1,2"
         ],
         "CHAR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::CHARACTER",
             "argumentCount": "1"
         ],
         "CHIDIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::CHIDIST",
             "argumentCount": "2"
         ],
         "CHIINV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::CHIINV",
             "argumentCount": "2"
         ],
         "CHITEST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "2"
         ],
         "CHOOSE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::CHOOSE",
             "argumentCount": "2+"
         ],
         "CLEAN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::TRIMNONPRINTABLE",
             "argumentCount": "1"
         ],
         "CODE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::ASCIICODE",
             "argumentCount": "1"
         ],
         "COLUMN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::COLUMN",
             "argumentCount": "-1",
             "passByReference": [
@@ -379,1019 +379,1019 @@ class Calculation
             ]
         ],
         "COLUMNS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::COLUMNS",
             "argumentCount": "1"
         ],
         "COMBIN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::COMBIN",
             "argumentCount": "2"
         ],
         "COMPLEX": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::COMPLEX",
             "argumentCount": "2,3"
         ],
         "CONCATENATE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::CONCATENATE",
             "argumentCount": "1+"
         ],
         "CONFIDENCE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::CONFIDENCE",
             "argumentCount": "3"
         ],
         "CONVERT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::CONVERTUOM",
             "argumentCount": "3"
         ],
         "CORREL": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::CORREL",
             "argumentCount": "2"
         ],
         "COS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "cos",
             "argumentCount": "1"
         ],
         "COSH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "cosh",
             "argumentCount": "1"
         ],
         "COUNT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::COUNT",
             "argumentCount": "1+"
         ],
         "COUNTA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::COUNTA",
             "argumentCount": "1+"
         ],
         "COUNTBLANK": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::COUNTBLANK",
             "argumentCount": "1"
         ],
         "COUNTIF": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::COUNTIF",
             "argumentCount": "2"
         ],
         "COUNTIFS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "2"
         ],
         "COUPDAYBS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::COUPDAYBS",
             "argumentCount": "3,4"
         ],
         "COUPDAYS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::COUPDAYS",
             "argumentCount": "3,4"
         ],
         "COUPDAYSNC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::COUPDAYSNC",
             "argumentCount": "3,4"
         ],
         "COUPNCD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::COUPNCD",
             "argumentCount": "3,4"
         ],
         "COUPNUM": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::COUPNUM",
             "argumentCount": "3,4"
         ],
         "COUPPCD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::COUPPCD",
             "argumentCount": "3,4"
         ],
         "COVAR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::COVAR",
             "argumentCount": "2"
         ],
         "CRITBINOM": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::CRITBINOM",
             "argumentCount": "3"
         ],
         "CUBEKPIMEMBER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_CUBE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_CUBE,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "?"
         ],
         "CUBEMEMBER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_CUBE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_CUBE,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "?"
         ],
         "CUBEMEMBERPROPERTY": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_CUBE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_CUBE,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "?"
         ],
         "CUBERANKEDMEMBER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_CUBE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_CUBE,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "?"
         ],
         "CUBESET": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_CUBE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_CUBE,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "?"
         ],
         "CUBESETCOUNT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_CUBE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_CUBE,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "?"
         ],
         "CUBEVALUE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_CUBE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_CUBE,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "?"
         ],
         "CUMIPMT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::CUMIPMT",
             "argumentCount": "6"
         ],
         "CUMPRINC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::CUMPRINC",
             "argumentCount": "6"
         ],
         "DATE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::DATE",
             "argumentCount": "3"
         ],
         "DATEDIF": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::DATEDIF",
             "argumentCount": "2,3"
         ],
         "DATEVALUE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::DATEVALUE",
             "argumentCount": "1"
         ],
         "DAVERAGE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DAVERAGE",
             "argumentCount": "3"
         ],
         "DAY": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::DAYOFMONTH",
             "argumentCount": "1"
         ],
         "DAYS360": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::DAYS360",
             "argumentCount": "2,3"
         ],
         "DB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::DB",
             "argumentCount": "4,5"
         ],
         "DCOUNT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DCOUNT",
             "argumentCount": "3"
         ],
         "DCOUNTA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DCOUNTA",
             "argumentCount": "3"
         ],
         "DDB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::DDB",
             "argumentCount": "4,5"
         ],
         "DEC2BIN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::DECTOBIN",
             "argumentCount": "1,2"
         ],
         "DEC2HEX": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::DECTOHEX",
             "argumentCount": "1,2"
         ],
         "DEC2OCT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::DECTOOCT",
             "argumentCount": "1,2"
         ],
         "DEGREES": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "rad2deg",
             "argumentCount": "1"
         ],
         "DELTA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::DELTA",
             "argumentCount": "1,2"
         ],
         "DEVSQ": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::DEVSQ",
             "argumentCount": "1+"
         ],
         "DGET": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DGET",
             "argumentCount": "3"
         ],
         "DISC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::DISC",
             "argumentCount": "4,5"
         ],
         "DMAX": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DMAX",
             "argumentCount": "3"
         ],
         "DMIN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DMIN",
             "argumentCount": "3"
         ],
         "DOLLAR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::DOLLAR",
             "argumentCount": "1,2"
         ],
         "DOLLARDE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::DOLLARDE",
             "argumentCount": "2"
         ],
         "DOLLARFR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::DOLLARFR",
             "argumentCount": "2"
         ],
         "DPRODUCT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DPRODUCT",
             "argumentCount": "3"
         ],
         "DSTDEV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DSTDEV",
             "argumentCount": "3"
         ],
         "DSTDEVP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DSTDEVP",
             "argumentCount": "3"
         ],
         "DSUM": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DSUM",
             "argumentCount": "3"
         ],
         "DURATION": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "5,6"
         ],
         "DVAR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DVAR",
             "argumentCount": "3"
         ],
         "DVARP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATABASE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATABASE,
             "functionCall": "\\ZExcel\\Calculation\\Database::DVARP",
             "argumentCount": "3"
         ],
         "EDATE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::EDATE",
             "argumentCount": "2"
         ],
         "EFFECT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::EFFECT",
             "argumentCount": "2"
         ],
         "EOMONTH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::EOMONTH",
             "argumentCount": "2"
         ],
         "ERF": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::ERF",
             "argumentCount": "1,2"
         ],
         "ERFC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::ERFC",
             "argumentCount": "1"
         ],
         "ERROR.TYPE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::ERROR_TYPE",
             "argumentCount": "1"
         ],
         "EVEN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::EVEN",
             "argumentCount": "1"
         ],
         "EXACT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "2"
         ],
         "EXP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "exp",
             "argumentCount": "1"
         ],
         "EXPONDIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::EXPONDIST",
             "argumentCount": "3"
         ],
         "FACT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::FACT",
             "argumentCount": "1"
         ],
         "FACTDOUBLE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::FACTDOUBLE",
             "argumentCount": "1"
         ],
         "FALSE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOGICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOGICAL,
             "functionCall": "\\ZExcel\\Calculation\\Logical::FALSEE",
             "argumentCount": "0"
         ],
         "FDIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "3"
         ],
         "FIND": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::SEARCHSENSITIVE",
             "argumentCount": "2,3"
         ],
         "FINDB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::SEARCHSENSITIVE",
             "argumentCount": "2,3"
         ],
         "FINV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "3"
         ],
         "FISHER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::FISHER",
             "argumentCount": "1"
         ],
         "FISHERINV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::FISHERINV",
             "argumentCount": "1"
         ],
         "FIXED": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::FIXEDFORMAT",
             "argumentCount": "1-3"
         ],
         "FLOOR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::FLOOR",
             "argumentCount": "2"
         ],
         "FORECAST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::FORECAST",
             "argumentCount": "3"
         ],
         "FREQUENCY": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "2"
         ],
         "FTEST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "2"
         ],
         "FV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::FV",
             "argumentCount": "3-5"
         ],
         "FVSCHEDULE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::FVSCHEDULE",
             "argumentCount": "2"
         ],
         "GAMMADIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::GAMMADIST",
             "argumentCount": "4"
         ],
         "GAMMAINV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::GAMMAINV",
             "argumentCount": "3"
         ],
         "GAMMALN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::GAMMALN",
             "argumentCount": "1"
         ],
         "GCD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::GCD",
             "argumentCount": "1+"
         ],
         "GEOMEAN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::GEOMEAN",
             "argumentCount": "1+"
         ],
         "GESTEP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::GESTEP",
             "argumentCount": "1,2"
         ],
         "GETPIVOTDATA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "2+"
         ],
         "GROWTH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::GROWTH",
             "argumentCount": "1-4"
         ],
         "HARMEAN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::HARMEAN",
             "argumentCount": "1+"
         ],
         "HEX2BIN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::HEXTOBIN",
             "argumentCount": "1,2"
         ],
         "HEX2DEC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::HEXTODEC",
             "argumentCount": "1"
         ],
         "HEX2OCT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::HEXTOOCT",
             "argumentCount": "1,2"
         ],
         "HLOOKUP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::HLOOKUP",
             "argumentCount": "3,4"
         ],
         "HOUR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::HOUROFDAY",
             "argumentCount": "1"
         ],
         "HYPERLINK": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::HYPERLINK",
             "argumentCount": "1,2",
             "passCellReference": TRUE
         ],
         "HYPGEOMDIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::HYPGEOMDIST",
             "argumentCount": "4"
         ],
         "IF": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOGICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOGICAL,
             "functionCall": "\\ZExcel\\Calculation\\Logical::STATEMENT_IF",
             "argumentCount": "1-3"
         ],
         "IFERROR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOGICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOGICAL,
             "functionCall": "\\ZExcel\\Calculation\\Logical::IFERROR",
             "argumentCount": "2"
         ],
         "IMABS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMABS",
             "argumentCount": "1"
         ],
         "IMAGINARY": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMAGINARY",
             "argumentCount": "1"
         ],
         "IMARGUMENT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMARGUMENT",
             "argumentCount": "1"
         ],
         "IMCONJUGATE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMCONJUGATE",
             "argumentCount": "1"
         ],
         "IMCOS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMCOS",
             "argumentCount": "1"
         ],
         "IMDIV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMDIV",
             "argumentCount": "2"
         ],
         "IMEXP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMEXP",
             "argumentCount": "1"
         ],
         "IMLN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMLN",
             "argumentCount": "1"
         ],
         "IMLOG10": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMLOG10",
             "argumentCount": "1"
         ],
         "IMLOG2": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMLOG2",
             "argumentCount": "1"
         ],
         "IMPOWER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMPOWER",
             "argumentCount": "2"
         ],
         "IMPRODUCT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMPRODUCT",
             "argumentCount": "1+"
         ],
         "IMREAL": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMREAL",
             "argumentCount": "1"
         ],
         "IMSIN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMSIN",
             "argumentCount": "1"
         ],
         "IMSQRT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMSQRT",
             "argumentCount": "1"
         ],
         "IMSUB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMSUB",
             "argumentCount": "2"
         ],
         "IMSUM": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::IMSUM",
             "argumentCount": "1+"
         ],
         "INDEX": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::INDEX",
             "argumentCount": "1-4"
         ],
         "INDIRECT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::INDIRECT",
             "argumentCount": "1,2",
             "passCellReference": TRUE
         ],
         "INFO": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "1"
         ],
         "INT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::INTT",
             "argumentCount": "1"
         ],
         "INTERCEPT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::INTERCEPT",
             "argumentCount": "2"
         ],
         "INTRATE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::INTRATE",
             "argumentCount": "4,5"
         ],
         "IPMT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::IPMT",
             "argumentCount": "4-6"
         ],
         "IRR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::IRR",
             "argumentCount": "1,2"
         ],
         "ISBLANK": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::IS_BLANK",
             "argumentCount": "1"
         ],
         "ISERR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::IS_ERR",
             "argumentCount": "1"
         ],
         "ISERROR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::IS_ERROR",
             "argumentCount": "1"
         ],
         "ISEVEN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::IS_EVEN",
             "argumentCount": "1"
         ],
         "ISLOGICAL": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::IS_LOGICAL",
             "argumentCount": "1"
         ],
         "ISNA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::IS_NA",
             "argumentCount": "1"
         ],
         "ISNONTEXT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::IS_NONTEXT",
             "argumentCount": "1"
         ],
         "ISNUMBER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::IS_NUMBER",
             "argumentCount": "1"
         ],
         "ISODD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::IS_ODD",
             "argumentCount": "1"
         ],
         "ISPMT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::ISPMT",
             "argumentCount": "4"
         ],
         "ISREF": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "1"
         ],
         "ISTEXT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::IS_TEXT",
             "argumentCount": "1"
         ],
         "JIS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "1"
         ],
         "KURT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::KURT",
             "argumentCount": "1+"
         ],
         "LARGE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::LARGE",
             "argumentCount": "2"
         ],
         "LCM": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::LCM",
             "argumentCount": "1+"
         ],
         "LEFT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::LEFT",
             "argumentCount": "1,2"
         ],
         "LEFTB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::LEFT",
             "argumentCount": "1,2"
         ],
         "LEN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::STRINGLENGTH",
             "argumentCount": "1"
         ],
         "LENB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::STRINGLENGTH",
             "argumentCount": "1"
         ],
         "LINEST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::LINEST",
             "argumentCount": "1-4"
         ],
         "LN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "log",
             "argumentCount": "1"
         ],
         "LOG": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::LOG_BASE",
             "argumentCount": "1,2"
         ],
         "LOG10": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "log10",
             "argumentCount": "1"
         ],
         "LOGEST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::LOGEST",
             "argumentCount": "1-4"
         ],
         "LOGINV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::LOGINV",
             "argumentCount": "3"
         ],
         "LOGNORMDIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::LOGNORMDIST",
             "argumentCount": "3"
         ],
         "LOOKUP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::LOOKUP",
             "argumentCount": "2,3"
         ],
         "LOWER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::LOWERCASE",
             "argumentCount": "1"
         ],
         "MATCH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::MATCH",
             "argumentCount": "2,3"
         ],
         "MAX": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::MAX",
             "argumentCount": "1+"
         ],
         "MAXA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::MAXA",
             "argumentCount": "1+"
         ],
         "MAXIF": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::MAXIF",
             "argumentCount": "2+"
         ],
         "MDETERM": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::MDETERM",
             "argumentCount": "1"
         ],
         "MDURATION": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "5,6"
         ],
         "MEDIAN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::MEDIAN",
             "argumentCount": "1+"
         ],
         "MEDIANIF": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "2+"
         ],
         "MID": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::MID",
             "argumentCount": "3"
         ],
         "MIDB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::MID",
             "argumentCount": "3"
         ],
         "MIN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::MIN",
             "argumentCount": "1+"
         ],
         "MINA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::MINA",
             "argumentCount": "1+"
         ],
         "MINIF": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::MINIF",
             "argumentCount": "2+"
         ],
         "MINUTE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::MINUTEOFHOUR",
             "argumentCount": "1"
         ],
         "MINVERSE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::MINVERSE",
             "argumentCount": "1"
         ],
         "MIRR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::MIRR",
             "argumentCount": "3"
         ],
         "MMULT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::MMULT",
             "argumentCount": "2"
         ],
         "MOD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::MOD",
             "argumentCount": "2"
         ],
         "MODE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::MODE",
             "argumentCount": "1+"
         ],
         "MONTH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::MONTHOFYEAR",
             "argumentCount": "1"
         ],
         "MROUND": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::MROUND",
             "argumentCount": "2"
         ],
         "MULTINOMIAL": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::MULTINOMIAL",
             "argumentCount": "1+"
         ],
         "N": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::N",
             "argumentCount": "1"
         ],
         "NA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::NA",
             "argumentCount": "0"
         ],
         "NEGBINOMDIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::NEGBINOMDIST",
             "argumentCount": "3"
         ],
         "NETWORKDAYS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::NETWORKDAYS",
             "argumentCount": "2+"
         ],
         "NOMINAL": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::NOMINAL",
             "argumentCount": "2"
         ],
         "NORMDIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::NORMDIST",
             "argumentCount": "4"
         ],
         "NORMINV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::NORMINV",
             "argumentCount": "3"
         ],
         "NORMSDIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::NORMSDIST",
             "argumentCount": "1"
         ],
         "NORMSINV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::NORMSINV",
             "argumentCount": "1"
         ],
         "NOT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOGICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOGICAL,
             "functionCall": "\\ZExcel\\Calculation\\Logical::NOT",
             "argumentCount": "1"
         ],
         "NOW": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::DATETIMENOW",
             "argumentCount": "0"
         ],
         "NPER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::NPER",
             "argumentCount": "3-5"
         ],
         "NPV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::NPV",
             "argumentCount": "2+"
         ],
         "OCT2BIN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::OCTTOBIN",
             "argumentCount": "1,2"
         ],
         "OCT2DEC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::OCTTODEC",
             "argumentCount": "1"
         ],
         "OCT2HEX": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_ENGINEERING,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_ENGINEERING,
             "functionCall": "\\ZExcel\\Calculation\\Engineering::OCTTOHEX",
             "argumentCount": "1,2"
         ],
         "ODD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::ODD",
             "argumentCount": "1"
         ],
         "ODDFPRICE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "8,9"
         ],
         "ODDFYIELD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "8,9"
         ],
         "ODDLPRICE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "7,8"
         ],
         "ODDLYIELD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "7,8"
         ],
         "OFFSET": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::OFFSET",
             "argumentCount": "3,5",
             "passCellReference": TRUE,
@@ -1400,182 +1400,182 @@ class Calculation
             ]
         ],
         "OR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOGICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOGICAL,
             "functionCall": "\\ZExcel\\Calculation\\Logical::LOGICAL_OR",
             "argumentCount": "1+"
         ],
         "PEARSON": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::CORREL",
             "argumentCount": "2"
         ],
         "PERCENTILE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::PERCENTILE",
             "argumentCount": "2"
         ],
         "PERCENTRANK": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::PERCENTRANK",
             "argumentCount": "2,3"
         ],
         "PERMUT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::PERMUT",
             "argumentCount": "2"
         ],
         "PHONETIC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "1"
         ],
         "PI": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "pi",
             "argumentCount": "0"
         ],
         "PMT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::PMT",
             "argumentCount": "3-5"
         ],
         "POISSON": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::POISSON",
             "argumentCount": "3"
         ],
         "POWER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::POWER",
             "argumentCount": "2"
         ],
         "PPMT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::PPMT",
             "argumentCount": "4-6"
         ],
         "PRICE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::PRICE",
             "argumentCount": "6,7"
         ],
         "PRICEDISC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::PRICEDISC",
             "argumentCount": "4,5"
         ],
         "PRICEMAT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::PRICEMAT",
             "argumentCount": "5,6"
         ],
         "PROB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "3,4"
         ],
         "PRODUCT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::PRODUCT",
             "argumentCount": "1+"
         ],
         "PROPER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::PROPERCASE",
             "argumentCount": "1"
         ],
         "PV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::PV",
             "argumentCount": "3-5"
         ],
         "QUARTILE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::QUARTILE",
             "argumentCount": "2"
         ],
         "QUOTIENT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::QUOTIENT",
             "argumentCount": "2"
         ],
         "RADIANS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "deg2rad",
             "argumentCount": "1"
         ],
         "RAND": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::RAND",
             "argumentCount": "0"
         ],
         "RANDBETWEEN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::RAND",
             "argumentCount": "2"
         ],
         "RANK": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::RANK",
             "argumentCount": "2,3"
         ],
         "RATE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::RATE",
             "argumentCount": "3-6"
         ],
         "RECEIVED": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::RECEIVED",
             "argumentCount": "4-5"
         ],
         "REPLACE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::REPLACE",
             "argumentCount": "4"
         ],
         "REPLACEB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::REPLACE",
             "argumentCount": "4"
         ],
         "REPT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "str_repeat",
             "argumentCount": "2"
         ],
         "RIGHT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::RIGHT",
             "argumentCount": "1,2"
         ],
         "RIGHTB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::RIGHT",
             "argumentCount": "1,2"
         ],
         "ROMAN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::ROMAN",
             "argumentCount": "1,2"
         ],
         "ROUND": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "round",
             "argumentCount": "2"
         ],
         "ROUNDDOWN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::ROUNDDOWN",
             "argumentCount": "2"
         ],
         "ROUNDUP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::ROUNDUP",
             "argumentCount": "2"
         ],
         "ROW": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::ROW",
             "argumentCount": "-1",
             "passByReference": [
@@ -1583,377 +1583,377 @@ class Calculation
             ]
         ],
         "ROWS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::ROWS",
             "argumentCount": "1"
         ],
         "RSQ": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::RSQ",
             "argumentCount": "2"
         ],
         "RTD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "1+"
         ],
         "SEARCH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::SEARCHINSENSITIVE",
             "argumentCount": "2,3"
         ],
         "SEARCHB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::SEARCHINSENSITIVE",
             "argumentCount": "2,3"
         ],
         "SECOND": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::SECONDOFMINUTE",
             "argumentCount": "1"
         ],
         "SERIESSUM": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SERIESSUM",
             "argumentCount": "4"
         ],
         "SIGN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SIGN",
             "argumentCount": "1"
         ],
         "SIN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "sin",
             "argumentCount": "1"
         ],
         "SINH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "sinh",
             "argumentCount": "1"
         ],
         "SKEW": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::SKEW",
             "argumentCount": "1+"
         ],
         "SLN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::SLN",
             "argumentCount": "3"
         ],
         "SLOPE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::SLOPE",
             "argumentCount": "2"
         ],
         "SMALL": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::SMALL",
             "argumentCount": "2"
         ],
         "SQRT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "sqrt",
             "argumentCount": "1"
         ],
         "SQRTPI": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SQRTPI",
             "argumentCount": "1"
         ],
         "STANDARDIZE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::STANDARDIZE",
             "argumentCount": "3"
         ],
         "STDEV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::STDEV",
             "argumentCount": "1+"
         ],
         "STDEVA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::STDEVA",
             "argumentCount": "1+"
         ],
         "STDEVP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::STDEVP",
             "argumentCount": "1+"
         ],
         "STDEVPA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::STDEVPA",
             "argumentCount": "1+"
         ],
         "STEYX": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::STEYX",
             "argumentCount": "2"
         ],
         "SUBSTITUTE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::SUBSTITUTE",
             "argumentCount": "3,4"
         ],
         "SUBTOTAL": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SUBTOTAL",
             "argumentCount": "2+"
         ],
         "SUM": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SUM",
             "argumentCount": "1+"
         ],
         "SUMIF": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SUMIF",
             "argumentCount": "2,3"
         ],
         "SUMIFS": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "?"
         ],
         "SUMPRODUCT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SUMPRODUCT",
             "argumentCount": "1+"
         ],
         "SUMSQ": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SUMSQ",
             "argumentCount": "1+"
         ],
         "SUMX2MY2": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SUMX2MY2",
             "argumentCount": "2"
         ],
         "SUMX2PY2": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SUMX2PY2",
             "argumentCount": "2"
         ],
         "SUMXMY2": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::SUMXMY2",
             "argumentCount": "2"
         ],
         "SYD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::SYD",
             "argumentCount": "4"
         ],
         "T": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::RETURNSTRING",
             "argumentCount": "1"
         ],
         "TAN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "tan",
             "argumentCount": "1"
         ],
         "TANH": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "tanh",
             "argumentCount": "1"
         ],
         "TBILLEQ": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::TBILLEQ",
             "argumentCount": "3"
         ],
         "TBILLPRICE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::TBILLPRICE",
             "argumentCount": "3"
         ],
         "TBILLYIELD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::TBILLYIELD",
             "argumentCount": "3"
         ],
         "TDIST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::TDIST",
             "argumentCount": "3"
         ],
         "TEXT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::TEXTFORMAT",
             "argumentCount": "2"
         ],
         "TIME": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::TIME",
             "argumentCount": "3"
         ],
         "TIMEVALUE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::TIMEVALUE",
             "argumentCount": "1"
         ],
         "TINV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::TINV",
             "argumentCount": "2"
         ],
         "TODAY": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::DATENOW",
             "argumentCount": "0"
         ],
         "TRANSPOSE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::TRANSPOSE",
             "argumentCount": "1"
         ],
         "TREND": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::TREND",
             "argumentCount": "1-4"
         ],
         "TRIM": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::TRIMSPACES",
             "argumentCount": "1"
         ],
         "TRIMMEAN": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::TRIMMEAN",
             "argumentCount": "2"
         ],
         "TRUE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOGICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOGICAL,
             "functionCall": "\\ZExcel\\Calculation\\Logical::TRUEE",
             "argumentCount": "0"
         ],
         "TRUNC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_MATH_AND_TRIG,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_MATH_AND_TRIG,
             "functionCall": "\\ZExcel\\Calculation\\MathTrig::TRUNC",
             "argumentCount": "1,2"
         ],
         "TTEST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "4"
         ],
         "TYPE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::TYPE",
             "argumentCount": "1"
         ],
         "UPPER": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::UPPERCASE",
             "argumentCount": "1"
         ],
         "USDOLLAR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "2"
         ],
         "VALUE": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_TEXT_AND_DATA,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_TEXT_AND_DATA,
             "functionCall": "\\ZExcel\\Calculation\\TextData::VALUE",
             "argumentCount": "1"
         ],
         "VAR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::VARFunc",
             "argumentCount": "1+"
         ],
         "VARA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::VARA",
             "argumentCount": "1+"
         ],
         "VARP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::VARP",
             "argumentCount": "1+"
         ],
         "VARPA": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::VARPA",
             "argumentCount": "1+"
         ],
         "VDB": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "5-7"
         ],
         "VERSION": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_INFORMATION,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_INFORMATION,
             "functionCall": "\\ZExcel\\Calculation\\Functions::VERSION",
             "argumentCount": "0"
         ],
         "VLOOKUP": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_LOOKUP_AND_REFERENCE,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_LOOKUP_AND_REFERENCE,
             "functionCall": "\\ZExcel\\Calculation\\LookupRef::VLOOKUP",
             "argumentCount": "3,4"
         ],
         "WEEKDAY": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::DAYOFWEEK",
             "argumentCount": "1,2"
         ],
         "WEEKNUM": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::WEEKOFYEAR",
             "argumentCount": "1,2"
         ],
         "WEIBULL": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::WEIBULL",
             "argumentCount": "4"
         ],
         "WORKDAY": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::WORKDAY",
             "argumentCount": "2+"
         ],
         "XIRR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::XIRR",
             "argumentCount": "2,3"
         ],
         "XNPV": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::XNPV",
             "argumentCount": "3"
         ],
         "YEAR": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::YEAR",
             "argumentCount": "1"
         ],
         "YEARFRAC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_DATE_AND_TIME,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_DATE_AND_TIME,
             "functionCall": "\\ZExcel\\Calculation\\DateTime::YEARFRAC",
             "argumentCount": "2,3"
         ],
         "YIELD": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Functions::DUMMY",
             "argumentCount": "6,7"
         ],
         "YIELDDISC": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::YIELDDISC",
             "argumentCount": "4,5"
         ],
         "YIELDMAT": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_FINANCIAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_FINANCIAL,
             "functionCall": "\\ZExcel\\Calculation\\Financial::YIELDMAT",
             "argumentCount": "5,6"
         ],
         "ZTEST": [
-            "category": \ZExcel\Calculation\Functio::CATEGORY_STATISTICAL,
+            "category": \ZExcel\Calculation\Functionn::CATEGORY_STATISTICAL,
             "functionCall": "\\ZExcel\\Calculation\\Statistical::ZTEST",
             "argumentCount": "2-3"
         ]

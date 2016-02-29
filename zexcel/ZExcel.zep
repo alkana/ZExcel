@@ -2,6 +2,8 @@ namespace ZExcel;
 
 class ZExcel
 {
+    private static version = "0.1";
+    
     private uniqueID;
 
     /**
@@ -943,5 +945,10 @@ class ZExcel
     public function getID()
     {
         return this->uniqueID;
+    }
+    
+    public static function getVersion()
+    {
+        return self::version;
     }
 }

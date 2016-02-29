@@ -713,8 +713,10 @@ class MathTrig
             if (columnA != rowB) {
                 return \ZExcel\Calculation\Functions::VaLUE();
             }
+            
+            let ex = call_user_func([matrixA, "times"], matrixB);
 
-            return call_user_func([matrixA, "times"], matrixB)->getArray();
+            return ex->getArray();
         } catch \ZExcel\Exception, ex {
             return \ZExcel\Calculation\Functions::VaLUE();
         }

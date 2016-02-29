@@ -37,10 +37,10 @@ class AutoloaderTest extends PHPUnit_Framework_TestCase
 
     public function testAutoloadInstantiateSuccess()
     {
-        $result = new \ZExcel\Calculation\Functio(1, 2, 3);
+        $result = new \ZExcel\Calculation\Functionn(1, 2, 3);
         //    Must return an object...
         $this->assertTrue(is_object($result));
         //    ... of the correct type
-        $this->assertTrue(is_a($result, '\ZExcel\Calculation\Functio'));
+        $this->assertTrue(is_a($result, '\ZExcel\Calculation\Functionn'));
     }
 }
