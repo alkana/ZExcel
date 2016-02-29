@@ -34,7 +34,7 @@ class CholeskyDecomposition
         var sum;
         int i, j, k;
         
-        if (A instanceof Matrix) {
+        if (a instanceof Matrix) {
             let this->l = a->getArray();
             let this->m = a->getRowDimension();
 

@@ -175,9 +175,9 @@ class Matrix
      *    @param int j Column position
      *    @return mixed Element (int/float/double)
      */
-    public function get(var i = null, var j = null)
+    public function get(int i, int j)
     {
-        throw new \Exception("Not implemented yet!");
+        return this->a[i][j];
     }
 
     /**
@@ -204,8 +204,16 @@ class Matrix
      */
     public function checkMatrixDimensions(var b = null)
     {
-        throw new \Exception("Not implemented yet!");
-    }    //    function checkMatrixDimensions()
+        if (b instanceof \ZPExcel\Shared\JAMA\Matrix) {
+            if ((this->m == b->getRowDimension()) && (this->n == b->getColumnDimension())) {
+                return true;
+            } else {
+                throw new \ZExcel\Calculation\Exception(self::MATRIX_DIMENSION_EXCEPTION);
+            }
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::ARGUMENT_TYPE_EXCEPTION);
+        }
+    }
 
     /**
      *    set
@@ -218,9 +226,8 @@ class Matrix
      */
     public function set(var i = null, var j = null, var c = null)
     {
-        // Optimized set version just has this
-        throw new \Exception("Not implemented yet!");
-    }    //    function set()
+        let this->a[i][j] = c;
+    }
 
     /**
      *    identity
@@ -232,7 +239,7 @@ class Matrix
      */
     public function identity(var m = null, var n = null)
     {
-        throw new \Exception("Not implemented yet!");
+        return this->diagonal(m, n, 1);
     }
 
     /**
@@ -246,7 +253,17 @@ class Matrix
      */
     public function diagonal(var m = null, var n = null, var c = 1)
     {
-        throw new \Exception("Not implemented yet!");
+        var r;
+        int i;
+        
+        let r = new \ZExcel\Shared\JAMA\Matrix();
+        call_user_func([r, "initialize"], m, n);
+        
+        for i in range(0, m - 1) {
+            r->set(i, i, c);
+        }
+        
+        return r;
     }
 
     /**
@@ -259,20 +276,36 @@ class Matrix
      */
     public function getMatrixByRow(var i0 = null, var iFF = null)
     {
-        throw new \Exception("Not implemented yet!");
+        if (is_int(i0)) {
+            if (is_int(iFF)) {
+                return call_user_func([this, "getMatrix"], i0, 0, iFF + 1, this->n);
+            } else {
+                return call_user_func([this, "getMatrix"], i0, 0, i0 + 1, this->n);
+            }
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+        }
     }
 
     /**
      *    getMatrixByCol
      *
      *    Get a submatrix by column index/range
-     *    @param int i0 Initial column index
-     *    @param int iF Final column index
+     *    @param int j0 Initial column index
+     *    @param int jF Final column index
      *    @return Matrix Submatrix
      */
     public function getMatrixByCol(var j0 = null, var jF = null)
     {
-        throw new \Exception("Not implemented yet!");
+        if (is_int(j0)) {
+            if (is_int(jF)) {
+                return call_user_func([this, "getMatrix"], 0, j0, this->m, jF + 1);
+            } else {
+                return call_user_func([this, "getMatrix"], 0, j0, this->m, j0 + 1);
+            }
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+        }
     }
 
     /**
@@ -283,7 +316,19 @@ class Matrix
      */
     public function transpose()
     {
-        throw new \Exception("Not implemented yet!");
+        var r;
+        int i, j;
+        
+        let r = new \ZExcel\Shared\JAMA\Matrix();
+        call_user_func([r, "initialize"], this->n, this->m);
+        
+        for i in range(0, this->m - 1) {
+            for j in range(0, this->n - 1) {
+                r->set(j, i, this->a[i][j]);
+            }
+        }
+        
+        return r;
     }    //    function transpose()
 
     /**
@@ -294,7 +339,16 @@ class Matrix
      */
     public function trace()
     {
-        throw new \Exception("Not implemented yet!");
+        double s;
+        int i, n;
+        
+        let n = 0 + min($this->m, $this->n);
+        
+        for i in range(0, n - 1) {
+            let s = s + this->a[i][i];
+        }
+        
+        return s;
     }
 
     /**
@@ -528,7 +582,6 @@ class Matrix
                     }
                     
                     return c;
-                    break;
                 case "double":
                     let c = new \ZExcel\Shared\JAMA\Matrix();
                     call_user_func([c, "initialize"], this->m, this->n);
@@ -540,7 +593,6 @@ class Matrix
                     }
                     
                     return c;
-                    break;
                 case "float":
                     let c = new \ZExcel\Shared\JAMA\Matrix();
                     call_user_func([c, "initialize"], this->a);
@@ -552,10 +604,8 @@ class Matrix
                     }
                     
                     return c;
-                    break;
                 default:
                     throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
-                    break;
             }
         } else {
             throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
@@ -616,6 +666,22 @@ class Matrix
     public function det()
     {
         throw new \Exception("Not implemented yet!");
+    }
+    
+    public static function hypo(double a, double b) {
+        double r;
+        
+        if (abs(a) > abs(b)) {
+            let r = b / a;
+            let r = abs(a) * sqrt(1 + r * r);
+        } elseif (b != 0) {
+            let r = a / b;
+            let r = abs(b) * sqrt(1 + r * r);
+        } else {
+            let r = 0.0;
+        }
+        
+        return r;
     }
     
     /**
