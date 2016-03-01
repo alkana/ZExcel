@@ -452,7 +452,6 @@ class MathTrig
      */
     public static function lcm()
     {
-        /*
         var value, myFactors, myCountedFactor, myCountedFactors,
             myCountedPower, myPoweredFactors, myPoweredValue, allPoweredFactor,
             myPoweredFactor, returnValue = 1, allPoweredFactors = [];
@@ -493,7 +492,6 @@ class MathTrig
         }
         
         return returnValue;
-        */
     }
 
 
