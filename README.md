@@ -3,7 +3,7 @@ The goal of ZExcel is to rewrite PHPExcel with the Zephir language (http://zephi
 
 # Status
 - 2015-12-05: The library is not useable at all.
-- 2016-02-28: The library is already not useable but lot of classes has been implemented (~80%, you can easily test it with phpunit) 
+- 2016-02-28: The library always not usable but lot of classes has been implemented (~80%, you can easily test it with phpunit) 
 
 # How to install ?
 1. Install zephir under your server/vagrant/docker (@see https://github.com/phalcon/zephir#readme)

@@ -15,7 +15,7 @@ class XEEValidatorTest extends PHPUnit_Framework_TestCase
      */
     public function testInvalidXML($filename)
     {
-        $reader = $this->getMockForAbstractClass('\ZExcel\Reader_Abstract');
+        $reader = $this->getMockForAbstractClass('\ZExcel\Reader\Abstract');
         $expectedResult = 'FAILURE: Should throw an Exception rather than return a value';
         $result = $reader->securityScanFile($filename);
         $this->assertEquals($expectedResult, $result);
@@ -35,7 +35,7 @@ class XEEValidatorTest extends PHPUnit_Framework_TestCase
      */
     public function testValidXML($filename, $expectedResult)
     {
-        $reader = $this->getMockForAbstractClass('\ZExcel\Reader_Abstract');
+        $reader = $this->getMockForAbstractClass('\ZExcel\Reader\Abstract');
         $result = $reader->securityScanFile($filename);
         $this->assertEquals($expectedResult, $result);
     }
