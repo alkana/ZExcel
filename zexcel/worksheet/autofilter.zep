@@ -37,8 +37,8 @@ class AutoFilter
     /**
      * Create a new \ZExcel\Worksheet\AutoFilter
      *
-     *    @param    string        $pRange        Cell range (i.e. A1:E10)
-     * @param \ZExcel\Worksheet $pSheet
+     *    @param    string        pRange        Cell range (i.e. A1:E10)
+     * @param \ZExcel\Worksheet pSheet
      */
     public function __construct(string pRange = "", <\ZExcel\Worksheet> pSheet = null)
     {
@@ -53,18 +53,20 @@ class AutoFilter
      */
     public function getParent()
     {
-        throw new \Exception("Not implemented yet!");
+        return this->_workSheet;
     }
 
     /**
      * Set AutoFilter Parent Worksheet
      *
-     * @param \ZExcel\Worksheet $pSheet
+     * @param \ZExcel\Worksheet pSheet
      * @return \ZExcel\Worksheet\AutoFilter
      */
     public function setParent(<\ZExcel\Worksheet> pSheet = null)
     {
-        throw new \Exception("Not implemented yet!");
+        let this->_workSheet = pSheet;
+
+        return this;
     }
 
     /**
@@ -74,19 +76,54 @@ class AutoFilter
      */
     public function getRange()
     {
-        throw new \Exception("Not implemented yet!");
+        return this->_range;
     }
 
     /**
      *    Set AutoFilter Range
      *
-     *    @param    string        $pRange        Cell range (i.e. A1:E10)
+     *    @param    string        pRange        Cell range (i.e. A1:E10)
      *    @throws    \ZExcel\Exception
      *    @return \ZExcel\Worksheet\AutoFilter
      */
-    public function setRange(string pRange = "")
+    public function setRange(var pRange = "")
     {
-        throw new \Exception("Not implemented yet!");
+        var cellAddress, worksheet, key, value, rangeStart, rangeEnd, colIndex;
+        
+        let cellAddress = explode("!",strtoupper(pRange));
+        
+        if (count(cellAddress) > 1) {
+            let worksheet = cellAddress[0];
+            let pRange = cellAddress[1];
+        }
+
+        if (strpos(pRange,":") !== false) {
+            let this->_range = pRange;
+        } elseif(empty(pRange)) {
+            let this->_range = "";
+        } else {
+            throw new \ZExcel\Exception("Autofilter must be set on a range of cells.");
+        }
+
+        if (empty(pRange)) {
+            //    Discard all column rules
+            let this->_columns = [];
+        } else {
+            //    Discard any column rules that are no longer valid within this range
+            let value = \ZExcel\Cell::rangeBoundaries(this->_range);
+            let rangeStart = value[0];
+            let rangeEnd = value[1];
+
+            for key, value in this->_columns {
+                let colIndex = \ZExcel\Cell::columnIndexFromString(key);
+                
+                if ((rangeStart[0] > colIndex) || (rangeEnd[0] < colIndex)) {
+                    unset(this->_columns[key]);
+                }
+            }
+        }
+
+        return this;
     }
 
     /**
@@ -97,62 +134,91 @@ class AutoFilter
      */
     public function getColumns()
     {
-        throw new \Exception("Not implemented yet!");
+        return this->_columns;
     }
 
     /**
      * Validate that the specified column is in the AutoFilter range
      *
-     * @param    string    $column            Column name (e.g. A)
+     * @param    string    column            Column name (e.g. A)
      * @throws    \ZExcel\Exception
      * @return    integer    The column offset within the autofilter range
      */
-    public function testColumnInRange(string column)
+    public function testColumnInRange(var column)
     {
-        throw new \Exception("Not implemented yet!");
+        var columnIndex, rangeStart, rangeEnd;
+        
+        if (empty(this->_range)) {
+            throw new \ZExcel\Exception("No autofilter range is defined.");
+        }
+
+        let columnIndex = \ZExcel\Cell::columnIndexFromString(column);
+        let column = \ZExcel\Cell::rangeBoundaries(this->_range);
+        let rangeStart = column[0];
+        let rangeEnd = column[1];
+        
+        if ((rangeStart[0] > columnIndex) || (rangeEnd[0] < columnIndex)) {
+            throw new \ZExcel\Exception("Column is outside of current autofilter range.");
+        }
+
+        return columnIndex - rangeStart[0];
     }
 
     /**
      * Get a specified AutoFilter Column Offset within the defined AutoFilter range
      *
-     * @param    string    $pColumn        Column name (e.g. A)
+     * @param    string    pColumn        Column name (e.g. A)
      * @throws    \ZExcel\Exception
      * @return integer    The offset of the specified column within the autofilter range
      */
     public function getColumnOffset(string pColumn)
     {
-        throw new \Exception("Not implemented yet!");
+        return this->testColumnInRange(pColumn);
     }
 
     /**
      * Get a specified AutoFilter Column
      *
-     * @param    string    $pColumn        Column name (e.g. A)
+     * @param    string    pColumn        Column name (e.g. A)
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet\AutoFilter\Column
      */
     public function getColumn(string pColumn)
     {
-        throw new \Exception("Not implemented yet!");
+        this->testColumnInRange(pColumn);
+
+        if (!isset(this->_columns[pColumn])) {
+            let this->_columns[pColumn] = new \ZExcel\Worksheet\AutoFilter\Column(pColumn, this);
+        }
+
+        return this->_columns[pColumn];
     }
 
     /**
-     * Get a specified AutoFilter Column by it's offset
+     * Get a specified AutoFilter Column by it"s offset
      *
-     * @param    integer    $pColumnOffset        Column offset within range (starting from 0)
+     * @param    integer    pColumnOffset        Column offset within range (starting from 0)
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet\AutoFilter\Column
      */
     public function getColumnByOffset(int pColumnOffset = 0)
     {
-        throw new \Exception("Not implemented yet!");
+        var tmp, rangeStart, rangeEnd, pColumn;
+        
+        let tmp = \ZExcel\Cell::rangeBoundaries(this->_range);
+        let rangeStart = tmp[0];
+        let rangeEnd = tmp[1];
+        
+        let pColumn = \ZExcel\Cell::stringFromColumnIndex(rangeStart[0] + pColumnOffset - 1);
+
+        return this->getColumn(pColumn);
     }
 
     /**
      *    Set AutoFilter
      *
-     *    @param    \ZExcel\Worksheet\AutoFilter\Column|string        $pColumn
-     *            A simple string containing a Column ID like 'A' is permitted
+     *    @param    \ZExcel\Worksheet\AutoFilter\Column|string        pColumn
+     *            A simple string containing a Column ID like "A" is permitted
      *    @throws    \ZExcel\Exception
      *    @return \ZExcel\Worksheet\AutoFilter
      */
@@ -164,7 +230,7 @@ class AutoFilter
     /**
      * Clear a specified AutoFilter Column
      *
-     * @param    string  $pColumn    Column name (e.g. A)
+     * @param    string  pColumn    Column name (e.g. A)
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet\AutoFilter
      */
@@ -176,11 +242,11 @@ class AutoFilter
      *    Shift an AutoFilter Column Rule to a different column
      *
      *    Note: This method bypasses validation of the destination column to ensure it is within this AutoFilter range.
-     *        Nor does it verify whether any column rule already exists at $toColumn, but will simply overrideany existing value.
+     *        Nor does it verify whether any column rule already exists at toColumn, but will simply overrideany existing value.
      *        Use with caution.
      *
-     *    @param    string    $fromColumn        Column name (e.g. A)
-     *    @param    string    $toColumn        Column name (e.g. B)
+     *    @param    string    fromColumn        Column name (e.g. A)
+     *    @param    string    toColumn        Column name (e.g. B)
      *    @return \ZExcel\Worksheet\AutoFilter
      */
     public function shiftColumn(string fromColumn = null, string toColumn = null)
@@ -192,8 +258,8 @@ class AutoFilter
     /**
      *    Test if cell value is in the defined set of values
      *
-     *    @param    mixed        $cellValue
-     *    @param    mixed[]        $dataSet
+     *    @param    mixed        cellValue
+     *    @param    mixed[]        dataSet
      *    @return boolean
      */
     private static function _filterTestInSimpleDataSet(cellValue, array dataSet)
@@ -204,8 +270,8 @@ class AutoFilter
     /**
      *    Test if cell value is in the defined set of Excel date values
      *
-     *    @param    mixed        $cellValue
-     *    @param    mixed[]        $dataSet
+     *    @param    mixed        cellValue
+     *    @param    mixed[]        dataSet
      *    @return boolean
      */
     private static function _filterTestInDateGroupSet(cellValue,array dataSet)
@@ -216,8 +282,8 @@ class AutoFilter
     /**
      *    Test if cell value is within a set of values defined by a ruleset
      *
-     *    @param    mixed        $cellValue
-     *    @param    mixed[]        $ruleSet
+     *    @param    mixed        cellValue
+     *    @param    mixed[]        ruleSet
      *    @return boolean
      */
     private static function _filterTestInCustomDataSet(cellValue, array ruleSet)
@@ -228,8 +294,8 @@ class AutoFilter
     /**
      *    Test if cell date value is matches a set of values defined by a set of months
      *
-     *    @param    mixed        $cellValue
-     *    @param    mixed[]        $monthSet
+     *    @param    mixed        cellValue
+     *    @param    mixed[]        monthSet
      *    @return boolean
      */
     private static function _filterTestInPeriodDateSet(cellValue, array monthSet)
@@ -243,8 +309,8 @@ class AutoFilter
      *
      *    @FIXME filterColumn is a reference (not manage by Zephir)
      *
-     *    @param    string                                        $dynamicRuleType
-     *    @param    \ZExcel\Worksheet\AutoFilter\Column        &$filterColumn
+     *    @param    string                                        dynamicRuleType
+     *    @param    \ZExcel\Worksheet\AutoFilter\Column        &filterColumn
      *    @return mixed[]
      */
     private function _dynamicFilterDateRange(string dynamicRuleType, <\ZExcel\Worksheet\AutoFilter\Column> filterColumn)
