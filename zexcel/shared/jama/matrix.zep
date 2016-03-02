@@ -30,9 +30,9 @@ class Matrix
             "-10": "All rows must have the same length."
         ],
         "FR": [
-            "-1": "Modèle inadmissible d'argument pour la fonction polymorphe.",
-            "-2": "Type inadmissible d'argument.",
-            "-3": "Gamme inadmissible d'argument.",
+            "-1": "Modèle inadmissible d argument pour la fonction polymorphe.",
+            "-2": "Type inadmissible d argument.",
+            "-3": "Gamme inadmissible d argument.",
             "-4": "Les dimensions de Matrix ne sont pas égales.",
             "-5": "Perte significative de précision détectée.",
             "-6": "Perte significative de précision détectée."
@@ -342,7 +342,7 @@ class Matrix
         double s;
         int i, n;
         
-        let n = 0 + min($this->m, $this->n);
+        let n = 0 + min(this->m, this->n);
         
         for i in range(0, n - 1) {
             let s = s + this->a[i][i];
@@ -370,7 +370,41 @@ class Matrix
      */
     public function plus()
     {
-        throw new \Exception("Not implemented yet!");
+        var i, j, m, args, match;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch(match) {
+                case "object":
+                        if (args[0] instanceof \ZExcel\Shared\JAMA\Matrix) {
+                            let m = args[0];
+                        } else {
+                            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                        }
+                        break;
+                case "array":
+                        let m = new \ZExcel\Shared\JAMA\Matrix();
+                        call_user_func([m, "initialize"], args[0]);
+                        break;
+                default:
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+                        break;
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    m->set(i, j, m->get(i, j) + this->a[i][j]);
+                }
+            }
+            
+            return m;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
     /**
