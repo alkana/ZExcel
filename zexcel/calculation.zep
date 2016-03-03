@@ -2306,7 +2306,7 @@ class Calculation
      * @param mixed $value
      * @return mixed
      */
-    public static function _wrapResult(value)
+    public static function wrapResult(value)
     {
         if (is_string(value)) {
             //    Error values cannot be "wrapped"
@@ -2485,13 +2485,13 @@ class Calculation
         let formula = trim(formula);
         
         if (substr(formula, 0, 1) != "=") {
-            return self::_wrapResult(formula);
+            return self::wrapResult(formula);
         }
         
         let formula = ltrim(substr(formula, 1));
         
         if (strlen(formula) === 0) {
-            return self::_wrapResult(formula);
+            return self::wrapResult(formula);
         }
 
         let pCellParent = (pCell !== null) ? pCell->getWorksheet() : null;
@@ -2974,7 +2974,7 @@ class Calculation
                     
                     if (opCharacter == "\"") {
                         //    UnEscape any quotes within the string
-                        let val = self::_wrapResult(str_replace("\"\"", "\"", self::_unwrapResult(val)));
+                        let val = self::wrapResult(str_replace("\"\"", "\"", self::_unwrapResult(val)));
                     } elseif (is_numeric(val)) {
                         if ((strpos(val, ".") !== false) || (stripos(val, "e") !== false) || (val > PHP_INT_MAX) || (val < -PHP_INT_MAX)) {
                             let val = (float) val;

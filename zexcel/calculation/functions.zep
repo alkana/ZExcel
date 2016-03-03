@@ -177,7 +177,7 @@ class Functions
         
         if (!in_array(substr(condition, 0, 1), [">", "<", "="])) {
             if (!is_numeric(condition)) {
-                let condition = \ZExcel\Calculation::_wrapResult(strtoupper(condition));
+                let condition = \ZExcel\Calculation::wrapResult(strtoupper(condition));
             }
             let returnValue = "=" . condition;
         } else {
@@ -188,7 +188,7 @@ class Functions
             
             if (!is_numeric(operand)) {
                 let operand = str_replace("\"", "\"\"", operand);
-                let operand = \ZExcel\Calculation::_wrapResult(strtoupper(operand));
+                let operand = \ZExcel\Calculation::wrapResult(strtoupper(operand));
             }
 
             let returnValue = operator . operand;

@@ -1286,7 +1286,7 @@ class MathTrig
         for key, arg in aArgs {
             if (!is_numeric(arg)) {
                 let arg = str_replace("\"", "\"\"", arg);
-                let arg = \ZExcel\Calculation::_wrapResult(strtoupper(arg));
+                let arg = \ZExcel\Calculation::wrapResult(strtoupper(arg));
             }
             
             let testCondition = "=" . arg . condition;
@@ -1349,7 +1349,7 @@ class MathTrig
                     }
                 } else {
                     if (!is_numeric(arg)) {
-                        let arg = \ZExcel\Calculation::_wrapResult(strtoupper(arg));
+                        let arg = \ZExcel\Calculation::wrapResult(strtoupper(arg));
                     }
                     
                     let testCondition = "=" . arg . condition;
