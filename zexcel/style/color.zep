@@ -329,7 +329,7 @@ class Color extends Supervisor implements ZIComparable
         }
         return md5(
             this->argb .
-            __CLASS__
+            get_class(this)
         );
     }
 }

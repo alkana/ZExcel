@@ -9,7 +9,7 @@ class DefaultValueBinder implements IValueBinder
      * @param  mixed          $value  Value to bind in cell
      * @return boolean
      */
-    public function bindValue(<\ZExcel\Cell> cell, value = null)
+    public function bindValue(<\ZExcel\Cell> cell, var value = null)
     {
         // sanitize UTF-8 strings
         if (is_string(value)) {
@@ -36,7 +36,7 @@ class DefaultValueBinder implements IValueBinder
      * @param   mixed  $pValue
      * @return  string
      */
-    public static function dataTypeForValue(pValue = null)
+    public static function dataTypeForValue(var pValue = null)
     {
         var tValue = [];
         
@@ -55,11 +55,13 @@ class DefaultValueBinder implements IValueBinder
             return \ZExcel\Cell\DataType::TYPE_NUMERIC;
         } elseif (preg_match("/^[\+\-]?([0-9]+\\.?[0-9]*|[0-9]*\\.?[0-9]+)([Ee][\-\+]?[0-2]?\d{1,3})?$/", pValue)) {
             let tValue = ltrim(pValue, "+-");
+            
             if (is_string(pValue) && tValue[0] === "0" && strlen(tValue) > 1 && tValue[1] !== ".") {
                 return \ZExcel\Cell\DataType::TYPE_STRING;
             } elseif ((strpos(pValue, ".") === false) && (pValue > PHP_INT_MAX)) {
                 return \ZExcel\Cell\DataType::TYPE_STRING;
             }
+            
             return \ZExcel\Cell\DataType::TYPE_NUMERIC;
         } elseif (is_string(pValue) && array_key_exists(pValue, \ZExcel\Cell\DataType::getErrorCodes())) {
             return \ZExcel\Cell\DataType::TYPE_ERROR;

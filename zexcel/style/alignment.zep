@@ -354,7 +354,7 @@ class Alignment extends Supervisor implements ZIComparable
             (this->shrinkToFit ? 't' : 'f') .
             this->indent .
             this->readorder .
-            __CLASS__
+            get_class(this)
         );
     }
 }

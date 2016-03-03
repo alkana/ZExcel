@@ -185,7 +185,7 @@ class Protection extends Supervisor implements ZIComparable
         return md5(
             this->locked .
             this->hidden .
-            __CLASS__
+            get_class(this)
         );
     }
 }

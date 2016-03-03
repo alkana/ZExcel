@@ -228,7 +228,7 @@ class Fill extends Supervisor implements ZIComparable
             this->getRotation() .
             this->getStartColor()->getHashCode() .
             this->getEndColor()->getHashCode() .
-            __CLASS__
+            get_class(this)
         );
     }
 }

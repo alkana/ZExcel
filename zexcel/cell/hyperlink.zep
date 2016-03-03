@@ -90,6 +90,6 @@ class Hyperlink
      */
     public function getHashCode() -> string
     {
-        return md5(this->url . this->tooltip . __CLASS__);
+        return md5(this->url . this->tooltip . get_class(this));
     }
 }

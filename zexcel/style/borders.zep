@@ -277,7 +277,7 @@ class Borders extends Supervisor implements ZIComparable
             this->getBottom()->getHashCode() .
             this->getDiagonal()->getHashCode() .
             this->getDiagonalDirection() .
-            __CLASS__
+            get_class(this)
         );
     }
 }

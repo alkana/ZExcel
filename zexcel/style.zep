@@ -344,7 +344,7 @@ class Style extends Style\Supervisor implements IComparable
             hashConditionals .
             this->protection->getHashCode() .
             (this->quotePrefix  ? "t" : "f") .
-            __CLASS__
+            get_class(this)
         );
     }
 

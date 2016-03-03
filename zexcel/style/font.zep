@@ -428,7 +428,7 @@ class Font extends Supervisor implements ZIComparable
             this->underline .
             (this->strikethrough ? "t" : "f") .
             this->color->getHashCode() .
-            __CLASS__
+            get_class(this)
         );
     }
 }

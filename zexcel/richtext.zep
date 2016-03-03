@@ -149,7 +149,7 @@ class RichText implements IComparable
             let hashElements = hashElements + element->getHashCode();
         }
 
-        return md5(hashElements . __CLASS__);
+        return md5(hashElements . get_class(this));
     }
 
     /**

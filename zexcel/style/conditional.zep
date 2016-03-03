@@ -163,7 +163,7 @@ class Conditional implements ZIComparable
             this->operatorType .
             implode(";", this->condition) .
             this->style->getHashCode() .
-            __CLASS__
+            get_class(this)
         );
     }
 

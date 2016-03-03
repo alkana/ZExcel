@@ -59,7 +59,7 @@ class TextElement implements ITextElement
      */
     public function getHashCode()
     {
-        return md5(this->text . __CLASS__);
+        return md5(this->text . get_class(this));
     }
 
     /**

@@ -137,6 +137,11 @@
 #define ZEPHIR_SCONCAT_VVVVVVVVVS(result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10) \
 	 zephir_concat_vvvvvvvvvs(&result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, sizeof(op10)-1, 1 TSRMLS_CC);
 
+#define ZEPHIR_CONCAT_VVVVVVVVVVVVVV(result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11, op12, op13, op14) \
+	 zephir_concat_vvvvvvvvvvvvvv(&result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11, op12, op13, op14, 0 TSRMLS_CC);
+#define ZEPHIR_SCONCAT_VVVVVVVVVVVVVV(result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11, op12, op13, op14) \
+	 zephir_concat_vvvvvvvvvvvvvv(&result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11, op12, op13, op14, 1 TSRMLS_CC);
+
 
 void zephir_concat_sss(zval **result, const char *op1, zend_uint op1_len, const char *op2, zend_uint op2_len, const char *op3, zend_uint op3_len, int self_var TSRMLS_DC);
 void zephir_concat_sv(zval **result, const char *op1, zend_uint op1_len, zval *op2, int self_var TSRMLS_DC);
@@ -164,6 +169,7 @@ void zephir_concat_vvvvvvs(zval **result, zval *op1, zval *op2, zval *op3, zval 
 void zephir_concat_vvvvvvvs(zval **result, zval *op1, zval *op2, zval *op3, zval *op4, zval *op5, zval *op6, zval *op7, const char *op8, zend_uint op8_len, int self_var TSRMLS_DC);
 void zephir_concat_vvvvvvvvs(zval **result, zval *op1, zval *op2, zval *op3, zval *op4, zval *op5, zval *op6, zval *op7, zval *op8, const char *op9, zend_uint op9_len, int self_var TSRMLS_DC);
 void zephir_concat_vvvvvvvvvs(zval **result, zval *op1, zval *op2, zval *op3, zval *op4, zval *op5, zval *op6, zval *op7, zval *op8, zval *op9, const char *op10, zend_uint op10_len, int self_var TSRMLS_DC);
+void zephir_concat_vvvvvvvvvvvvvv(zval **result, zval *op1, zval *op2, zval *op3, zval *op4, zval *op5, zval *op6, zval *op7, zval *op8, zval *op9, zval *op10, zval *op11, zval *op12, zval *op13, zval *op14, int self_var TSRMLS_DC);
 #define zephir_concat_function(result, op1, op2) concat_function(result, op1, op2 TSRMLS_CC)
 
 #endif /* ZEPHIR_KERNEL_CONCAT_H */

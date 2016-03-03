@@ -198,7 +198,7 @@ class Border extends Supervisor implements ZIComparable
         return md5(
             this->borderStyle .
             this->color->getHashCode() .
-            __CLASS__
+            get_class(this)
         );
     }
 }
