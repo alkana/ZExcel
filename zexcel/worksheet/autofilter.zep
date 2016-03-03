@@ -88,7 +88,7 @@ class AutoFilter
      */
     public function setRange(var pRange = "")
     {
-        var cellAddress, worksheet, key, value, rangeStart, rangeEnd, colIndex;
+        var cellAddress, worksheet, key, rangeStart, rangeEnd, colIndex;
         
         let cellAddress = explode("!",strtoupper(pRange));
         
@@ -110,11 +110,11 @@ class AutoFilter
             let this->_columns = [];
         } else {
             //    Discard any column rules that are no longer valid within this range
-            let value = \ZExcel\Cell::rangeBoundaries(this->_range);
-            let rangeStart = value[0];
-            let rangeEnd = value[1];
+            let key = \ZExcel\Cell::rangeBoundaries(this->_range);
+            let rangeStart = key[0];
+            let rangeEnd = key[1];
 
-            for key, value in this->_columns {
+            for key, _ in this->_columns {
                 let colIndex = \ZExcel\Cell::columnIndexFromString(key);
                 
                 if ((rangeStart[0] > colIndex) || (rangeEnd[0] < colIndex)) {

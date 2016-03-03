@@ -130,7 +130,6 @@ class Matrix
                     break;
                 default:
                     throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
-                    break;
             }
         } else {
             throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
@@ -192,7 +191,184 @@ class Matrix
      */
     public function getMatrix()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, i, j, i0, j0, m, n, r, iFF, jF, rl, cl;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                // A(i0...; j0...)
+                case "integer,integer":
+                    let i0 = args[0];
+                    let j0 = args[1];
+                    
+                    if (i0 >= 0) {
+                        let m = this->m - i0;
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    if (j0 >= 0) {
+                        let n = this->n - j0;
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    let r = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([r, "initialize"], m, n);
+                    
+                    for i in range(i0, this->m - 1) {
+                        for j in range(j0, this->n - 1) {
+                            r->set(i, j, this->a[i][j]);
+                        }
+                    }
+                    
+                    return r;
+                // A(i0...iF; j0...jF)
+                case "integer,integer,integer,integer":
+                    let i0 = args[0];
+                    let iFF = args[1];
+                    let j0 = args[2];
+                    let jF = args[3];
+                    
+                    if ((iFF > i0) && (this->m >= iFF) && (i0 >= 0)) {
+                        let m = iFF - i0;
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    if ((jF > j0) && (this->n >= jF) && (j0 >= 0)) {
+                        let n = jF - j0;
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    let r = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([r, "initialize"], m + 1, n + 1);
+                    
+                    for i in range(i0, iFF) {
+                        for j in range(j0, jF) {
+                            r->set(i - i0, j - j0, this->a[i][j]);
+                        }
+                    }
+                    
+                    return r;
+                //r = array of row indices; C = array of column indices
+                case "array,array":
+                    let rl = args[0];
+                    let cl = args[1];
+                    
+                    if (count(rl) > 0) {
+                        let m = count(rl);
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    if (count(cl) > 0) {
+                        let n = count(cl);
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    let r = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([r, "initialize"], m, n);
+                    
+                    for i in range(0, m - 1) {
+                        for j in range(0, n - 1) {
+                            r->set(i - i0, j - j0, this->a[rl[i]][cl[j]]);
+                        }
+                    }
+                    
+                    return r;
+                //rl = array of row indices; cl = array of column indices
+                case "array,array":
+                    let rl = args[0];
+                    let cl = args[1];
+                    
+                    if (count(rl) > 0) {
+                        let m = count(rl);
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    if (count(cl) > 0) {
+                        let n = count(cl);
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    let r = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([r, "initialize"], m, n);
+                    
+                    for i in range(0, m - 1) {
+                        for j in range(0, n - 1) {
+                            r->set(i, j, this->a[rl[i]][cl[j]]);
+                        }
+                    }
+                    
+                    return r;
+                //A(i0...iFF); cl = array of column indices
+                case "integer,integer,array":
+                    let i0 = args[0];
+                    let iFF = args[1];
+                    let cl = args[2];
+                    
+                    if ((iFF > i0) && (this->m >= iFF) && (i0 >= 0)) {
+                        let m = iFF - i0;
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    if (count(cl) > 0) {
+                        let n = count(cl);
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    let r = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([r, "initialize"], m, n);
+                    
+                    for i in range(i0, iFF - 1) {
+                        for j in range(0, n - 1) {
+                            r->set(i - i0, j, this->a[rl[i]][j]);
+                        }
+                    }
+                    
+                    return r;
+                //rl = array of row indices
+                case "array,integer,integer":
+                    let rl = args[0];
+                    let j0 = args[1];
+                    let jF = args[2];
+                    
+                    if (count(rl) > 0) {
+                        let m = count(rl);
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    if ((jF >= j0) && (this->n >= jF) && (j0 >= 0)) {
+                        let n = jF - j0;
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_BOUNDS_EXCEPTION));
+                    }
+                    
+                    let r = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([r, "initialize"], m, n + 1);
+                    
+                    for i in range(0, m - 1) {
+                        for j in range(j0, jF) {
+                            r->set(i, j - j0, this->a[rl[i]][j]);
+                        }
+                    }
+                    return r;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+            }
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
     /**
@@ -271,7 +447,7 @@ class Matrix
      *
      *    Get a submatrix by row index/range
      *    @param int i0 Initial row index
-     *    @param int iF Final row index
+     *    @param int iFF Final row index
      *    @return Matrix Submatrix
      */
     public function getMatrixByRow(var i0 = null, var iFF = null)
@@ -390,7 +566,6 @@ class Matrix
                         break;
                 default:
                         throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
-                        break;
             }
             
             this->checkMatrixDimensions(m);
@@ -416,7 +591,59 @@ class Matrix
      */
     public function plusEquals()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j, validValues, value;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared\JAMA\Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                    break;
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initialize"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    let validValues = true;
+                    let value = m->get(i, j);
+                    
+                    if ((is_string(this->a[i][j])) && (strlen(this->a[i][j]) > 0) && (!is_numeric(this->a[i][j]))) {
+                        let this->a[i][j] = trim(this->a[i][j], "\"");
+                        let this->a[i][j] = \ZExcel\Shared\Stringg::convertToNumberIfFraction(this->a[i][j]);
+                        let validValues = validValues && (this->a[i][j] !== false);
+                    }
+                    
+                    if ((is_string(value)) && (strlen(value) > 0) && (!is_numeric(value))) {
+                        let value = trim(value, "\"");
+                        let value = \ZExcel\Shared\Stringg::convertToNumberIfFraction(value);
+                        let validValues = validValues && (value !== false);
+                    }
+                    
+                    if (validValues) {
+                        let this->a[i][j] = this->a[i][j] + value;
+                    } else {
+                        let this->a[i][j] = \ZExcel\Calculation\Functions::NaN();
+                    }
+                }
+            }
+            
+            return this;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
     /**
@@ -428,7 +655,40 @@ class Matrix
      */
     public function minus()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared_JAMA_Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                    break;
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initilliaze"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    m->set(i, j, m->get(i, j) - this->a[i][j]);
+                }
+            }
+            
+            return m;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
     /**
@@ -440,7 +700,59 @@ class Matrix
      */
     public function minusEquals()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j, validValues, value;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared_JAMA_Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                    break;
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initialize"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    let validValues = true;
+                    let value = m->get(i, j);
+                    
+                    if ((is_string(this->a[i][j])) && (strlen(this->a[i][j]) > 0) && (!is_numeric(this->a[i][j]))) {
+                        let this->a[i][j] = trim(this->a[i][j], "\"");
+                        let this->a[i][j] = \ZExcel\Shared\Stringg::convertToNumberIfFraction(this->a[i][j]);
+                        let validValues = validValues && (this->a[i][j] !== false);
+                    }
+                    
+                    if ((is_string(value)) && (strlen(value) > 0) && (!is_numeric(value))) {
+                        let value = trim(value, "\"");
+                        let value = \ZExcel\Shared\Stringg::convertToNumberIfFraction(value);
+                        let validValues = validValues && (value !== false);
+                    }
+                    
+                    if (validValues) {
+                        let this->a[i][j] = this->a[i][j] - value;
+                    } else {
+                        let this->a[i][j] = \ZExcel\Calculation\Functions::NaN();
+                    }
+                }
+            }
+            
+            return this;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
     /**
@@ -453,7 +765,40 @@ class Matrix
      */
     public function arrayTimes()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared_JAMA_Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                    break;
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initialize"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m + 1) {
+                for j in range(0, this->n - 1) {
+                    m->set(i, j, m->get(i, j) * this->a[i][j]);
+                }
+            
+            }
+            return m;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
     /**
@@ -466,7 +811,58 @@ class Matrix
      */
     public function arrayTimesEquals()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j, validValues, value;
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared_JAMA_Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                    break;
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initialize"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    let validValues = true;
+                    let value = m->get(i, j);
+                    
+                    if ((is_string(this->a[i][j])) && (strlen(this->a[i][j]) > 0) && (!is_numeric(this->a[i][j]))) {
+                        let this->a[i][j] = trim(this->a[i][j], "\"");
+                        let this->a[i][j] = \ZExcel\Shared\Stringg::convertToNumberIfFraction(this->a[i][j]);
+                        let validValues = validValues && (this->a[i][j] !== false);
+                    }
+                    
+                    if ((is_string(value)) && (strlen(value) > 0) && (!is_numeric(value))) {
+                        let value = trim(value, "\"");
+                        let value = \ZExcel\Shared\Stringg::convertToNumberIfFraction(value);
+                        let validValues = validValues && (value !== false);
+                    }
+                    
+                    if (validValues) {
+                        let this->a[i][j] = this->a[i][j] * value;
+                    } else {
+                        let this->a[i][j] = \ZExcel\Calculation\Functions::NaN();
+                    }
+                }
+            }
+            
+            return this;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
     /**
@@ -479,7 +875,64 @@ class Matrix
      */
     public function arrayRightDivide()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j, validValues, value;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared_JAMA_Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                    break;
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initialize"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    let validValues = true;
+                    let value = m->get(i, j);
+                    
+                    if ((is_string(this->a[i][j])) && (strlen(this->a[i][j]) > 0) && (!is_numeric(this->a[i][j]))) {
+                        let this->a[i][j] = trim(this->a[i][j], "\"");
+                        let this->a[i][j] = \ZExcel\Shared\Stringg::convertToNumberIfFraction(this->a[i][j]);
+                        let validValues = validValues && (this->a[i][j] !== false);
+                    }
+                    
+                    if ((is_string(value)) && (strlen(value) > 0) && (!is_numeric(value))) {
+                        let value = trim(value, "\"");
+                        let value = \ZExcel\Shared\Stringg::convertToNumberIfFraction(value);
+                        let validValues = validValues && (value !== false);
+                    }
+                    
+                    if (validValues) {
+                        if (value == 0) {
+                            //    Trap for Divide by Zero error
+                            m->set(i, j, "#DIV/0!");
+                        } else {
+                            m->set(i, j, this->a[i][j] / value);
+                        }
+                    } else {
+                        m->set(i, j, \ZExcel\Calculation\Functions::NaN());
+                    }
+                }
+            }
+            
+            return m;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
 
@@ -493,7 +946,40 @@ class Matrix
      */
     public function arrayRightDivideEquals()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared\JAMA\Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                    break;
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initialize"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    let this->a[i][j] = this->a[i][j] / m->get(i, j);
+                }
+            }
+            
+            return m;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
 
@@ -507,7 +993,41 @@ class Matrix
      */
     public function arrayLeftDivide()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared\JAMA\Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                    break;
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initialize"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+                    break;
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    m->set(i, j, m->get(i, j) / this->a[i][j]);
+                }
+            }
+            
+            return m;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
 
@@ -521,7 +1041,39 @@ class Matrix
      */
     public function arrayLeftDivideEquals()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared\JAMA\Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                    break;
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initialize"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    let this->a[i][j] = m->get(i, j) / this->a[i][j];
+                }
+            }
+            return m;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
 
@@ -655,7 +1207,60 @@ class Matrix
      */
     public function power()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j, validValues, value;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared\JAMA\Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                    break;
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initialize"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+                    break;
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    let validValues = true;
+                    let value = m->get(i, j);
+                    
+                    if ((is_string(this->a[i][j])) && (strlen(this->a[i][j]) > 0) && (!is_numeric(this->a[i][j]))) {
+                        let this->a[i][j] = trim(this->a[i][j], "\"");
+                        let this->a[i][j] = \ZExcel\Shared\Stringg::convertToNumberIfFraction(this->a[i][j]);
+                        let validValues = validValues && (this->a[i][j] !== false);
+                    }
+                    
+                    if ((is_string(value)) && (strlen(value) > 0) && (!is_numeric(value))) {
+                        let value = trim(value, "\"");
+                        let value = \ZExcel\Shared\Stringg::convertToNumberIfFraction(value);
+                        let validValues = validValues && (value !== false);
+                    }
+                    
+                    if (validValues) {
+                        let this->a[i][j] = pow(this->a[i][j], value);
+                    } else {
+                        let this->a[i][j] = \ZExcel\Calculation\Functions::NaN();
+                    }
+                }
+            }
+            
+            return this;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
     /**
@@ -667,7 +1272,39 @@ class Matrix
      */
     public function concat()
     {
-        throw new \Exception("Not implemented yet!");
+        var args, match, m, i, j;
+        
+        if (func_num_args() > 0) {
+            let args = func_get_args();
+            let match = implode(",", array_map("gettype", args));
+
+            switch (match) {
+                case "object":
+                    if (args[0] instanceof \ZExcel\Shared\JAMA\Matrix) {
+                        let m = args[0];
+                    } else {
+                        throw new \ZExcel\Calculation\Exception(self::JAMAError(self::ARGUMENT_TYPE_EXCEPTION));
+                    }
+                case "array":
+                    let m = new \ZExcel\Shared\JAMA\Matrix();
+                    call_user_func([m, "initialize"], args[0]);
+                    break;
+                default:
+                    throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+            }
+            
+            this->checkMatrixDimensions(m);
+            
+            for i in range(0, this->m - 1) {
+                for j in range(0, this->n - 1) {
+                    let this->a[i][j] = trim(this->a[i][j], "\"") . trim(m->get(i, j), "\"");
+                }
+            }
+            
+            return this;
+        } else {
+            throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
+        }
     }
 
     /**
@@ -676,9 +1313,17 @@ class Matrix
      *    @param Matrix B Right hand side
      *    @return Matrix ... Solution if A is square, least squares solution otherwise
      */
-    public function solve(b)
+    public function solve(var b)
     {
-        throw new \Exception("Not implemented yet!");
+        var comp;
+        
+        if (this->m == this->n) {
+            let comp = new \ZExcel\Shared\JAMA\LudeComposition(this);
+            return comp->solve(b);
+        } else {
+            let comp = new \ZExcel\Shared\JAMA\QRDecomposition(this);
+            return comp->solve(b);
+        }
     }
 
     /**
@@ -688,7 +1333,7 @@ class Matrix
      */
     public function inverse()
     {
-        throw new \Exception("Not implemented yet!");
+        return this->solve(this->identity(this->m, this->m));
     }
 
     /**
@@ -699,7 +1344,11 @@ class Matrix
      */
     public function det()
     {
-        throw new \Exception("Not implemented yet!");
+        var l;
+        
+        let l = new \ZExcel\Shared\JAMA\ludeComposition(this);
+        
+        return l->det();
     }
     
     public static function hypo(double a, double b) {

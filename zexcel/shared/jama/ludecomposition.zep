@@ -1,6 +1,6 @@
 namespace ZExcel\Shared\JaMa;
 
-class luDecomposition 
+class ludeComposition
 {
     const MATRIX_SINGULAR_EXCEPTION = "Can only perform operation on singular matrix.";
     
@@ -74,7 +74,7 @@ class luDecomposition
                     let kmax = min(i,j);
                     let s = 0.0;
                     
-                    for k in rrange(0, kmax - 1) {
+                    for k in range(0, kmax - 1) {
                         let s = s + (lurowi[k] * lucolj[k]);
                     }
                     

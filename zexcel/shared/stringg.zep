@@ -549,6 +549,29 @@ class Stringg
         }
         return strtolower(pValue) ^ strtoupper(pValue) ^ pValue;
     }
+    
+    /**
+     * Identify whether a string contains a fractional numeric value,
+     *    and convert it to a numeric if it is
+     *
+     * @param string &$operand string value to test
+     * @return boolean
+     */
+    public static function convertToNumberIfFraction(var operand)
+    {
+        var sign, fractionFormula;
+        array match = [];
+        
+        if (preg_match("/^" . self::STRING_REGEXP_FRACTION . "$/i", operand, match)) {
+            let sign = (match[1] == "-") ? "-" : "+";
+            let fractionFormula = "=" . sign . match[2] . sign . match[3];
+            let operand = \ZExcel\Calculation::getInstance()->_calculateFormulaValue(fractionFormula);
+            
+            return operand;
+        }
+        
+        return false;
+    }
 
     /**
      * Get the decimal separator. If it has not yet been set explicitly, try to obtain number
@@ -578,8 +601,8 @@ class Stringg
     }
 
     /**
-     * Set the decimal separator. Only used by PHPExcel_Style_NumberFormat::toFormattedString()
-     * to format output by PHPExcel_Writer_HTML and PHPExcel_Writer_PDF
+     * Set the decimal separator. Only used by \ZExcel\Style_NumberFormat::toFormattedString()
+     * to format output by \ZExcel\Writer_HTML and \ZExcel\Writer_PDF
      *
      * @param string $pValue Character for decimal separator
      */
@@ -616,8 +639,8 @@ class Stringg
     }
 
     /**
-     * Set the thousands separator. Only used by PHPExcel_Style_NumberFormat::toFormattedString()
-     * to format output by PHPExcel_Writer_HTML and PHPExcel_Writer_PDF
+     * Set the thousands separator. Only used by \ZExcel\Style_NumberFormat::toFormattedString()
+     * to format output by \ZExcel\Writer_HTML and \ZExcel\Writer_PDF
      *
      * @param string $pValue Character for thousands separator
      */
@@ -655,8 +678,8 @@ class Stringg
     }
 
     /**
-     * Set the currency code. Only used by PHPExcel_Style_NumberFormat::toFormattedString()
-     *        to format output by PHPExcel_Writer_HTML and PHPExcel_Writer_PDF
+     * Set the currency code. Only used by \ZExcel\Style_NumberFormat::toFormattedString()
+     *        to format output by \ZExcel\Writer_HTML and \ZExcel\Writer_PDF
      *
      * @param string $pValue Character for currency code
      */
