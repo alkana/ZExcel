@@ -647,7 +647,8 @@ class LookupRef
      */
     public static function index(var arrayValues, var rowNum = 0, var columnNum = 0)
     {
-        /*
+        var rowKeys, columnKeys, returnArray, arrayColumn, tmp;
+        
         if ((rowNum < 0) || (columnNum < 0)) {
             return \ZExcel\Calculation\Functions::VaLUE();
         }
@@ -657,7 +658,8 @@ class LookupRef
         }
 
         let rowKeys = array_keys(arrayValues);
-        let columnKeys = @array_keys(arrayValues[rowKeys[0]]);
+        let tmp = arrayValues[rowKeys[0]];
+        let columnKeys = array_keys(tmp);
 
         if (columnNum > count(columnKeys)) {
             return \ZExcel\Calculation\Functions::VaLUE();
@@ -674,7 +676,7 @@ class LookupRef
             for arrayColumn in arrayValues {
                 if (is_array(arrayColumn)) {
                     if (isset(arrayColumn[rowNum])) {
-                        returnArray[] = arrayColumn[rowNum];
+                        let returnArray[] = arrayColumn[rowNum];
                     } else {
                         return arrayValues[rowNum];
                     }
@@ -699,7 +701,6 @@ class LookupRef
         let rowNum = rowKeys[rowNum];
 
         return arrayValues[rowNum][columnNum];
-        */
     }
 
 

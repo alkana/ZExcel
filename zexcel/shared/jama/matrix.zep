@@ -1227,7 +1227,6 @@ class Matrix
                     break;
                 default:
                     throw new \ZExcel\Calculation\Exception(self::JAMAError(self::POLYMORPHIC_ARGUMENT_EXCEPTION));
-                    break;
             }
             
             this->checkMatrixDimensions(m);
