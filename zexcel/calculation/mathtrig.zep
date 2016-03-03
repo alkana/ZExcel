@@ -8,9 +8,12 @@ class MathTrig
      */
     private static function factors(var value)
     {
-        var i, startVal = floor(sqrt(value)), factorArray = [];
+        array factorArray = [];
+        int i, startVal;
         
-        for i in range(startVal, 2) {
+        let startVal = 0 + floor(sqrt(value));
+        
+        for i in reverse range(2, startVal) {
             if ((value % i) == 0) {
                 let factorArray = array_merge(factorArray, self::factors(value / i));
                 let factorArray = array_merge(factorArray, self::factors(i));
@@ -25,7 +28,7 @@ class MathTrig
             rsort(factorArray);
             return factorArray;
         } else {
-            return [(int) value];
+            return [intval(value)];
         }
     }
 

@@ -79,6 +79,7 @@ class ludeComposition
                     }
                     
                     let lucolj[i] = (double) lucolj[i] - s;
+                    let this->lu[i][j] = lucolj[i]; // back reference
                     let lurowi[j] = lucolj[i];
                 }
                 
@@ -103,10 +104,11 @@ class ludeComposition
                     let this->piv[j] = k;
                     let this->pivsign = this->pivsign * -1;
                 }
+                
                 // Compute multipliers.
                 if ((j < this->m) && (this->lu[j][j] != 0.0)) {
                     for i in range(j + 1, this->m - 1) {
-                        let this->lu[i][j] = this->lu[i][j] / this->lu[j][j];
+                        let this->lu[i][j] = this->lu[i][j] * (1 / this->lu[j][j]);
                     }
                 }
             }
@@ -221,10 +223,10 @@ class ludeComposition
         var d, j;
         
         if (this->m == this->n) {
-            let d = this->pivsign;
+            let d = (double) this->pivsign;
             
             for j in range(0, this->n - 1) {
-                let d = d * this->lu[j][j];
+                let d = d * (double) this->lu[j][j];
             }
             
             return d;

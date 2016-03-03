@@ -58,7 +58,7 @@ class Database
      */
     private static function filter(var database, var criteria)
     {
-        var fieldNames, criteriaNames, testConditions, testValues, testConditionsCount, testCondition,
+        var fieldNames, criteriaNames, testConditions, testConditionsCount, testCondition,
             testConditionCount, testConditionSet, row, criterion, key, criteriaName, k, testConditionList,
             dataRow, dataValues, dataValue, result;
         
@@ -67,7 +67,6 @@ class Database
 
         //    Convert the criteria into a set of AND/OR conditions with [:placeholders]
         let testConditions = [];
-        let testValues = [];
         let testConditionsCount = 0;
         
         for key, criteriaName in criteriaNames {

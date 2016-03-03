@@ -81,7 +81,7 @@ class NumberFormat extends Supervisor implements ZIComparable
             "mmm": "M",
             //    mm is minutes if time, but can also be month w/leading zero
             //    so we try to identify times be the inclusion of a : separator in the mask
-            //    It isn't perfect, but the best way I know how
+            //    It isn"t perfect, but the best way I know how
             ":mm": ":i",
             "mm:": "i:",
             //    month leading zero
@@ -196,7 +196,19 @@ class NumberFormat extends Supervisor implements ZIComparable
      */
     public function applyFromArray(array pStyles = null)
     {
-        throw new \Exception("Not implemented yet!");
+        if (is_array(pStyles)) {
+            if (this->isSupervisor) {
+                this->getActiveSheet()->getStyle(this->getSelectedCells())->applyFromArray(this->getStyleArray(pStyles));
+            } else {
+                if (array_key_exists("code", pStyles)) {
+                    this->setFormatCode(pStyles["code"]);
+                }
+            }
+        } else {
+            throw new \ZExcel\Exception("Invalid style array passed.");
+        }
+        
+        return this;
     }
 
     /**
@@ -206,7 +218,15 @@ class NumberFormat extends Supervisor implements ZIComparable
      */
     public function getFormatCode()
     {
-        throw new \Exception("Not implemented yet!");
+        if (this->isSupervisor) {
+            return this->getSharedComponent()->getFormatCode();
+        }
+        
+        if (this->builtInFormatCode !== false) {
+            return self::builtInFormatCode(this->builtInFormatCode);
+        }
+        
+        return this->formatCode;
     }
 
     /**
@@ -215,9 +235,23 @@ class NumberFormat extends Supervisor implements ZIComparable
      * @param string pValue
      * @return \ZExcel\Style\NumberFormat
      */
-    public function setFormatCode(pValue = \ZExcel\Style\NumberFormat::FORMAT_GENERAL)
+    public function setFormatCode(var pValue = \ZExcel\Style\NumberFormat::FORMAT_GENERAL)
     {
-        throw new \Exception("Not implemented yet!");
+        var styleArray;
+        
+        if (pValue == "") {
+            let pValue = \ZExcel\Style\NumberFormat::FORMAT_GENERAL;
+        }
+        
+        if (this->isSupervisor) {
+            let styleArray = this->getStyleArray(["code": pValue]);
+            this->getActiveSheet()->getStyle(this->getSelectedCells())->applyFromArray(styleArray);
+        } else {
+            let this->formatCode = pValue;
+            let this->builtInFormatCode = self::builtInFormatCodeIndex(pValue);
+        }
+        
+        return this;
     }
 
     /**
@@ -227,7 +261,11 @@ class NumberFormat extends Supervisor implements ZIComparable
      */
     public function getBuiltInFormatCode()
     {
-        throw new \Exception("Not implemented yet!");
+        if (this->isSupervisor) {
+            return this->getSharedComponent()->getBuiltInFormatCode();
+        }
+        
+        return this->builtInFormatCode;
     }
 
     /**
@@ -236,9 +274,19 @@ class NumberFormat extends Supervisor implements ZIComparable
      * @param int pValue
      * @return \ZExcel\Style\NumberFormat
      */
-    public function setBuiltInFormatCode(pValue = 0)
+    public function setBuiltInFormatCode(var pValue = 0)
     {
-        throw new \Exception("Not implemented yet!");
+        var styleArray;
+        
+        if (this->isSupervisor) {
+            let styleArray = this->getStyleArray(["code": self::builtInFormatCode(pValue)]);
+            this->getActiveSheet()->getStyle(this->getSelectedCells())->applyFromArray(styleArray);
+        } else {
+            let this->builtInFormatCode = pValue;
+            let this->formatCode = self::builtInFormatCode(pValue);
+        }
+        
+        return this;
     }
 
     /**
@@ -246,7 +294,87 @@ class NumberFormat extends Supervisor implements ZIComparable
      */
     private static function fillBuiltInFormatCodes()
     {
-        throw new \Exception("Not implemented yet!");
+        //  [MS-OI29500: Microsoft Office Implementation Information for ISO/IEC-29500 Standard Compliance]
+        //  18.8.30. numFmt (Number Format)
+        //
+        //  The ECMA standard defines built-in format IDs
+        //      14: "mm-dd-yy"
+        //      22: "m/d/yy h:mm"
+        //      37: "#,##0 ;(#,##0)"
+        //      38: "#,##0 ;[Red](#,##0)"
+        //      39: "#,##0.00;(#,##0.00)"
+        //      40: "#,##0.00;[Red](#,##0.00)"
+        //      47: "mmss.0"
+        //      KOR fmt 55: "yyyy-mm-dd"
+        //  Excel defines built-in format IDs
+        //      14: "m/d/yyyy"
+        //      22: "m/d/yyyy h:mm"
+        //      37: "#,##0_);(#,##0)"
+        //      38: "#,##0_);[Red](#,##0)"
+        //      39: "#,##0.00_);(#,##0.00)"
+        //      40: "#,##0.00_);[Red](#,##0.00)"
+        //      47: "mm:ss.0"
+        //      KOR fmt 55: "yyyy/mm/dd"
+ 
+        // Built-in format codes
+        if (is_null(self::builtInFormats)) {
+            let self::builtInFormats = [];
+
+            // General
+            let self::builtInFormats[0] = \ZExcel\Style\NumberFormat::FORMAT_GENERAL;
+            let self::builtInFormats[1] = "0";
+            let self::builtInFormats[2] = "0.00";
+            let self::builtInFormats[3] = "#,##0";
+            let self::builtInFormats[4] = "#,##0.00";
+
+            let self::builtInFormats[9] = "0%";
+            let self::builtInFormats[10] = "0.00%";
+            let self::builtInFormats[11] = "0.00E+00";
+            let self::builtInFormats[12] = "# ?/?";
+            let self::builtInFormats[13] = "# ??/??";
+            let self::builtInFormats[14] = "m/d/yyyy";                     // Despite ECMA 'mm-dd-yy';
+            let self::builtInFormats[15] = "d-mmm-yy";
+            let self::builtInFormats[16] = "d-mmm";
+            let self::builtInFormats[17] = "mmm-yy";
+            let self::builtInFormats[18] = "h:mm AM/PM";
+            let self::builtInFormats[19] = "h:mm:ss AM/PM";
+            let self::builtInFormats[20] = "h:mm";
+            let self::builtInFormats[21] = "h:mm:ss";
+            let self::builtInFormats[22] = "m/d/yyyy h:mm";                // Despite ECMA 'm/d/yy h:mm';
+
+            let self::builtInFormats[37] = "#,##0_);(#,##0)";              //  Despite ECMA '#,##0 ;(#,##0)';
+            let self::builtInFormats[38] = "#,##0_);[Red](#,##0)";         //  Despite ECMA '#,##0 ;[Red](#,##0)';
+            let self::builtInFormats[39] = "#,##0.00_);(#,##0.00)";        //  Despite ECMA '#,##0.00;(#,##0.00)';
+            let self::builtInFormats[40] = "#,##0.00_);[Red](#,##0.00)";   //  Despite ECMA '#,##0.00;[Red](#,##0.00)';
+
+            // @FIXME zephir try to translate string
+//             let self::builtInFormats[44] = "_(\"$\"* #,##0.00_);_(\"$\"* \(#,##0.00\);_(\"$\"* "-"??_);_(@_)";
+            let self::builtInFormats[45] = "mm:ss";
+            let self::builtInFormats[46] = "[h]:mm:ss";
+            let self::builtInFormats[47] = "mm:ss.0";                      //  Despite ECMA 'mmss.0';
+            let self::builtInFormats[48] = "##0.0E+0";
+            let self::builtInFormats[49] = "@";
+
+            // CHT
+            let self::builtInFormats[27] = "[-404]e/m/d";
+            let self::builtInFormats[30] = "m/d/yy";
+            let self::builtInFormats[36] = "[$-404]e/m/d";
+            let self::builtInFormats[50] = "[$-404]e/m/d";
+            let self::builtInFormats[57] = "[$-404]e/m/d";
+
+            // THA
+            let self::builtInFormats[59] = "t0";
+            let self::builtInFormats[60] = "t0.00";
+            let self::builtInFormats[61] = "t#,##0";
+            let self::builtInFormats[62] = "t#,##0.00";
+            let self::builtInFormats[67] = "t0%";
+            let self::builtInFormats[68] = "t0.00%";
+            let self::builtInFormats[69] = "t# ?/?";
+            let self::builtInFormats[70] = "t# ??/??";
+
+            // Flip array (for faster lookups)
+            let self::flippedBuiltInFormats = array_flip(self::builtInFormats);
+        }
     }
 
     /**
@@ -255,9 +383,20 @@ class NumberFormat extends Supervisor implements ZIComparable
      * @param    int        pIndex
      * @return    string
      */
-    public static function builtInFormatCode(pIndex)
+    public static function builtInFormatCode(var pIndex)
     {
-        throw new \Exception("Not implemented yet!");
+        // Clean parameter
+        let pIndex = intval(pIndex);
+
+        // Ensure built-in format codes are available
+        self::fillBuiltInFormatCodes();
+        
+        // Lookup format code
+        if (isset(self::builtInFormats[pIndex])) {
+            return self::builtInFormats[pIndex];
+        }
+
+        return "";
     }
 
     /**
@@ -266,9 +405,17 @@ class NumberFormat extends Supervisor implements ZIComparable
      * @param    string        formatCode
      * @return    int|boolean
      */
-    public static function builtInFormatCodeIndex(formatCode)
+    public static function builtInFormatCodeIndex(var formatCode)
     {
-        throw new \Exception("Not implemented yet!");
+        // Ensure built-in format codes are available
+        self::fillBuiltInFormatCodes();
+
+        // Lookup format code
+        if (isset(self::flippedBuiltInFormats[formatCode])) {
+            return self::flippedBuiltInFormats[formatCode];
+        }
+
+        return false;
     }
 
     /**
@@ -278,22 +425,14 @@ class NumberFormat extends Supervisor implements ZIComparable
      */
     public function getHashCode()
     {
-        throw new \Exception("Not implemented yet!");
-    }
-    
-    protected static function getDateFormatReplacements()
-    {
-        throw new \Exception("Not implemented yet!");
-    }
-        
-    private static function getDateFormatReplacements24()
-    {
-        throw new \Exception("Not implemented yet!");
-    }
-    
-    private static function getDateFormatReplacements12()
-    {
-        throw new \Exception("Not implemented yet!");
+        if (this->isSupervisor) {
+            return this->getSharedComponent()->getHashCode();
+        }
+        return md5(
+            this->formatCode .
+            this->builtInFormatCode .
+            get_class(this)
+        );
     }
     
     private static function setLowercaseCallback(matches) {
@@ -313,8 +452,8 @@ class NumberFormat extends Supervisor implements ZIComparable
         
         let format = preg_replace("/^(\[\$[A-Z]*-[0-9A-F]*\])/i", "", format);
 
-        // OpenOffice.org uses upper-case number formats, e.g. 'YYYY', convert to lower-case;
-        //    but we don't want to change any quoted strings
+        // OpenOffice.org uses upper-case number formats, e.g. "YYYY", convert to lower-case;
+        //    but we don"t want to change any quoted strings
 //        let format = preg_replace_callback("/(?:^|\")([^\"]*)(?:$|\")/", ["self", "setLowercaseCallback"], format);
 
         // Only process the non-quoted blocks for date format characters
@@ -342,9 +481,29 @@ class NumberFormat extends Supervisor implements ZIComparable
         return [value, format];
     }
 
-    private static function formatAsPercentage(value, format)
+    private static function formatAsPercentage(var value, var format)
     {
-        throw new \Exception("Not implemented yet!");
+        var s;
+        array m = [];
+        
+        if (format === self::FORMAT_PERCENTAGE) {
+            let value = round((100 * value), 0) . "%";
+        } else {
+            if (preg_match("/\.[#0]+/i", format, m)) {
+                let s = substr(m[0], 0, 1) . (strlen(m[0]) - 1);
+                let format = str_replace(m[0], s, format);
+            }
+            
+            if (preg_match("/^[#0]+/", format, m)) {
+                let format = str_replace(m[0], strlen(m[0]), format);
+            }
+            
+            let format = "%" . str_replace("%", "f%%", format);
+
+            let value = sprintf(format, 100 * value);
+        }
+        
+        return [value, format];
     }
 
     private static function formatAsFraction(var value, var format)
@@ -360,8 +519,8 @@ class NumberFormat extends Supervisor implements ZIComparable
 
         let gcd = call_user_func("\ZExcel\Calculation\MathTrig::GCD", decimalPart, decimalDivisor);
 
-        let adjustedDecimalPart = decimalPart/gcd;
-        let adjustedDecimalDivisor = decimalDivisor/gcd;
+        let adjustedDecimalPart = decimalPart / gcd;
+        let adjustedDecimalDivisor = decimalDivisor / gcd;
 
         if ((strpos(format, "0") !== false) || (strpos(format, "#") !== false) || (substr(format, 0, 3) == "? ?")) {
             if (integerPart == 0) {
@@ -376,9 +535,66 @@ class NumberFormat extends Supervisor implements ZIComparable
         return [value, format];
     }
 
+    /**
+     * @FIXME segment fault + zend_mm_heap corrupted
+     */
     private static function complexNumberFormatMask(number, mask, level = 0)
     {
-        throw new \Exception("Not implemented yet!");
+        var sign, numbers, mask, masks, result, result1, result2,
+            r, block, blockValue, divisor, size, offset;
+        
+        let sign = (number < 0.0);
+        let number = abs(number);
+        
+        if (strpos(mask, ".") !== false) {
+            let numbers = explode(".", number . ".0");
+            let masks = explode(".", mask . ".0");
+            let result1 = self::complexNumberFormatMask(numbers[0], masks[0], 1);
+            let result2 = strrev(self::complexNumberFormatMask(strrev(numbers[1]), strrev(masks[1]), 1));
+            
+            let result = result1 . "." . result2;
+            
+	        if (sign == true) {
+	            let result = "-" . result;
+	        }
+            
+            return result;
+        }
+        
+        let result = [];
+        let r = preg_match_all("/0+/", mask, result, PREG_OFFSET_CAPTURE);
+        
+        if (r > 1) {
+            let result = array_reverse(result[0]);
+
+            for block in result {
+                let divisor = "1" . block[0];
+                let size = strlen(block[0]);
+                let offset = block[1];
+
+                let blockValue = sprintf(
+                    "%0" . size . "d",
+                    fmod(number, divisor)
+                );
+                
+                let number = floor(number / (double) divisor);
+                let mask = substr_replace(mask, blockValue, offset, size);
+            }
+            
+            if (number > 0) {
+                let mask = substr_replace(mask, number, offset, 0);
+            }
+            
+            let result = mask;
+        } else {
+            let result = number;
+        }
+
+        if (sign == true) {
+            let result = "-" . result;
+        }
+        
+        return result;
     }
 
     /**
@@ -400,7 +616,7 @@ class NumberFormat extends Supervisor implements ZIComparable
             return value;
         }
 
-        // For 'General' format code, we just pass the value although this is not entirely the way Excel does it,
+        // For "General" format code, we just pass the value although this is not entirely the way Excel does it,
         // it seems to round numbers to a total of 10 digits.
         if ((format === \ZExcel\Style\NumberFormat::FORMAT_GENERAL) || (format === \ZExcel\Style\NumberFormat::FORMAT_TEXT)) {
             return value;
@@ -428,11 +644,25 @@ class NumberFormat extends Supervisor implements ZIComparable
                 let value = abs(value); // Use the absolute value
                 break;
             case 3:
-                let format = (value > 0) ? sections[0] : ((value < 0) ? sections[1] : sections[2]);
+                if (value > 0) {
+                    let format = sections[0];
+                } elseif (value < 0) {
+                    let format = sections[1];
+                } else {
+                    let format = sections[2];
+                }
+                
                 let value = abs(value); // Use the absolute value
                 break;
             case 4:
-                let format = (value > 0) ? sections[0] : ((value < 0) ? sections[1] : sections[2]);
+                if (value > 0) {
+                    let format = sections[0];
+                } elseif (value < 0) {
+                    let format = sections[1];
+                } else {
+                    let format = sections[2];
+                }
+                
                 let value = abs(value); // Use the absolute value
                 break;
             default:
@@ -452,7 +682,7 @@ class NumberFormat extends Supervisor implements ZIComparable
         let color_regex = "/^\\[[a-zA-Z]+\\]/";
         let format = preg_replace(color_regex, "", format);
 
-        // Let's begin inspecting the format and converting the value to a formatted string
+        // Let"s begin inspecting the format and converting the value to a formatted string
 
         //  Check for date/time characters (not inside quotes)
         let matches = [];
@@ -463,18 +693,21 @@ class NumberFormat extends Supervisor implements ZIComparable
             let format = sections[1];
         } elseif (preg_match("/%$/", format)) {
             // % number format
-            self::formatAsPercentage(value, format);
+            var sections = self::formatAsPercentage(value, format);
+            let value = sections[0];
+            let format = sections[1];
         } else {
             if (format === self::FORMAT_CURRENCY_EUR_SIMPLE) {
                 let value = "EUR " . sprintf("%1.2f", value);
             } else {
-                // Some non-number strings are quoted, so we'll get rid of the quotes, likewise any positional * symbols
+                // Some non-number strings are quoted, so we"ll get rid of the quotes, likewise any positional * symbols
                 let format = str_replace(["\"", "*"], "", format);
 
                 // Find out if we need thousands separator
                 // This is indicated by a comma enclosed by a digit placeholder:
                 //        #,#   or   0,0
                 let useThousands = preg_match("/(#,#|0,0)/", format);
+                
                 if (useThousands) {
                     let format = preg_replace("/0,0/", "00", format);
                     let format = preg_replace("/#,#/", "##", format);
@@ -485,6 +718,7 @@ class NumberFormat extends Supervisor implements ZIComparable
                 //        #,   or    0.0,,
                 let scale = 1; // same as no scale
                 let matches = [];
+                
                 if (preg_match("/(#|0)(,+)/", format, matches)) {
                     let scale = pow(1000, strlen(matches[2]));
 
@@ -494,11 +728,12 @@ class NumberFormat extends Supervisor implements ZIComparable
                 }
                 
                 let m = [];
+                
                 if (preg_match("/#?.*\?\/\?/", format, m)) {
                     if (value != (int) value) {
                         let sections = self::formatAsFraction(value, format);
-			            let value = sections[0];
-			            let format = sections[1];
+                        let value  = sections[0];
+                        let format = sections[1];
                     }
                 } else {
                     // Handle the number itself
@@ -549,9 +784,11 @@ class NumberFormat extends Supervisor implements ZIComparable
                     let currencyFormat = m[0];
                     let currencyCode = m[1];
                     let currencyCode = current(explode("-", currencyCode));
+                    
                     if (currencyCode == "") {
                         let currencyCode = \ZExcel\Shared\Stringg::getCurrencyCode();
                     }
+                    
                     let value = preg_replace("/\[\$([^\]]*)\]/u", currencyCode, value);
                 }
             }
