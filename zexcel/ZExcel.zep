@@ -319,7 +319,7 @@ class ZExcel
      */
     public function __destruct()
     {
-        \ZExcel\Calculation::unsetInstance(this);
+        let this->calculationEngine = null;
         this->disconnectWorksheets();
     }
 

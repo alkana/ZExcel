@@ -166,7 +166,7 @@ class Calculation
      * @var string
      *
      */
-    private static _localeLanguage = "en_us";                    //    US English    (default locale)
+    private static localeLanguage = "en_us";                    //    US English    (default locale)
     
     /**
      * List of available locale settings
@@ -2051,35 +2051,11 @@ class Calculation
     
     private function __construct(<\ZExcel\ZExcel> workbook = null)
     {
-        int setPrecision = 16;
-        
-        if (PHP_INT_SIZE == 4) {
-            let setPrecision = 14;
-        }
-        
-        let this->savedPrecision = ini_get("precision");
-        
-        if (this->savedPrecision < setPrecision) {
-            ini_set("precision", setPrecision);
-        }
-        
-        let this->delta = 1 * pow(10, -setPrecision);
-        
-        if (workbook !== null) {
-            let self::_workbookSets[workbook->getID()] = this;
-        }
+        let this->delta = 1 * pow(10, 0 - ini_get("precision"));
         
         let this->_workbook = workbook;
         let this->cyclicReferenceStack = new \ZExcel\CalcEngine\CyclicReferenceStack();
         let this->debugLog = new \ZExcel\CalcEngine\Logger(this->cyclicReferenceStack);
-    }
-    
-    
-    public function __destruct()
-    {
-        if (this->savedPrecision != ini_get("precision")) {
-            ini_set("precision", this->savedPrecision);
-        }
     }
     
     private static function _loadLocales() {
@@ -2110,19 +2086,9 @@ class Calculation
         return self::_instance;
     }
     
-    /**
-     * Unset an instance of this class
-     *
-     * @access    public
-     * @param   PHPExcel workbook  Injected workbook identifying the instance to unset
-     */
-    public static function unsetInstance(<\ZExcel\ZExcel> workbook = null)
+    public function __destruct()
     {
-        if (workbook !== null) {
-            if (isset(self::_workbookSets[workbook->getID()])) {
-                unset(self::_workbookSets[workbook->getID()]);
-            }
-        }
+        let this->workbook = null;
     }
 
     /**
@@ -2158,8 +2124,7 @@ class Calculation
     {
         throw new \ZExcel\Calculation\Exception("Cloning the calculation engine is not allowed!");
     }
-
-
+    
     /**
      * Return the locale-specific translation of TRUE
      *
@@ -2291,7 +2256,7 @@ class Calculation
      */
     public function getLocale()
     {
-        return self::_localeLanguage;
+        return self::localeLanguage;
     }
 
     /**
@@ -2305,14 +2270,66 @@ class Calculation
         throw new \Exception("Not implemented yet!");
     }
     
-    public static function _translateSeparator(fromSeparator, toSeparator, formula, inBraces)
+    public static function translateSeparator(fromSeparator, toSeparator, formula, inBraces)
     {
-        throw new \Exception("Not implemented yet!");
+        var strln, i, chrr;
+        
+        let strln = mb_strlen(formula);
+        
+        for i in rage(0, strln - 1) {
+            let chrr = mb_substr(formula, i, 1);
+            
+            switch (chrr) {
+                case "{":
+                    let inBraces = true;
+                    break;
+                case "}":
+                    let inBraces = false;
+                    break;
+                case fromSeparator:
+                    if (!inBraces) {
+                        let formula = mb_substr(formula, 0, i) . toSeparator . mb_substr(formula, i + 1);
+                    }
+            }
+        }
+        
+        return formula;
     }
 
-    private static function _translateFormula(from, to, formula, fromSeparator, toSeparator)
+    private static function translateFormula(from, to, formula, fromSeparator, toSeparator)
     {
-        throw new \Exception("Not implemented yet!");
+        var inBraces, temp, i, key, value;
+        
+        //    Convert any Excel function names to the required language
+        if (self::localeLanguage !== "en_us") {
+            let inBraces = false;
+            
+            //    If there is the possibility of braces within a quoted string, then we don"t treat those as matrix indicators
+            if (strpos(formula, "\"") !== false) {
+                //    So instead we skip replacing in any quoted strings by only replacing in every other array element after we"ve exploded
+                //        the formula
+                let temp = explode("\"", formula);
+                let i = false;
+                
+                for key, value in temp {
+                    //    Only count/replace in alternating array entrie
+                    let i = !i;
+                    if (i) {
+                        let temp[key] = preg_replace(from, to, value);
+                        let temp[key] = self::translateSeparator(fromSeparator, toSeparator, value, inBraces);
+                    }
+                }
+
+                //    Then rebuild the formula string
+                let formula = implode("\"", temp);
+            } else {
+                //    If there"s no quoted strings, then we do a simple count/replace
+                let formula = preg_replace(from, to, formula);
+                let formula = self::translateSeparator(fromSeparator, toSeparator, formula, inBraces);
+            }
+        }
+
+        return formula;
     }
     
     public function _translateFormulaToLocale(formula)
@@ -2329,7 +2346,7 @@ class Calculation
     {
         var functionName, brace;
     
-        if (self::_localeLanguage !== "en_us") {
+        if (self::localeLanguage !== "en_us") {
             let functionName = trim(functionn, "(");
             if (isset(self::localeFunctions[functionName])) {
                 let brace = (functionName != functionn);
@@ -2374,7 +2391,7 @@ class Calculation
     public static function _unwrapResult(value)
     {
         if (is_string(value)) {
-            if ((isset(value[0])) && (value[0] == '"') && (substr(value,-1) == '"')) {
+            if ((isset(value[0])) && (value[0] == "\"") && (substr(value,-1) == "\"")) {
                 return substr(value,1,-1);
             }
         //    Convert numeric errors to NaN error
