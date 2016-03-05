@@ -166,7 +166,7 @@ class Calculation
      * @var string
      *
      */
-    private static localeLanguage = "en_us";                    //    US English    (default locale)
+    private static _localeLanguage = "en_us";                    //    US English    (default locale)
     
     /**
      * List of available locale settings
@@ -183,10 +183,15 @@ class Calculation
      * @var string
      *
      */
-    private static localeArgumentSeparator = ",";
+    private static _localeArgumentSeparator = ",";
     
-    private static localeFunctions = [];
+    private static _localeFunctions = [];
     
+    private static functionReplaceFromExcel = null;
+    private static functionReplaceToExcel = null;
+    private static functionReplaceFromLocale = null;
+    private static functionReplaceToLocale = null;
+            
     /**
      * Locale-specific translations for Excel constants (True, False and Null)
      *
@@ -2256,7 +2261,7 @@ class Calculation
      */
     public function getLocale()
     {
-        return self::localeLanguage;
+        return self::_localeLanguage;
     }
 
     /**
@@ -2265,9 +2270,109 @@ class Calculation
      * @param string $locale  The locale to use for formula translation
      * @return boolean
      */
-    public function setLocale($locale = "en_us")
+    public function setLocale(string locale = "en_us")
     {
-        throw new \Exception("Not implemented yet!");
+    	var language, functionNamesFile, localeFunction, localeFunctions, fName, lfName, tmp, configFile, localeSettings, localeSetting, settingName, settingValue;
+    	
+        //    Identify our locale and language
+        let language = strtolower(locale);
+        let locale = language;
+        
+        if (strpos(locale,"_") !== false) {
+            let language = explode("_",locale);
+            let language = language[0];
+        }
+
+        if (count(self::_validLocaleLanguages) == 1) {
+            self::_loadLocales();
+        }
+
+        //    Test whether we have any language data for this language (any locale)
+        if (in_array(language,self::_validLocaleLanguages)) {
+            //    initialise language/locale settings
+            let self::_localeFunctions = [];
+            let self::_localeArgumentSeparator = ",";
+            let self::_localeBoolean = ["TRUE": "TRUE", "FALSE": "FALSE", "NULL": "NULL"];
+            
+            //    Default is English, if user isn"t requesting english, then read the necessary data from the locale files
+            if (locale != "en_us") {
+                //    Search for a file with a list of function names for locale
+                let functionNamesFile = "ZExcel" . DIRECTORY_SEPARATOR . "locale" . DIRECTORY_SEPARATOR . str_replace("_",DIRECTORY_SEPARATOR,locale) . DIRECTORY_SEPARATOR . "functions";
+                
+                if (!file_exists(functionNamesFile)) {
+                    //    If there isn"t a locale specific function file, look for a language specific function file
+                    let functionNamesFile = "ZExcel" . DIRECTORY_SEPARATOR . "locale" . DIRECTORY_SEPARATOR . language . DIRECTORY_SEPARATOR . "functions";
+                    
+                    if (!file_exists(functionNamesFile)) {
+                        return false;
+                    }
+                }
+                
+                //    Retrieve the list of locale or language specific function names
+                let localeFunctions = file(functionNamesFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                
+                for localeFunction in localeFunctions {
+                	let localeFunction = explode("##", localeFunction);
+                    let localeFunction = localeFunction[0];    //    Strip out comments
+                    
+                    if (strpos(localeFunction,"=") !== false) {
+                        let tmp = explode("=",localeFunction);
+                        let fName = trim(tmp[0]);
+                        let lfName = trim(tmp[1]);
+                        
+                        if ((isset(self::_PHPExcelFunctions[fName])) && (lfName != "") && (fName != lfName)) {
+                            let self::_localeFunctions[fName] = lfName;
+                        }
+                    }
+                }
+                //    Default the TRUE and FALSE constants to the locale names of the TRUE() and FALSE() functions
+                if (isset(self::_localeFunctions["TRUE"])) {
+                	let self::_localeBoolean["TRUE"] = self::_localeFunctions["TRUE"];
+                }
+                
+                if (isset(self::_localeFunctions["FALSE"])) {
+                	let self::_localeBoolean["FALSE"] = self::_localeFunctions["FALSE"];
+                }
+
+                let configFile = "PHPExcel" . DIRECTORY_SEPARATOR . "locale" . DIRECTORY_SEPARATOR . str_replace("_", DIRECTORY_SEPARATOR, locale) . DIRECTORY_SEPARATOR . "config";
+                
+                if (!file_exists(configFile)) {
+                    let configFile = "PHPExcel" . DIRECTORY_SEPARATOR . "locale" . DIRECTORY_SEPARATOR . language . DIRECTORY_SEPARATOR . "config";
+                }
+                
+                if (file_exists(configFile)) {
+                    let localeSettings = file(configFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                    
+                    for localeSetting in localeSettings {
+                        let localeSetting = explode("##",localeSetting);    //    Strip out comments
+                        let localeSetting = localeSetting[0];
+                        
+                        if (strpos(localeSetting,"=") !== false) {
+                        	let settingName = explode("=", localeSetting);
+                        	
+                        	let settingValue = settingName[1];
+                        	let settingName = strtoupper(trim(settingName[0]));
+                        	
+                            switch (settingName) {
+                                case "ARGUMENTSEPARATOR" :
+                                    let self::_localeArgumentSeparator = trim(settingValue);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            let self::functionReplaceFromExcel = null;
+            let self::functionReplaceToExcel = null;
+            let self::functionReplaceFromLocale = null;
+            let self::functionReplaceToLocale = null;
+            let self::_localeLanguage = locale;
+            
+            return true;
+        }
+        
+        return false;
     }
     
     public static function translateSeparator(fromSeparator, toSeparator, formula, inBraces)
@@ -2301,7 +2406,7 @@ class Calculation
         var inBraces, temp, i, key, value;
         
         //    Convert any Excel function names to the required language
-        if (self::localeLanguage !== "en_us") {
+        if (self::_localeLanguage !== "en_us") {
             let inBraces = false;
             
             //    If there is the possibility of braces within a quoted string, then we don"t treat those as matrix indicators
@@ -2346,11 +2451,11 @@ class Calculation
     {
         var functionName, brace;
     
-        if (self::localeLanguage !== "en_us") {
+        if (self::_localeLanguage !== "en_us") {
             let functionName = trim(functionn, "(");
-            if (isset(self::localeFunctions[functionName])) {
+            if (isset(self::_localeFunctions[functionName])) {
                 let brace = (functionName != functionn);
-                let functionn = self::localeFunctions[functionName];
+                let functionn = self::_localeFunctions[functionName];
                 
                 if (brace) {
                     let functionn = functionn . "(";
