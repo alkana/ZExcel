@@ -2401,7 +2401,7 @@ class Calculation
         return formula;
     }
 
-    private static function translateFormula(from, to, formula, fromSeparator, toSeparator)
+    private static function _translateFormula(from, to, formula, fromSeparator, toSeparator)
     {
         var inBraces, temp, i, key, value;
         
@@ -2437,14 +2437,65 @@ class Calculation
         return formula;
     }
     
-    public function _translateFormulaToLocale(formula)
+    public function _translateFormulaToLocale(var formula)
     {
-        throw new \Exception("Not implemented yet!");
+    	var localeVar;
+    	
+        if (self::functionReplaceFromExcel === null) {
+            let self::functionReplaceFromExcel = [];
+            
+            for localeVar in array_keys(self::_localeFunctions) {
+                let self::functionReplaceFromExcel[] = "/(@?[^\w\.])" . preg_quote(localeVar) . "([\s]*\()/Ui";
+            }
+            
+            for localeVar in array_keys(self::_localeBoolean) {
+                let self::functionReplaceFromExcel[] = "/(@?[^\w\.])" . preg_quote(localeVar) . "([^\w\.])/Ui";
+            }
+
+        }
+
+        if (self::functionReplaceToLocale === null) {
+            let self::functionReplaceToLocale = [];
+            
+            for localeVar in array_values(self::_localeFunctions) {
+                let self::functionReplaceToLocale[] = "$1" . trim(localeVar) . "$2";
+            }
+            
+            for localeVar in array_values(self::_localeBoolean) {
+                let self::functionReplaceToLocale[] = "$1" . trim(localeVar) . "$2";
+            }
+        }
+
+        return self::_translateFormula(self::functionReplaceFromExcel, self::functionReplaceToLocale, formula, ",", self::_localeArgumentSeparator);
     }
     
-    public function _translateFormulaToEnglish(formula)
+    public function _translateFormulaToEnglish(var formula)
     {
-        throw new \Exception("Not implemented yet!");
+    	var localeVar;
+    	
+        if (self::functionReplaceFromLocale === null) {
+            let self::functionReplaceFromLocale = [];
+            
+            for localeVar in array_values(self::_localeFunctions) {
+                let self::functionReplaceFromLocale[] = "/(@?[^\w\.])" . preg_quote(localeVar) . "([\s]*\()/Ui";
+            }
+            for localeVar in array_values(self::_localeBoolean) {
+                let self::functionReplaceFromLocale[] = "/(@?[^\w\.])" . preg_quote(localeVar) . "([^\w\.])/Ui";
+            }
+        }
+
+        if (self::functionReplaceToExcel === null) {
+            let self::functionReplaceToExcel = [];
+            
+            for localeVar in array_keys(self::_localeFunctions) {
+                let self::functionReplaceToExcel[] = "$1" . trim(localeVar) . "$2";
+            }
+            for localeVar in array_keys(self::_localeBoolean) {
+                let self::functionReplaceToExcel[] = "$1" . trim(localeVar) . "$2";
+            }
+        }
+
+        return self::_translateFormula(self::functionReplaceFromLocale, self::functionReplaceToExcel, formula, self::_localeArgumentSeparator,",");
     }
     
     public static function _localeFunc(functionn)
@@ -2467,7 +2518,7 @@ class Calculation
     /**
      * Wrap string values in quotes
      *
-     * @param mixed $value
+     * @param mixed value
      * @return mixed
      */
     public static function wrapResult(value)
@@ -2490,7 +2541,7 @@ class Calculation
     /**
      * Remove quotes used as a wrapper to identify string values
      *
-     * @param mixed $value
+     * @param mixed value
      * @return mixed
      */
     public static function _unwrapResult(value)
@@ -2510,7 +2561,7 @@ class Calculation
      * Retained for backward compatibility
      *
      * @access    public
-     * @param    PHPExcel_Cell    $pCell    Cell to calculate
+     * @param    PHPExcel_Cell    pCell    Cell to calculate
      * @return    mixed
      * @throws    PHPExcel_Calculation_Exception
      */
@@ -2562,9 +2613,9 @@ class Calculation
                 return \ZExcel\Calculation\Functions::value();
             }
             
-            //    If there's only a single cell in the array, then we allow it
+            //    If there"s only a single cell in the array, then we allow it
             if (count(testResult) != 1) {
-                //    If keys are numeric, then it's a matrix result rather than a cell range result, so we permit it
+                //    If keys are numeric, then it"s a matrix result rather than a cell range result, so we permit it
                 let r = array_keys(result);
                 let r = array_shift(r);
                 if (!is_numeric(r)) {
@@ -2595,7 +2646,7 @@ class Calculation
     /**
      * Validate and parse a formula string
      *
-     * @param    string        $formula        Formula to parse
+     * @param    string        formula        Formula to parse
      * @return    array
      * @throws    PHPExcel_Calculation_Exception
      */
@@ -2606,9 +2657,9 @@ class Calculation
     /**
      * Calculate the value of a formula
      *
-     * @param    string            $formula    Formula to parse
-     * @param    string            $cellID        Address of the cell to calculate
-     * @param    PHPExcel_Cell    $pCell        Cell to calculate
+     * @param    string            formula    Formula to parse
+     * @param    string            cellID        Address of the cell to calculate
+     * @param    PHPExcel_Cell    pCell        Cell to calculate
      * @return    mixed
      * @throws    PHPExcel_Calculation_Exception
      */
@@ -2701,9 +2752,9 @@ class Calculation
     /**
      * Ensure that paired matrix operands are both matrices and of the same size
      *
-     * @param    mixed        &$operand1    First matrix operand
-     * @param    mixed        &$operand2    Second matrix operand
-     * @param    integer        $resize        Flag indicating whether the matrices should be resized to match
+     * @param    mixed        &operand1    First matrix operand
+     * @param    mixed        &operand2    Second matrix operand
+     * @param    integer        resize        Flag indicating whether the matrices should be resized to match
      *                                        and (if so), whether the smaller dimension should grow or the
      *                                        larger should shrink.
      *                                            0 = no resize
@@ -2717,7 +2768,7 @@ class Calculation
     /**
      * Read the dimensions of a matrix, and re-index it with straight numeric keys starting from row 0, column 0
      *
-     * @param    mixed        &$matrix        matrix operand
+     * @param    mixed        &matrix        matrix operand
      * @return    array        An array comprising the number of rows, and number of columns
      */
     public static function _getMatrixDimensions(matrix)
@@ -2728,12 +2779,12 @@ class Calculation
     /**
      * Ensure that paired matrix operands are both matrices of the same size
      *
-     * @param    mixed        &$matrix1        First matrix operand
-     * @param    mixed        &$matrix2        Second matrix operand
-     * @param    integer        $matrix1Rows    Row size of first matrix operand
-     * @param    integer        $matrix1Columns    Column size of first matrix operand
-     * @param    integer        $matrix2Rows    Row size of second matrix operand
-     * @param    integer        $matrix2Columns    Column size of second matrix operand
+     * @param    mixed        &matrix1        First matrix operand
+     * @param    mixed        &matrix2        Second matrix operand
+     * @param    integer        matrix1Rows    Row size of first matrix operand
+     * @param    integer        matrix1Columns    Column size of first matrix operand
+     * @param    integer        matrix2Rows    Row size of second matrix operand
+     * @param    integer        matrix2Columns    Column size of second matrix operand
      */
     private static function _resizeMatricesShrink(matrix1, matrix2, matrix1Rows, matrix1Columns, matrix2Rows, matrix2Columns)
     {
@@ -2743,12 +2794,12 @@ class Calculation
     /**
      * Ensure that paired matrix operands are both matrices of the same size
      *
-     * @param    mixed        &$matrix1    First matrix operand
-     * @param    mixed        &$matrix2    Second matrix operand
-     * @param    integer        $matrix1Rows    Row size of first matrix operand
-     * @param    integer        $matrix1Columns    Column size of first matrix operand
-     * @param    integer        $matrix2Rows    Row size of second matrix operand
-     * @param    integer        $matrix2Columns    Column size of second matrix operand
+     * @param    mixed        &matrix1    First matrix operand
+     * @param    mixed        &matrix2    Second matrix operand
+     * @param    integer        matrix1Rows    Row size of first matrix operand
+     * @param    integer        matrix1Columns    Column size of first matrix operand
+     * @param    integer        matrix2Rows    Row size of second matrix operand
+     * @param    integer        matrix2Columns    Column size of second matrix operand
      */
     private static function _resizeMatricesExtend(matrix1, matrix2, matrix1Rows, matrix1Columns, matrix2Rows, matrix2Columns)
     {
@@ -2758,7 +2809,7 @@ class Calculation
     /**
      * Format details of an operand for display in the log (based on operand type)
      *
-     * @param    mixed        $value    First matrix operand
+     * @param    mixed        value    First matrix operand
      * @return    mixed
      */
     private function _showValue(value)
@@ -3361,16 +3412,56 @@ class Calculation
     
     public function isImplemented(pFunction = "")
     {
-        throw new \Exception("Not implemented yet!");
+        let pFunction = strtoupper (pFunction);
+        
+        if (isset(self::_PHPExcelFunctions[$pFunction])) {
+            return (self::_PHPExcelFunctions[pFunction]["functionCall"] != "\ZExcel\Calculation\Functions::DUMMY");
+        } else {
+            return false;
+        }
     }
     
     public function listFunctions()
     {
-        throw new \Exception("Not implemented yet!");
+    	var returnValue, functionName, functionn;
+    	
+        // Return value
+        let returnValue = [];
+        // Loop functions
+        for functionName, functionn in self::_PHPExcelFunctions {
+            if (functionn["functionCall"] != "\ZExcel\Calculation\Functions::DUMMY") {
+                let returnValue[$functionName] = new \ZExcel\Calculation\Function(functionn["category"], functionName, functionn["functionCall"]);
+            }
+        }
+
+        // Return
+        return returnValue;
+    }
+    
+    /**
+     * Get a list of all Excel function names
+     *
+     * @return    array
+     */
+    public function listAllFunctionNames() {
+        return array_keys(self::_PHPExcelFunctions);
     }
     
     public function listFunctionNames()
     {
-        throw new \Exception("Not implemented yet!");
+    	var returnValue, functionName, functionn;
+    	
+        // Return value
+        let returnValue = [];
+        
+        // Loop functions
+        for functionName, functionn in self::_PHPExcelFunctions {
+            if (functionn["functionCall"] != "\ZExcel\Calculation\Functions::DUMMY") {
+                let returnValue[] = functionName;
+            }
+        }
+
+        // Return
+        return returnValue;
     }
 }
