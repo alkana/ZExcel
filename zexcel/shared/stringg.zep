@@ -59,7 +59,15 @@ class Stringg
      */
     private static function _buildControlCharacters()
     {
-        throw new \Exception("Not implemented yet!");
+        var i, find, replace;
+        
+        for i in range(0, 31) {
+            if (i != 9 && i != 10 && i != 13) {
+                let find = "_x" . sprintf("%04s" , strtoupper(dechex(i))) . "_";
+                let replace = chr(i);
+                let self::_controlCharacters[find] = replace;
+            }
+        }
     }
 
     /**
@@ -288,7 +296,13 @@ class Stringg
 
     public static function buildCharacterSets()
     {
-        throw new \Exception("Not implemented yet!");
+        if(empty(self::_controlCharacters)) {
+            self::_buildControlCharacters();
+        }
+        
+        if(empty(self::_SYLKCharacters)) {
+            self::_buildSYLKCharacters();
+        }
     }
 
     /**
@@ -305,9 +319,13 @@ class Stringg
      * @param     string    $value    Value to unescape
      * @return     string
      */
-    public static function controlCharacterOOXML2PHP(value = "")
+    public static function controlCharacterOOXML2PHP(var value = "") -> string
     {
-        throw new \Exception("Not implemented yet!");
+        return str_replace(
+            array_keys(self::_controlCharacters),
+            array_values(self::_controlCharacters),
+            value
+        );
     }
 
     /**
@@ -324,9 +342,13 @@ class Stringg
      * @param     string    $value    Value to escape
      * @return     string
      */
-    public static function controlCharacterPHP2OOXML(value = "")
+    public static function controlCharacterPHP2OOXML(var value = "") -> string
     {
-        throw new \Exception("Not implemented yet!");
+        return str_replace(
+            array_values(self::_controlCharacters),
+            array_keys(self::_controlCharacters),
+            value
+        );
     }
 
     /**
@@ -335,9 +357,22 @@ class Stringg
      * @param string $value
      * @return string
      */
-    public static function sanitizeUTF8(value)
+    public static function sanitizeUTF8(var value)
     {
-        throw new \Exception("Not implemented yet!");
+        if (self::getIsIconvEnabled()) {
+            let value = iconv("UTF-8", "UTF-8", value);
+            
+            return value;
+        }
+
+        if (self::getIsMbstringEnabled()) {
+            let value = mb_convert_encoding(value, "UTF-8", "UTF-8");
+            
+            return value;
+        }
+
+        // else, no conversion
+        return value;
     }
 
     /**
@@ -346,9 +381,9 @@ class Stringg
      * @param string $value
      * @return boolean
      */
-    public static function isUTF8(value = "")
+    public static function isUTF8(var value = "") -> boolean
     {
-        throw new \Exception("Not implemented yet!");
+        return (value === "" || preg_match("'/^./su", value) === 1);
     }
 
     /**
@@ -358,9 +393,13 @@ class Stringg
      * @param mixed $value
      * @return string
      */
-    public static function formatNumber(value)
+    public static function formatNumber(var value) -> string
     {
-        throw new \Exception("Not implemented yet!");
+        if (is_float(value)) {
+            return str_replace(",", ".", value);
+        }
+        
+        return (string) value;
     }
 
     /**
@@ -389,9 +428,26 @@ class Stringg
      * @param string $value UTF-8 encoded string
      * @return string
      */
-    public static function utf8toBIFF8UnicodeLong(value)
+    public static function utf8toBIFF8UnicodeLong(var value)
     {
-        throw new \Exception("Not implemented yet!");
+        var ln, opt, chars, data;
+        
+        // character count
+        let ln = self::CountCharacters(value, "UTF-8");
+        
+        // option flags
+        if (self::getIsIconvEnabled() || self::getIsMbstringEnabled()) {
+            let opt = 0x0001;
+        } else {
+            let opt = 0x0000;
+        }
+        
+        // characters
+        let chars = self::ConvertEncoding(value, "UTF-16LE", "UTF-8");
+
+        let data = pack("vC", ln, opt) . chars;
+        
+        return data;
     }
 
     /**
@@ -402,9 +458,24 @@ class Stringg
      * @param string $from Encoding to convert from, e.g. 'UTF-16LE'
      * @return string
      */
-    public static function convertEncoding(value, to, from)
+    public static function convertEncoding(var value, var to, var from)
     {
-        throw new \Exception("Not implemented yet!");
+        if (self::getIsIconvEnabled()) {
+            return iconv(from, to, value);
+        }
+
+        if (self::getIsMbstringEnabled()) {
+            return mb_convert_encoding(value, to, from);
+        }
+
+        if (from == "UTF-16LE"){
+            return self::utf16_decode(value, false);
+        } elseif (from == "UTF-16BE"){
+            return self::utf16_decode(value);
+        }
+        
+        // else, no conversion
+        return value;
     }
 
     /**
@@ -422,9 +493,46 @@ class Stringg
      * @author  Rasmus Andersson {@link http://rasmusandersson.se/}
      * @author vadik56
      */
-    public static function utf16_decode(str, bom_be = true)
+    public static function utf16_decode(var str, var bom_be = true)
     {
-        throw new \Exception("Not implemented yet!");
+        var c0, c1, len, newstr, val, i;
+        
+        if( strlen(str) < 2 ) {
+            return str;
+        }
+        
+        let c0 = ord(substr(str, 0, 1));
+        let c1 = ord(substr(str, 1, 1));
+        
+        if( c0 == 0xfe && c1 == 0xff ) {
+            let str = substr(str,2);
+        } elseif( c0 == 0xff && c1 == 0xfe ) {
+            let str = substr(str,2);
+            let bom_be = false;
+        }
+        
+        let len = strlen(str);
+        let newstr = "";
+        
+        for i in range(0, len - 1) {
+            if( bom_be ) {
+                let val = ord(substr(str, i, 1)) << 4;
+                let val = val + ord(substr(str, i + 1, 1));
+            } else {
+                let val = ord(substr(str, i + 1, 1)) << 4;
+                let val = val + ord(substr(str, i, 1));
+            }
+            
+            if (val == 0x228) {
+                let newstr = newstr . "\n";
+            } else {
+                let newstr = newstr . chr(val);
+            }
+            
+            let i = i + 1; // equal with for step i + 2
+        }
+        
+        return newstr;
     }
 
     /**

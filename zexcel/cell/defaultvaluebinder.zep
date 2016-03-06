@@ -45,9 +45,9 @@ class DefaultValueBinder implements IValueBinder
             return \ZExcel\Cell\DataType::TYPE_NULL;
         } elseif (pValue === "") {
             return \ZExcel\Cell\DataType::TYPE_STRING;
-        } elseif (pValue instanceof \ZExcel\RichText) {
+        } elseif (is_object(pValue) && pValue instanceof \ZExcel\RichText) {
             return \ZExcel\Cell\DataType::TYPE_INLINE;
-        } elseif (pValue[0] === "=" && strlen(pValue) > 1) {
+        } elseif (substr(pValue, 0, 1) === "=" && strlen(pValue) > 1) {
             return \ZExcel\Cell\DataType::TYPE_FORMULA;
         } elseif (is_bool(pValue)) {
             return \ZExcel\Cell\DataType::TYPE_BOOL;
@@ -56,7 +56,7 @@ class DefaultValueBinder implements IValueBinder
         } elseif (preg_match("/^[\+\-]?([0-9]+\\.?[0-9]*|[0-9]*\\.?[0-9]+)([Ee][\-\+]?[0-2]?\d{1,3})?$/", pValue)) {
             let tValue = ltrim(pValue, "+-");
             
-            if (is_string(pValue) && tValue[0] === "0" && strlen(tValue) > 1 && tValue[1] !== ".") {
+            if (is_string(pValue) && substr(tValue, 0, 1) === strval(0) && strlen(tValue) > 1 && substr(tValue, 1, 1) !== ".") {
                 return \ZExcel\Cell\DataType::TYPE_STRING;
             } elseif ((strpos(pValue, ".") === false) && (pValue > PHP_INT_MAX)) {
                 return \ZExcel\Cell\DataType::TYPE_STRING;

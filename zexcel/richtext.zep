@@ -92,7 +92,7 @@ class RichText implements IComparable
 
         // Loop through all \ZExcel\RichText\ITextElement
         for text in this->richTextElements {
-            let returnValue = returnValue + text->getText();
+            let returnValue = returnValue . text->getText();
         }
 
         // Return

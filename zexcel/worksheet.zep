@@ -17,7 +17,7 @@ class Worksheet implements IComparable
      *
      * @var array
      */
-    private static _invalidCharacters;
+    private static _invalidCharacters = ["*", ":", "/", "\\", "?", "[", "]"];
 
     /**
      * Parent spreadsheet
@@ -305,11 +305,13 @@ class Worksheet implements IComparable
      * @param PHPExcel        $pParent
      * @param string        $pTitle
      */
-    public function __construct(<\ZExcel\ZExcel> pParent = null, pTitle = "Worksheet")
+    public function __construct(<\ZExcel\ZExcel> pParent = null, var pTitle = "Worksheet")
     {
         // Set parent and title
         let this->_parent = pParent;
+        
         this->setTitle(pTitle, false);
+        
         // setTitle can change $pTitle
         this->setCodeName(this->getTitle());
         this->setSheetState(\ZExcel\Worksheet::SHEETSTATE_VISIBLE);
@@ -391,21 +393,19 @@ class Worksheet implements IComparable
      */
     public static function getInvalidCharacters()
     {
-        if (self::_invalidCharacters == null) {
-            let self::_invalidCharacters = ["*", ":", "/", "\\", "?", "[", "]"];
-        }
-        
         return self::_invalidCharacters;
     }
 
     /**
      * Check sheet code name for valid Excel syntax
      *
+     * @FIXME Must be private (phpunit test error)
+     *
      * @param string $pValue The string to check
      * @return string The valid string
      * @throws Exception
      */
-    private static function _checkSheetCodeName(var pValue)
+    public static function _checkSheetCodeName(var pValue)
     {
         var charCount = 0, invalidCharacter;
         string checkPValue;
@@ -436,17 +436,15 @@ class Worksheet implements IComparable
    /**
      * Check sheet title for valid Excel syntax
      *
+     * @FIXME Must be private (problem on zephir access)
+     *
      * @param string $pValue The string to check
      * @return string The valid string
      * @throws \ZExcel\Exception
      */
-    private static function _checkSheetTitle(pValue)
+    public static function _checkSheetTitle(pValue)
     {
-        var invalidCharacters;
-        
-        let invalidCharacters = self::getInvalidCharacters();
-        
-        if (str_replace(invalidCharacters, "", pValue) !== false) {
+        if (str_replace(self::_invalidCharacters, "", pValue) !== false) {
             return new \ZExcel\Exception("Invalid character found in sheet title");
         }
         
@@ -694,32 +692,60 @@ class Worksheet implements IComparable
      *          references to this worksheet
      * @return \ZExcel\Worksheet
      */
-    public function setTitle(pValue = "Worksheet", updateFormulaCellReferences = true)
+    public function setTitle(var pValue = "Worksheet", var updateFormulaCellReferences = true)
     {
-        var oldTitle, newTitle;
+        var oldTitle, newTitle, altTitle, i;
         
-        let oldTitle = this->getTitle();
-        
-        if (oldTitle == pValue) {
+        // Is this a 'rename' or not?
+        if (this->getTitle() == pValue) {
             return this;
         }
         
         self::_checkSheetTitle(pValue);
         
-        if (isset(this->_parent) && this->_parent->sheetNameExists(pValue)) {
-            throw new \ZExcel\Exception("Title name already exists.");
+        let oldTitle = this->getTitle();
+        
+        if (is_object(this->_parent) && this->_parent instanceof \ZExcel\ZExcel) {
+            // Is there already such sheet name?
+            if (this->_parent->sheetNameExists(pValue)) {
+                // Use name, but append with lowest possible integer
+
+                if (\ZExcel\Shared\Stringg::CountCharacters(pValue) > 29) {
+                    let pValue = \ZExcel\Shared\Stringg::Substring(pValue,0,29);
+                }
+                
+                let i = 1;
+                
+                while (this->_parent->sheetNameExists(pValue . " " . i)) {
+                    let i = i + 1;
+                    
+                    if (i == 10) {
+                        if (\ZExcel\Shared\Stringg::CountCharacters(pValue) > 28) {
+                            let pValue = \ZExcel\Shared\Stringg::Substring($pValue,0,28);
+                        }
+                    } elseif (i == 100) {
+                        if (\ZExcel\Shared\Stringg::CountCharacters(pValue) > 27) {
+                            let pValue = \ZExcel\Shared\Stringg::Substring($pValue,0,27);
+                        }
+                    }
+                }
+
+                let altTitle = pValue . " " . i;
+                
+                return this->setTitle(altTitle, updateFormulaCellReferences);
+            }
         }
         
         let this->_title = pValue;
         let this->_dirty = true;
         
-        if (isset(this->_parent)) {
+        if (is_object(this->_parent) && this->_parent instanceof \ZExcel\ZExcel) {
             let newTitle = this->getTitle();
             
             \ZExcel\Calculation::getInstance(this->_parent)->renameCalculationCacheForWorksheet(oldTitle, newTitle);
             
             if (updateFormulaCellReferences == true) {
-                throw new \Exception("Not full implemented yet! (\ZExcel\ReferenceHelper->updateNamedFormulas)");
+                \ZExcel\ReferenceHelper::getInstance()->updateNamedFormulas(this->_parent, oldTitle, newTitle);
             }
         }
         

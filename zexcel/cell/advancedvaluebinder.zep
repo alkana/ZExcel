@@ -24,7 +24,7 @@ class AdvancedValueBinder extends DefaultValueBinder implements IValueBinder
         let dataType = parent::dataTypeForValue(value);
 
         // Style logic - strings
-        if (dataType === \ZExcel\Cell\DataType::TYPE_STRING && (value instanceof \ZExcel\RichText) === false) {
+        if (dataType === \ZExcel\Cell\DataType::TYPE_STRING && (!is_object(value) || !(value instanceof \ZExcel\RichText))) {
             //    Test for booleans using locale-setting
             if (value == \ZExcel\Calculation::getTRUE()) {
                 cell->setValueExplicit(true, \ZExcel\Cell\DataType::TYPE_BOOL);

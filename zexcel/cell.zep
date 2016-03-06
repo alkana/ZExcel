@@ -192,7 +192,7 @@ class Cell
      *    @return    \ZExcel\Cell
      *    @throws    \ZExcel\Exception
      */
-    public function setValueExplicit(pValue = null, pDataType = \ZExcel\Cell\DataType::TYPE_STRING)
+    public function setValueExplicit(var pValue = null, var pDataType = \ZExcel\Cell\DataType::TYPE_STRING)
     {
         // set the value according to data type
         switch (pDataType) {

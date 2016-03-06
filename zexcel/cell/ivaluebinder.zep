@@ -9,5 +9,5 @@ interface IValueBinder
      * @param  mixed $value           Value to bind in cell
      * @return boolean
      */
-    public function bindValue(<\ZExcel\Cell>cell, var value = null);
+    public function bindValue(<\ZExcel\Cell> cell, var value = null);
 }

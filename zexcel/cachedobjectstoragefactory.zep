@@ -195,7 +195,7 @@ class CachedObjectStorageFactory
      **/
     public static function getInstance(<\ZExcel\Worksheet> parent)
     {
-        var instance, cacheMethodIsAvailable, functon;
+        var instance, cacheMethodIsAvailable, functionn;
         
         self::initStaticArray();
         
@@ -205,11 +205,11 @@ class CachedObjectStorageFactory
         }
 
         if (cacheMethodIsAvailable) {
-            let functon = self::cacheStorageClass;
-            let instance = new {functon}(
-                parent,
-                self::storageMethodParameters[self::cacheStorageMethod]
-            );
+            let functionn = self::cacheStorageClass;
+            
+            // @FIXME Check the second parameter (cache not need, but trying to send it)
+            let instance = new {functionn}(parent);
+            
             if (instance !== null) {
                 return instance;
             }
