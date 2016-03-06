@@ -386,13 +386,16 @@ class AutoFilter
      */
     private static function _filterTestInPeriodDateSet(cellValue, array monthSet)
     {
+        var dateValue;
+        
         //    Blank cells are always ignored, so return a FALSE
         if ((cellValue == "") || (cellValue === null)) {
-            return FALSE;
+            return false;
         }
 
         if (is_numeric(cellValue)) {
-            dateValue = date("m", \ZExcel\Shared\Date::ExcelToPHP(cellValue));
+            let dateValue = date("m", \ZExcel\Shared\Date::ExcelToPHP(cellValue));
+            
             if (in_array(dateValue, monthSet)) {
                 return true;
             }

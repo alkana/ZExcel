@@ -15,7 +15,30 @@ class File
 
     public static function file_exists(string pFilename) -> boolean
     {
-        throw new \Exception("Not implemented yet!");
+        var zip, zipFile, archiveFile, returnValue;
+        
+        if (strtolower(substr(pFilename, 0, 3)) == "zip" ) {
+            // Open ZIP file and verify if the file exists
+            let zipFile     = substr(pFilename, 6, strpos(pFilename, "#") - 6);
+            let archiveFile = substr(pFilename, strpos(pFilename, "#") + 1);
+
+            let zip = new \ZipArchive();
+            
+            if (zip->open(zipFile) === true) {
+                let returnValue = (zip->getFromName(archiveFile) !== false);
+                
+                zip->close();
+                
+                return returnValue;
+            } else {
+                return false;
+            }
+        } else {
+            // Regular file_exists
+            return file_exists(pFilename);
+        }
+        
+        return false;
     }
 
     public static function realpath(string pFilename) -> string

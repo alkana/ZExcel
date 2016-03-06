@@ -680,7 +680,7 @@ class ZExcel
         if (pIndex > numSheets - 1) {
             throw new \ZExcel\Exception("You tried to set a sheet active by the out of bounds index: " . pIndex . " The actual number of sheets is " . numSheets . ".");
         } else {
-            let this->activeSheetIndex = $pIndex;
+            let this->activeSheetIndex = pIndex;
         }
         
         return this->getActiveSheet();
@@ -832,8 +832,8 @@ class ZExcel
                 unset(this->namedRanges[namedRange]);
             }
         } else {
-            if (isset(this->namedRanges[$pSheet->getTitle() . "!" . namedRange])) {
-                unset(this->namedRanges[$pSheet->getTitle() . "!" . namedRange]);
+            if (isset(this->namedRanges[pSheet->getTitle() . "!" . namedRange])) {
+                unset(this->namedRanges[pSheet->getTitle() . "!" . namedRange]);
             }
         }
         
@@ -859,7 +859,7 @@ class ZExcel
     {
         var copied, worksheetCount, i;
         
-        let copied = clone $this;
+        let copied = clone this;
         let worksheetCount = count(this->workSheetCollection);
         
         for i in range(0, worksheetCount - 1) {
@@ -1037,7 +1037,7 @@ class ZExcel
     {
         var cellStyleXf;
         
-        for cellStyleXf in $this->cellStyleXfCollection {
+        for cellStyleXf in this->cellStyleXfCollection {
             if (cellStyleXf->getHashCode() == pValue) {
                 return cellStyleXf;
             }
@@ -1078,7 +1078,84 @@ class ZExcel
      */
     public function garbageCollect()
     {
-        throw new \Exception("Not implemented yet!");
+        var i, map, index, cellXf, sheet, cell, cellID, rowDimension, columnDimension, countNeededCellXfs;
+        
+        // how many references are there to each cellXf ?
+        array countReferencesCellXf = [];
+        
+        for index, cellXf in this->cellXfCollection {
+            let countReferencesCellXf[index] = 0;
+        }
+
+        for sheet in this->getWorksheetIterator() {
+            // from cells
+            for cellID in sheet->getCellCollection(false) {
+                let cell = sheet->getCell(cellID);
+                let countReferencesCellXf[cell->getXfIndex()] = countReferencesCellXf[cell->getXfIndex()] + 1;
+            }
+
+            // from row dimensions
+            for rowDimension in sheet->getRowDimensions() {
+                if (rowDimension->getXfIndex() !== null) {
+                    let countReferencesCellXf[rowDimension->getXfIndex()] = countReferencesCellXf[rowDimension->getXfIndex()] + 1;
+                }
+            }
+
+            // from column dimensions
+            for columnDimension in sheet->getColumnDimensions() {
+                let countReferencesCellXf[columnDimension->getXfIndex()] = countReferencesCellXf[columnDimension->getXfIndex()] + 1;
+            }
+        }
+
+        // remove cellXfs without references and create mapping so we can update xfIndex
+        // for all cells and columns
+        let countNeededCellXfs = 0;
+        
+        for index, cellXf in this->cellXfCollection {
+            if (countReferencesCellXf[index] > 0 || index == 0) { // we must never remove the first cellXf
+                let countNeededCellXfs = countNeededCellXfs + 1;
+            } else {
+                unset(this->cellXfCollection[index]);
+            }
+            
+            let map[index] = countNeededCellXfs - 1;
+        }
+        
+        let this->cellXfCollection = array_values(this->cellXfCollection);
+
+        // update the index for all cellXfs
+        for i, cellXf in this->cellXfCollection {
+            cellXf->setIndex(i);
+        }
+
+        // make sure there is always at least one cellXf (there should be)
+        if (empty(this->cellXfCollection)) {
+            let this->cellXfCollection[] = new \ZExcel\Style();
+        }
+
+        // update the xfIndex for all cells, row dimensions, column dimensions
+        for sheet in this->getWorksheetIterator() {
+            // for all cells
+            for cellID in sheet->getCellCollection(false) {
+                let cell = sheet->getCell(cellID);
+                cell->setXfIndex(map[cell->getXfIndex()]);
+            }
+
+            // for all row dimensions
+            for rowDimension in sheet->getRowDimensions() {
+                if (rowDimension->getXfIndex() !== null) {
+                    rowDimension->setXfIndex(map[rowDimension->getXfIndex()]);
+                }
+            }
+
+            // for all column dimensions
+            for columnDimension in sheet->getColumnDimensions() {
+                columnDimension->setXfIndex(map[columnDimension->getXfIndex()]);
+            }
+
+            // also do garbage collection for all the sheets
+            sheet->garbageCollect();
+        }
     }
 
     public function getID()
