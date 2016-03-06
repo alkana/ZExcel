@@ -204,9 +204,25 @@ class ZExcel
     *
     * return string|null|array
     */
-    public function getRibbonXMLData(string What = "all") //we need some constants here...
+    public function getRibbonXMLData(string what = "all") //we need some constants here...
     {
-        throw new \Exception("Not implemented yet!");
+        var returnData;
+        
+        let what = strtolower(what);
+        
+        switch (what){
+            case "all":
+                let returnData = this->ribbonXMLData;
+                break;
+            case "target":
+            case "data":
+                if (is_array(this->ribbonXMLData) && array_key_exists(what, this->ribbonXMLData)) {
+                    let returnData = this->ribbonXMLData[what];
+                }
+                break;
+        }
+
+        return returnData;
     }
 
     /**
@@ -234,9 +250,33 @@ class ZExcel
     * retrieve Binaries Ribbon Objects
     *
     */
-    public function getRibbonBinObjects(string What = "all")
+    public function getRibbonBinObjects(string what = "all")
     {
-        throw new \Exception("Not implemented yet!");
+        var returnData, tmpTypes;
+        
+        let what = strtolower(what);
+        
+        switch(what) {
+            case "all":
+                return this->ribbonBinObjects;
+                break;
+            case "names":
+            case "data":
+                if (is_array(this->ribbonBinObjects) && array_key_exists(what, this->ribbonBinObjects)) {
+                    let returnData = this->ribbonBinObjects[what];
+                }
+                break;
+            case "types":
+                if (is_array(this->ribbonBinObjects) && array_key_exists("data", this->ribbonBinObjects) && is_array(this->ribbonBinObjects["data"])) {
+                    let tmpTypes = array_keys(this->ribbonBinObjects["data"]);
+                    let returnData = array_unique(array_map([this, "getExtensionOnly"], tmpTypes));
+                } else {
+                    let returnData = []; // the caller want an array... not null if empty
+                }
+                break;
+        }
+        
+        return returnData;
     }
 
     /**
@@ -271,14 +311,23 @@ class ZExcel
     }
 
     /**
-     * Get sheet by code name. Warning : sheet don't have always a code name !
+     * Get sheet by code name. Warning : sheet don"t have always a code name !
      *
      * @param string pName Sheet name
      * @return PHPExcel_Worksheet
      */
     public function getSheetByCodeName(string pName = "")
     {
-        throw new \Exception("Not implemented yet!");
+        var worksheetCount, i;
+        
+        let worksheetCount = count(this->workSheetCollection);
+        for i in range(0, worksheetCount - 1) {
+            if (this->workSheetCollection[i]->getCodeName() == pName) {
+                return this->workSheetCollection[i];
+            }
+        }
+
+        return null;
     }
 
      /**
@@ -384,7 +433,7 @@ class ZExcel
      *
      * @param PHPExcel_DocumentSecurity    pValue
      */
-    public function setSecurity(<ZExcel\DocumentSecurity> pValue)
+    public function setSecurity(<\ZExcel\DocumentSecurity> pValue)
     {
         let this->security = pValue;
     }
@@ -440,7 +489,7 @@ class ZExcel
     public function addSheet(<\ZExcel\Worksheet> pSheet, int iSheetIndex = -1)
     {
         if (this->sheetNameExists(pSheet->getTitle())) {
-            throw new \ZExcel\Exception("Workbook already contains a worksheet named '{$pSheet->getTitle()}'. Rename this worksheet first.");
+            throw new \ZExcel\Exception("Workbook already contains a worksheet named '". pSheet->getTitle() . "'. Rename this worksheet first.");
         }
 
         if(iSheetIndex == -1) {
@@ -575,7 +624,24 @@ class ZExcel
      */
     public function setIndexByName(string sheetName, int newIndex)
     {
-        throw new \Exception("Not implemented yet!");
+        var oldIndex, pSheet;
+        
+        let oldIndex = this->getIndex(this->getSheetByName(sheetName));
+        
+        let pSheet = array_splice(
+            this->workSheetCollection,
+            oldIndex,
+            1
+        );
+        
+        array_splice(
+            this->workSheetCollection,
+            newIndex,
+            0,
+            pSheet
+        );
+        
+        return newIndex;
     }
 
     /**
@@ -671,7 +737,30 @@ class ZExcel
      */
     public function addExternalSheet(<\ZExcel\Worksheet> pSheet, int iSheetIndex = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var countCellXfs, cellXf, cellID, cell;
+        
+        if (this->sheetNameExists(pSheet->getTitle())) {
+            throw new \ZExcel\Exception("Workbook already contains a worksheet named '" . pSheet->getTitle() . "'. Rename the external sheet first.");
+        }
+
+        // count how many cellXfs there are in this workbook currently, we will need this below
+        let countCellXfs = count(this->cellXfCollection);
+
+        // copy all the shared cellXfs from the external workbook and append them to the current
+        for cellXf in pSheet->getParent()->getCellXfCollection() {
+            this->addCellXf(clone cellXf);
+        }
+
+        // move sheet to this workbook
+        pSheet->rebindParent(this);
+
+        // update the cellXfs
+        for cellID in pSheet->getCellCollection(false) {
+            let cell = pSheet->getCell(cellID);
+            cell->setXfIndex(cell->getXfIndex() + countCellXfs);
+        }
+
+        return this->addSheet(pSheet, iSheetIndex);
     }
 
     /**
@@ -692,7 +781,15 @@ class ZExcel
      */
     public function addNamedRange(<\ZExcel\NamedRange> namedRange)
     {
-        throw new \Exception("Not implemented yet!");
+        if (namedRange->getScope() == null) {
+            // global scope
+            let this->namedRanges[namedRange->getName()] = namedRange;
+        } else {
+            // local scope
+            let this->namedRanges[namedRange->getScope()->getTitle() . "!" . namedRange->getName()] = namedRange;
+        }
+        
+        return true;
     }
 
     /**
@@ -702,9 +799,23 @@ class ZExcel
      * @param  PHPExcel_Worksheet|null pSheet Scope. Use null for global scope
      * @return PHPExcel_NamedRange|null
      */
-    public function getNamedRange(string namedRange, <ZExcel\Worksheet> pSheet = null)
+    public function getNamedRange(string namedRange, <\ZExcel\Worksheet> pSheet = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var returnValue;
+
+        if (namedRange != "" && namedRange !== null) {
+            // first look for global defined name
+            if (isset(this->namedRanges[namedRange])) {
+                let returnValue = this->namedRanges[namedRange];
+            }
+
+            // then look for local defined name (has priority over global defined name if both names exist)
+            if ((pSheet !== null) && isset(this->namedRanges[pSheet->getTitle() . "!" . namedRange])) {
+                let returnValue = this->namedRanges[pSheet->getTitle() . "!" . namedRange];
+            }
+        }
+
+        return returnValue;
     }
 
     /**
@@ -714,9 +825,19 @@ class ZExcel
      * @param  PHPExcel_Worksheet|null  pSheet  Scope: use null for global scope.
      * @return PHPExcel
      */
-    public function removeNamedRange(string namedRange, <\ZExcel\Worksheet> pSheet = null)
+    public function removeNamedRange(string namedRange, <\ZExcel\Worksheet> pSheet = null) -> <\ZExcel\ZExcel>
     {
-        throw new \Exception("Not implemented yet!");
+        if (pSheet === null) {
+            if (isset(this->namedRanges[namedRange])) {
+                unset(this->namedRanges[namedRange]);
+            }
+        } else {
+            if (isset(this->namedRanges[$pSheet->getTitle() . "!" . namedRange])) {
+                unset(this->namedRanges[$pSheet->getTitle() . "!" . namedRange]);
+            }
+        }
+        
+        return this;
     }
 
     /**
@@ -736,7 +857,17 @@ class ZExcel
      */
     public function copy()
     {
-        throw new \Exception("Not implemented yet!");
+        var copied, worksheetCount, i;
+        
+        let copied = clone $this;
+        let worksheetCount = count(this->workSheetCollection);
+        
+        for i in range(0, worksheetCount - 1) {
+            let this->workSheetCollection[i] = this->workSheetCollection[i]->copy();
+            this->workSheetCollection[i]->rebindParent(this);
+        }
+
+        return copied;
     }
 
     /**
@@ -902,9 +1033,17 @@ class ZExcel
      * @param  string pValue
      * @return PHPExcel_Style|false
      */
-    public function getCellStyleXfByHashCode(pValue = "")
+    public function getCellStyleXfByHashCode(var pValue = "")
     {
-        throw new \Exception("Not implemented yet!");
+        var cellStyleXf;
+        
+        for cellStyleXf in $this->cellStyleXfCollection {
+            if (cellStyleXf->getHashCode() == pValue) {
+                return cellStyleXf;
+            }
+        }
+        
+        return false;
     }
 
     /**

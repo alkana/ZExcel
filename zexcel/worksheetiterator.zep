@@ -2,28 +2,61 @@ namespace ZExcel;
 
 class WorksheetIterator implements \Iterator
 {
-    public function current()
+    /**
+     * Spreadsheet to iterate
+     *
+     * @var PHPExcel
+     */
+    private subject;
+
+    /**
+     * Current iterator position
+     *
+     * @var int
+     */
+    private position = 0;
+
+    /**
+     * Create a new worksheet iterator
+     *
+     * @param PHPExcel         $subject
+     */
+    public function __construct(<\ZExcel> subject = null)
     {
-       throw new \Exception("Not implemented yet!");
+        // Set subject
+        let this->subject = subject;
     }
-    
-    public function key()
+
+    /**
+     * Destructor
+     */
+    public function __destruct()
     {
-       throw new \Exception("Not implemented yet!");
-    }
-    
-    public function next()
-    {
-       throw new \Exception("Not implemented yet!");
+        unset(this->subject);
     }
     
     public function rewind()
     {
-       throw new \Exception("Not implemented yet!");
+        let this->position = 0;
+    }
+    
+    public function current()
+    {
+       return this->subject->getSheet(this->position);
+    }
+    
+    public function key()
+    {
+       return this->position;
+    }
+    
+    public function next()
+    {
+       let this->position = this->position + 1;
     }
     
     public function valid()
     {
-       throw new \Exception("Not implemented yet!");
+        return this->position < this->subject->getSheetCount();
     }
 }
