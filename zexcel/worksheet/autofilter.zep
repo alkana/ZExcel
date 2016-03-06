@@ -222,9 +222,30 @@ class AutoFilter
      *    @throws    \ZExcel\Exception
      *    @return \ZExcel\Worksheet\AutoFilter
      */
-    public function setColumn(pColumn)
+    public function setColumn(var pColumn) -> <\ZExcel\AutoFilter>
     {
-        throw new \Exception("Not implemented yet!");
+        var column;
+        
+        if ((is_string(pColumn)) && (!empty(pColumn))) {
+            let column = pColumn;
+        } elseif(is_object(pColumn) && (pColumn instanceof \ZExcel\Worksheet\AutoFilter\Column)) {
+            let column = pColumn->getColumnIndex();
+        } else {
+            throw new \ZExcel\Exception("Column is not within the autofilter range.");
+        }
+        
+        this->testColumnInRange(column);
+
+        if (is_string(pColumn)) {
+            let this->_columns[pColumn] = new \ZExcel\Worksheet\AutoFilter\Column(pColumn, this);
+        } elseif(is_object(pColumn) && (pColumn instanceof \ZExcel\Worksheet\AutoFilter\Column)) {
+            pColumn->setParent(this);
+            let this->_columns[column] = pColumn;
+        }
+        
+        ksort(this->_columns);
+
+        return this;
     }
 
     /**
@@ -234,8 +255,15 @@ class AutoFilter
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet\AutoFilter
      */
-    public function clearColumn(string pColumn) {
-        throw new \Exception("Not implemented yet!");
+    public function clearColumn(string pColumn)
+    {
+        this->testColumnInRange(pColumn);
+
+        if (isset(this->_columns[pColumn])) {
+            unset(this->_columns[pColumn]);
+        }
+
+        return this;
     }
 
     /**
@@ -249,9 +277,24 @@ class AutoFilter
      *    @param    string    toColumn        Column name (e.g. B)
      *    @return \ZExcel\Worksheet\AutoFilter
      */
-    public function shiftColumn(string fromColumn = null, string toColumn = null)
+    public function shiftColumn(string! fromColumn = null, string! toColumn = null)
     {
-        throw new \Exception("Not implemented yet!");
+        let fromColumn = strtoupper(fromColumn);
+        let toColumn = strtoupper(toColumn);
+
+        if ((fromColumn !== null) && (isset(this->_columns[fromColumn])) && (toColumn !== null)) {
+            this->_columns[fromColumn]->setParent();
+            this->_columns[fromColumn]->setColumnIndex(toColumn);
+            
+            let this->_columns[toColumn] = this->_columns[fromColumn];
+            
+            this->_columns[toColumn]->setParent(this);
+            unset(this->_columns[fromColumn]);
+
+            ksort(this->_columns);
+        }
+
+        return this;
     }
 
 
@@ -262,9 +305,18 @@ class AutoFilter
      *    @param    mixed[]        dataSet
      *    @return boolean
      */
-    private static function _filterTestInSimpleDataSet(cellValue, array dataSet)
+    private static function _filterTestInSimpleDataSet(var cellValue, array dataSet)
     {
-        throw new \Exception("Not implemented yet!");
+        var dataSetValues, blanks;
+        
+        let dataSetValues = dataSet["filterValues"];
+        let blanks = dataSet["blanks"];
+        
+        if ((cellValue == "") || (cellValue === null)) {
+            return blanks;
+        }
+        
+        return in_array(cellValue, dataSetValues);
     }
 
     /**
@@ -274,9 +326,43 @@ class AutoFilter
      *    @param    mixed[]        dataSet
      *    @return boolean
      */
-    private static function _filterTestInDateGroupSet(cellValue,array dataSet)
+    private static function _filterTestInDateGroupSet(var cellValue, array dataSet)
     {
-        throw new \Exception("Not implemented yet!");
+        var dateSet, blanks, dateValue, dtVal;
+        
+        let dateSet = dataSet["filterValues"];
+        let blanks = dataSet["blanks"];
+        
+        if ((cellValue == "") || (cellValue === null)) {
+            return blanks;
+        }
+
+        if (is_numeric(cellValue)) {
+            let dateValue = \ZExcel\Shared\Date::ExcelToPHP(cellValue);
+            
+            if (cellValue < 1) {
+                //    Just the time part
+                let dtVal = date("His",dateValue);
+                let dateSet = dateSet["time"];
+            } elseif(cellValue == floor(cellValue)) {
+                //    Just the date part
+                let dtVal = date("Ymd",dateValue);
+                let dateSet = dateSet["date"];
+            } else {
+                //    date and time parts
+                let dtVal = date("YmdHis",dateValue);
+                let dateSet = dateSet["dateTime"];
+            }
+            
+            for dateValue in dateSet {
+                //    Use of substr to extract value at the appropriate group level
+                if (substr(dtVal, 0, strlen(dateValue)) == dateValue) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -300,7 +386,19 @@ class AutoFilter
      */
     private static function _filterTestInPeriodDateSet(cellValue, array monthSet)
     {
-        throw new \Exception("Not implemented yet!");
+        //    Blank cells are always ignored, so return a FALSE
+        if ((cellValue == "") || (cellValue === null)) {
+            return FALSE;
+        }
+
+        if (is_numeric(cellValue)) {
+            dateValue = date("m", \ZExcel\Shared\Date::ExcelToPHP(cellValue));
+            if (in_array(dateValue, monthSet)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -320,7 +418,22 @@ class AutoFilter
 
     private function _calculateTopTenValue(columnID, startRow, endRow, ruleType, ruleValue)
     {
-        throw new \Exception("Not implemented yet!");
+        var range, dataValues;
+        
+        let range = columnID . startRow . ":" . columnID . endRow;
+        let dataValues = \ZExcel\Calculation\Functions::flattenArray(
+            this->_workSheet->rangeToArray(range, null, true, false)
+        );
+
+        let dataValues = array_filter(dataValues);
+        
+        if (ruleType == \ZExcel\Worksheet\AutoFilter\Column\Rule::AUTOFILTER_COLUMN_RULE_TOPTEN_TOP) {
+            rsort(dataValues);
+        } else {
+            sort(dataValues);
+        }
+
+        return array_pop(array_slice(dataValues, 0, ruleValue));
     }
 
     /**
