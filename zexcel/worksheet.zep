@@ -312,38 +312,38 @@ class Worksheet implements IComparable
         this->setTitle(pTitle, false);
         // setTitle can change $pTitle
         this->setCodeName(this->getTitle());
-        // this->setSheetState(\ZExcel\Worksheet::SHEETSTATE_VISIBLE);
+        this->setSheetState(\ZExcel\Worksheet::SHEETSTATE_VISIBLE);
 
-        // let this->_cellCollection = \ZExcel\CachedObjectStorageFactory::getInstance(this);
+        let this->_cellCollection = \ZExcel\CachedObjectStorageFactory::getInstance(this);
 
         // Set page setup
         let this->_pageSetup  = new \ZExcel\Worksheet\PageSetup();
 
         // Set page margins
-        // let this->_pageMargins = new \ZExcel\Worksheet\PageMargins();
+        let this->_pageMargins = new \ZExcel\Worksheet\PageMargins();
 
         // Set page header/footer
-        // let this->_headerFooter = new \ZExcel\Worksheet\HeaderFooter();
+        let this->_headerFooter = new \ZExcel\Worksheet\HeaderFooter();
 
         // Set sheet view
         let this->_sheetView = new \ZExcel\Worksheet\SheetView();
 
         // Drawing collection
-        // let this->_drawingCollection = new \ArrayObject();
+        let this->_drawingCollection = new \ArrayObject();
 
         // Chart collection
-        // let this->_chartCollection = new \ArrayObject();
+        let this->_chartCollection = new \ArrayObject();
 
         // Protection
-        // let this->_protection = new \ZExcel\Worksheet\Protection();
+        let this->_protection = new \ZExcel\Worksheet\Protection();
 
         // Default row dimension
-        // let this->_defaultRowDimension = new \ZExcel\Worksheet\RowDimension(null);
+        let this->_defaultRowDimension = new \ZExcel\Worksheet\RowDimension(null);
 
         // Default column dimension
-        // let this->_defaultColumnDimension = new \ZExcel\Worksheet\ColumnDimension(null);
+        let this->_defaultColumnDimension = new \ZExcel\Worksheet\ColumnDimension(null);
 
-        // let this->_autoFilter = new \ZExcel\Worksheet\AutoFilter(null, this);
+        let this->_autoFilter = new \ZExcel\Worksheet\AutoFilter(null, this);
     }
 
 
