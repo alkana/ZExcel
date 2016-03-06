@@ -2,12 +2,22 @@ namespace ZExcel;
 
 class Cell
 {
+
     /**
      *  Default range variable constant
      *
      *  @var  string
      */
     const DEFAULT_RANGE = "A1:A1";
+    
+    protected static _columnLookup = [
+        "A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7, "H": 8, "I": 9, "J": 10, "K": 11, "L": 12, "M": 13,
+        "N": 14, "O": 15, "P": 16, "Q": 17, "R": 18, "S": 19, "T": 20, "U": 21, "V": 22, "W": 23, "X": 24, "Y": 25, "Z": 26,
+        "a": 1, "b": 2, "c": 3, "d": 4, "e": 5, "f": 6, "g": 7, "h": 8, "i": 9, "j": 10, "k": 11, "l": 12, "m": 13,
+        "n": 14, "o": 15, "p": 16, "q": 17, "r": 18, "s": 19, "t": 20, "u": 21, "v": 22, "w": 23, "x": 24, "y": 25, "z": 26
+    ];
+    
+    protected static _indexCache = [];
 
     /**
      *    Value binder to use
@@ -15,7 +25,7 @@ class Cell
      *    @var    \ZExcel\Cell\IValueBinder
      */
     private static _valueBinder;
-
+    
     /**
      *    Value of the cell
      *
@@ -549,9 +559,7 @@ class Cell
         let myRow    = this->getRow();
 
         // Verify if cell is in range
-        return ((rangeStart[0] <= myColumn) && (rangeEnd[0] >= myColumn) &&
-                (rangeStart[1] <= myRow) && (rangeEnd[1] >= myRow)
-               );
+        return ((rangeStart[0] <= myColumn) && (rangeEnd[0] >= myColumn) && (rangeStart[1] <= myRow) && (rangeEnd[1] >= myRow));
     }
 
     /**
@@ -584,9 +592,11 @@ class Cell
      *    @return    string    Absolute coordinate        e.g. 'A' or '1' or 'A1'
      *    @throws    \ZExcel\Exception
      */
-    public static function absoluteReference(pCoordinateString = "A1")
+    public static function absoluteReference(var pCoordinateString = "A1")
     {
         var worksheet, cellAddress;
+        
+        let pCoordinateString = strval(pCoordinateString);
         
         if (strpos(pCoordinateString, ":") === false && strpos(pCoordinateString, ",") === false) {
             // Split out any worksheet name from the reference
@@ -604,9 +614,9 @@ class Cell
 
             // Create absolute coordinate
             if (ctype_digit(pCoordinateString)) {
-                return worksheet . "" . pCoordinateString;
+                return worksheet . "$" . pCoordinateString;
             } elseif (ctype_alpha(pCoordinateString)) {
-                return worksheet . "" . strtoupper(pCoordinateString);
+                return worksheet . "$" . strtoupper(pCoordinateString);
             }
             
             return worksheet . self::absoluteCoordinate(pCoordinateString);
@@ -630,20 +640,22 @@ class Cell
             // Split out any worksheet name from the coordinate
             let worksheet = "";
             let cellAddress = explode("!", pCoordinateString);
+            
             if (count(cellAddress) > 1) {
                 let worksheet = cellAddress[0];
                 let pCoordinateString = cellAddress[1];
             }
+            
             if (strlen(worksheet) > 0) {
                 let worksheet .= "!";
             }
 
             // Create absolute coordinate
             let tmp = self::coordinateFromString(pCoordinateString);
-            let column = ltrim(tmp[0], "");
-            let row = ltrim(tmp[1], "");
+            let column = ltrim(tmp[0], "$");
+            let row = ltrim(tmp[1], "$");
             
-            return worksheet . "" . column . "" . row;
+            return worksheet . "$" . column . "$" . row;
         }
 
         throw new \ZExcel\Exception("Cell coordinate string can not be a range of cells");
@@ -668,6 +680,7 @@ class Cell
 
         let exploded = explode(",", pRange);
         let counter = count(exploded) - 1;
+        
         for i in range(0, counter) {
             let exploded[i] = explode(":", exploded[i]);
         }
@@ -694,9 +707,11 @@ class Cell
         // Build range
         let imploded = [];
         let counter = count(pRange);
-        for i in range(0, counter) {
+        
+        for i in range(0, counter - 1) {
             let pRange[i] = implode(":", pRange[i]);
         }
+        
         let imploded = implode(",", pRange);
 
         return imploded;
@@ -709,7 +724,7 @@ class Cell
      *    @return    array    Range coordinates array(Start Cell, End Cell)
      *                    where Start Cell and End Cell are arrays (Column Number, Row Number)
      */
-    public static function rangeBoundaries(pRange = "A1:A1")
+    public static function rangeBoundaries(var pRange = "A1:A1")
     {
         var rangeA, rangeB, rangeStart, rangeEnd, tmp;
         
@@ -749,7 +764,7 @@ class Cell
      *    @param    string    pRange        Cell range (e.g. A1:A1)
      *    @return    array    Range dimension (width, height)
      */
-    public static function rangeDimension(pRange = "A1:A1")
+    public static function rangeDimension(var pRange = "A1:A1")
     {
         var rangeStart, rangeEnd, tmp;
         
@@ -769,7 +784,7 @@ class Cell
      *    @return    array    Range coordinates array(Start Cell, End Cell)
      *                    where Start Cell and End Cell are arrays (Column ID, Row Number)
      */
-    public static function getRangeBoundaries(pRange = "A1:A1")
+    public static function getRangeBoundaries(var pRange = "A1:A1")
     {
         var rangeA, rangeB, tmp;
         
@@ -794,47 +809,38 @@ class Cell
 
         return [self::coordinateFromString(rangeA), self::coordinateFromString(rangeB)];
     }
-
+    
     /**
      *    Column index from string
      *
      *    @param    string pString
      *    @return    int Column index (base 1 !!!)
      */
-    public static function columnIndexFromString(pString = "A")
+    public static function columnIndexFromString(var pString = "A")
     {
-        //    It's surprising how costly the strtoupper() and ord() calls actually are, so we use a lookup array rather than use ord()
-        //        and make it case insensitive to get rid of the strtoupper() as well. Because it's a static, there's no significant
-        //        memory overhead either
-        //    Using a lookup cache adds a slight memory overhead, but boosts speed
-        //    caching using a static within the method is faster than a class static,
-        //        though it's additional memory overhead
-        array _columnLookup = [
-            "A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7, "H": 8, "I": 9, "J": 10, "K": 11, "L": 12, "M": 13,
-            "N": 14, "O": 15, "P": 16, "Q": 17, "R": 18, "S": 19, "T": 20, "U": 21, "V": 22, "W": 23, "X": 24, "Y": 25, "Z": 26,
-            "a": 1, "b": 2, "c": 3, "d": 4, "e": 5, "f": 6, "g": 7, "h": 8, "i": 9, "j": 10, "k": 11, "l": 12, "m": 13,
-            "n": 14, "o": 15, "p": 16, "q": 17, "r": 18, "s": 19, "t": 20, "u": 21, "v": 22, "w": 23, "x": 24, "y": 25, "z": 26
-        ], _indexCache = [];
-
-        if (isset(_indexCache[pString])) {
-            return _indexCache[pString];
+        var len;
+        
+        if (isset(self::_indexCache[pString])) {
+            return self::_indexCache[pString];
         }
 
         //    We also use the language construct isset() rather than the more costly strlen() function to match the length of pString
         //        for improved performance
-        if (isset(pString[0])) {
-            if (!isset(pString[1])) {
-                let _indexCache[pString] = _columnLookup[pString];
-                return _indexCache[pString];
-            } elseif (!isset(pString[2])) {
-                let _indexCache[pString] = _columnLookup[pString[0]] * 26 + _columnLookup[pString[1]];
-                return _indexCache[pString];
-            } elseif (!isset(pString[3])) {
-                let _indexCache[pString] = _columnLookup[pString[0]] * 676 + _columnLookup[pString[1]] * 26 + _columnLookup[pString[2]];
-                return _indexCache[pString];
+        let len = strlen(pString);
+        if (len > 0) {
+            if (len < 2) {
+                let self::_indexCache[pString] = self::_columnLookup[pString];
+                return self::_indexCache[pString];
+            } elseif (len < 3) {
+                let self::_indexCache[pString] = self::_columnLookup[substr(pString, 0, 1)] * 26 + self::_columnLookup[substr(pString, 1, 1)];
+                return self::_indexCache[pString];
+            } elseif (len < 4) {
+                let self::_indexCache[pString] = self::_columnLookup[substr(pString, 0, 1)] * 676 + self::_columnLookup[substr(pString, 1, 1)] * 26 + self::_columnLookup[substr(pString, 2, 1)];
+                return self::_indexCache[pString];
             }
         }
-        throw new \ZExcel\Exception("Column string index can not be " . ((isset(pString[0])) ? "longer than 3 characters" : "empty"));
+        
+        throw new \ZExcel\Exception("Column string index can not be " . ((strlen(pString) > 0) ? "longer than 3 characters" : "empty"));
     }
 
     /**
@@ -843,9 +849,20 @@ class Cell
      *    @param    int pColumnIndex Column index (base 0 !!!)
      *    @return    string
      */
-    public static function stringFromColumnIndex(pColumnIndex = 0)
+    public static function stringFromColumnIndex(var pColumnIndex = 0)
     {
-        throw new \Exception("Not implemented yet!");
+        if (!isset(self::_indexCache[pColumnIndex])) {
+            // Determine column string
+            if (pColumnIndex < 26) {
+                let self::_indexCache[pColumnIndex] = chr(65 + pColumnIndex);
+            } elseif (pColumnIndex < 702) {
+                let self::_indexCache[pColumnIndex] = chr(64 + (pColumnIndex / 26)) . chr(65 + pColumnIndex % 26);
+            } else {
+                let self::_indexCache[pColumnIndex] = chr(64 + ((pColumnIndex - 26) / 676)) . chr(65 + (((pColumnIndex - 26) % 676) / 26)) . chr(65 + pColumnIndex % 26);
+            }
+        }
+        
+        return self::_indexCache[pColumnIndex];
     }
 
     /**
@@ -854,18 +871,18 @@ class Cell
      *    @param    string    pRange        Range (e.g. A1 or A1:C10 or A1:E10 A20:E25)
      *    @return    array    Array containing single cell references
      */
-    public static function extractAllCellReferencesInRange(pRange = "A1")
+    public static function extractAllCellReferencesInRange(var pRange = "A1")
     {
         var cellBlocks, cellBlock, ranges, range, rangeStart, rangeEnd,
             startCol = 0, startRow = 0, endCol = 0, endRow = 0,
-            currentCol, currentRow, sortKeys, coord,
-            column = 0, row = 0;
+            currentCol, currentRow, sortKeys, coord, tmp;
         
         // Returnvalue
         array returnValue = [];
 
         // Explode spaces
-        let cellBlocks = explode(" ", str_replace("", "", strtoupper(pRange)));
+        let cellBlocks = explode(" ", str_replace("$", "", strtoupper(pRange)));
+        
         for cellBlock in cellBlocks {
             // Single cell?
             if (strpos(cellBlock,":") === false && strpos(cellBlock,",") === false) {
@@ -875,9 +892,10 @@ class Cell
 
             // Range...
             let ranges = self::splitRange(cellBlock);
+            
             for range in ranges {
                 // Single cell?
-                if (!isset(range[1])) {
+                if (count(range) === 1) {
                     let returnValue[] = range[0];
                     continue;
                 }
@@ -885,10 +903,19 @@ class Cell
                 // Range...
                 let rangeStart = range[0];
                 let rangeEnd = range[1];
-                sscanf(rangeStart, "%[A-Z]%d", startCol, startRow);
-                sscanf(rangeEnd, "%[A-Z]%d", endCol, endRow);
-                let endCol++;
-
+                
+                let tmp = sscanf(rangeStart, "%[A-Z]%d");
+                
+                let startCol = tmp[0];
+                let startRow = tmp[1];
+                
+                let tmp = sscanf(rangeEnd, "%[A-Z]%d");
+                
+                let endCol = tmp[0];
+                let endRow = tmp[1];
+                
+                let endCol = chr(ord(endCol) + 1);
+                
                 // Current data
                 let currentCol = startCol;
                 let currentRow = startRow;
@@ -896,10 +923,10 @@ class Cell
                 // Loop cells
                 while (currentCol != endCol) {
                     while (currentRow <= endRow) {
-                        let returnValue[] = currentCol.currentRow;
-                        let currentRow++;
+                        let returnValue[] = currentCol . currentRow;
+                        let currentRow = currentRow + 1;
                     }
-                    let currentCol++;
+                    let currentCol = chr(ord(currentCol) + 1);
                     let currentRow = startRow;
                 }
             }
@@ -907,10 +934,12 @@ class Cell
 
         //    Sort the result by column and row
         let sortKeys = [];
+        
         for coord in array_unique(returnValue) {
-            sscanf(coord, "%[A-Z]%d", column, row);
-            let sortKeys[sprintf("%3s%09d", column, row)] = coord;
+            let tmp = sscanf(coord, "%[A-Z]%d");
+            let sortKeys[sprintf("%3s%09d", tmp[0], tmp[1])] = coord;
         }
+        
         ksort(sortKeys);
 
         // Return value
