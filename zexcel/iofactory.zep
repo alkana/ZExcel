@@ -2,8 +2,103 @@ namespace ZExcel;
 
 class IOFactory
 {
+    /**
+     * Search locations
+     *
+     * @var    array
+     * @access    private
+     * @static
+     */
+    private static _searchLocations = [
+        [
+            "type": "IWriter",
+            "path": "ZExcel/Writer/{0}.php",
+            "class": "\ZExcel\Writer_{0}"
+        ],
+        [
+            "type": "IReader",
+            "path": "ZExcel/Reader/{0}.php",
+            "class": "\ZExcel\Reader\{0}"
+        ]
+    ];
+
+    /**
+     * Autoresolve classes
+     *
+     * @var    array
+     * @access    private
+     * @static
+     */
+    private static _autoResolveClasses = [
+        "Excel2007",
+        "Excel5",
+        "Excel2003XML",
+        "OOCalc",
+        "SYLK",
+        "Gnumeric",
+        "HTML",
+        "CSV"
+    ];
+    
     private function __construct() { }
 
+    /**
+     * Get search locations
+     *
+     * @static
+     * @access    public
+     * @return    array
+     */
+    public static function getSearchLocations()
+    {
+        return self::_searchLocations;
+    }
+    
+    /**
+     * Set search locations
+     *
+     * @static
+     * @access    public
+     * @param    array value
+     * @throws    PHPExcel_Reader_Exception
+     */
+    public static function setSearchLocations(var value)
+    {
+        if (is_array(value)) {
+            let self::_searchLocations = value;
+        } else {
+            throw new \ZExcel\Reader\Exception("Invalid parameter passed.");
+        }
+    }
+    
+    /**
+     * Add search location
+     *
+     * @static
+     * @access    public
+     * @param    string type        Example: IWriter
+     * @param    string location    Example: PHPExcel/Writer/{0}.php
+     * @param    string classname     Example: PHPExcel_Writer_{0}
+     */
+    public static function addSearchLocation(var type = "", var location = "", var classname = "")
+    {
+        let self::_searchLocations[] = [
+            "type": type,
+            "path": location,
+            "class": classname
+        ];
+    }
+    
+    /**
+     * Create PHPExcel_Writer_IWriter
+     *
+     * @static
+     * @access    public
+     * @param    PHPExcel phpExcel
+     * @param    string  writerType    Example: Excel2007
+     * @return    PHPExcel_Writer_IWriter
+     * @throws    PHPExcel_Reader_Exception
+     */
     public static function createWriter(<ZExcel> zExcel, string writerType = "") -> <Writer\IWriter>
     {
         // Search type
@@ -17,7 +112,7 @@ class IOFactory
             let instance = <Writer\IWriter> new {className}(zExcel);
             
             if (instance !== NULL) {
-                return $instance;
+                return instance;
             }
         }
         
@@ -38,7 +133,7 @@ class IOFactory
             let instance = <Reader\IReader> new {className}();
             
             if (instance !== NULL) {
-                return $instance;
+                return instance;
             }
         }
         
@@ -46,6 +141,15 @@ class IOFactory
         throw new Reader\Exception("No IReader found for type " . readerType);
     }
 
+    /**
+     * Loads PHPExcel from file using automatic PHPExcel_Reader_IReader resolution
+     *
+     * @static
+     * @access public
+     * @param     string         $pFilename        The name of the spreadsheet file
+     * @return    PHPExcel
+     * @throws    PHPExcel_Reader_Exception
+     */
     public static function load(string pFilename) -> <Reader\IReader>
     {
         var reader;
@@ -55,18 +159,43 @@ class IOFactory
         return reader->load(pFilename);
     }
 
-    public static function identify($pFilename)
+    /**
+     * Identify file type using automatic PHPExcel_Reader_IReader resolution
+     *
+     * @static
+     * @access public
+     * @param     string         $pFilename        The name of the spreadsheet file to identify
+     * @return    string
+     * @throws    PHPExcel_Reader_Exception
+     */
+    public static function identify(var pFilename)
     {
+        var reader, className, classType;
+        
+        let reader = self::createReaderForFile(pFilename);
+        let className = get_class(reader);
+        let classType = explode("\\", className);
+        
+        return array_pop(classType);
     }
 
+    /**
+     * Create PHPExcel_Reader_IReader for file using automatic PHPExcel_Reader_IReader resolution
+     *
+     * @static
+     * @access    public
+     * @param     string         $pFilename        The name of the spreadsheet file
+     * @return    PHPExcel_Reader_IReader
+     * @throws    PHPExcel_Reader_Exception
+     */
     public static function createReaderForFile(string pFilename) -> <Reader\IReader>
     {
         var pathinfo = null, reader = null;
         string extensionType = null;
         
-        let pathinfo = pathinfo($pFilename);
+        let pathinfo = pathinfo(pFilename);
         
-        if (isset($pathinfo["extension"])) {
+        if (isset(pathinfo["extension"])) {
             switch (strtolower(pathinfo["extension"])) {
                 case "xlsx":            //    Excel (OfficeOpenXML) Spreadsheet
                 case "xlsm":            //    Excel (OfficeOpenXML) Macro Spreadsheet (macros will be discarded)
@@ -106,27 +235,13 @@ class IOFactory
             
             if (extensionType !== NULL) {
                 let reader = self::createReader(extensionType);
-                // Let's see if we are lucky
+                // Let"s see if we are lucky
                 if (is_object(reader) && reader->canRead(pFilename)) {
                     return reader;
                 }
             }
         }
-        
-        /*
-        // If we reach here then "lucky guess" didn't give any result
-        // Try walking through all the options in self::$_autoResolveClasses
-        foreach (self::$_autoResolveClasses as $autoResolveClass) {
-            //    Ignore our original guess, we know that won't work
-            if ($autoResolveClass !== $extensionType) {
-                $reader = self::createReader($autoResolveClass);
-                if ($reader->canRead($pFilename)) {
-                    return $reader;
-                }
-            }
-        }
-        */
-        
+                
         throw new Reader\Exception("Unable to identify a reader for this file");
     }
 }

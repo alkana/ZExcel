@@ -371,7 +371,9 @@ class DocumentProperties
 	 * @return string
 	 */
 	public function getCustomPropertyValue(propertyName) {
-		throw new \Exception("Not implemented yet!");
+		if (isset(this->_customProperties[propertyName])) {
+            return this->_customProperties[propertyName]["value"];
+        }
 	}
 
 	/**
@@ -381,7 +383,9 @@ class DocumentProperties
 	 * @return string
 	 */
 	public function getCustomPropertyType(propertyName) {
-		throw new \Exception("Not implemented yet!");
+		if (isset(this->_customProperties[propertyName])) {
+            return this->_customProperties[propertyName]["type"];
+        }
 	}
 
 	/**
@@ -397,8 +401,29 @@ class DocumentProperties
 	 *   "b" : Boolean
 	 * @return PHPExcel_DocumentProperties
 	 */
-	public function setCustomProperty(string propertyName,string propertyValue = "", propertyType=NULL) {
-		throw new \Exception("Not implemented yet!");
+	public function setCustomProperty(string propertyName,string propertyValue = "", var propertyType = null) {
+		
+		if ((propertyType === null) || (!in_array(propertyType, [self::PROPERTY_TYPE_INTEGER, self::PROPERTY_TYPE_FLOAT, self::PROPERTY_TYPE_STRING, self::PROPERTY_TYPE_DATE, self::PROPERTY_TYPE_BOOLEAN]))) {
+
+            if (propertyValue === null) {
+                let propertyType = self::PROPERTY_TYPE_STRING;
+            } elseif (is_float(propertyValue)) {
+                let propertyType = self::PROPERTY_TYPE_FLOAT;
+            } elseif(is_int(propertyValue)) {
+                let propertyType = self::PROPERTY_TYPE_INTEGER;
+            } elseif (is_bool(propertyValue)) {
+                let propertyType = self::PROPERTY_TYPE_BOOLEAN;
+            } else {
+                let propertyType = self::PROPERTY_TYPE_STRING;
+            }
+        }
+
+        let this->_customProperties[propertyName] = [
+            "value": propertyValue,
+            "type" : propertyType
+        ];
+        
+        return this;
 	}
 
 	/**

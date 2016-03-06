@@ -2,7 +2,7 @@ namespace ZExcel;
 
 class NamedRange
 {
-	/**
+    /**
      * Range name
      *
      * @var string
@@ -59,7 +59,15 @@ class NamedRange
         let this->_worksheet = pWorksheet;
         let this->_range = pRange;
         let this->_localOnly = pLocalOnly;
-        let this->_scope = (pLocalOnly == true) ? ((pScope == null) ? pWorksheet : pScope) : null;
+        
+        let this->_scope = null;
+        if (pLocalOnly == true) {
+            if (pScope == null) {
+                let this->_scope = pWorksheet;
+            } else {
+                let this->_scope = pScope;
+            }
+        }
     }
 
     /**
@@ -67,7 +75,8 @@ class NamedRange
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return this->_name;
     }
 
@@ -77,7 +86,8 @@ class NamedRange
      * @param string value
      * @return PHPExcel_NamedRange
      */
-    public function setName(value = null) {
+    public function setName(value = null) -> <\ZExcel\NameRange>
+    {
         var oldTitle, newTitle;
     
         if (value !== null) {
@@ -88,6 +98,7 @@ class NamedRange
             if (this->_worksheet !== null) {
                 this->_worksheet->getParent()->removeNamedRange(this->_name,this->_worksheet);
             }
+            
             let this->_name = value;
 
             if (this->_worksheet !== null) {
@@ -96,8 +107,7 @@ class NamedRange
 
             // New title
             let newTitle = this->_name;
-            \ZExcel\ReferenceHelper::getInstance()
-            	->updateNamedFormulas(this->_worksheet->getParent(), oldTitle, newTitle);
+            \ZExcel\ReferenceHelper::getInstance()->updateNamedFormulas(this->_worksheet->getParent(), oldTitle, newTitle);
         }
         
         return this;
@@ -108,7 +118,8 @@ class NamedRange
      *
      * @return PHPExcel_Worksheet
      */
-    public function getWorksheet() {
+    public function getWorksheet()
+    {
         return this->_worksheet;
     }
 
@@ -118,7 +129,8 @@ class NamedRange
      * @param PHPExcel_Worksheet value
      * @return PHPExcel_NamedRange
      */
-    public function setWorksheet(<\ZExcel\Worksheet> value = null) {
+    public function setWorksheet(<\ZExcel\Worksheet> value = null) -> <\ZExcel\NameRange>
+    {
         if (value !== null) {
             let this->_worksheet = value;
         }
@@ -131,7 +143,8 @@ class NamedRange
      *
      * @return string
      */
-    public function getRange() {
+    public function getRange()
+    {
         return this->_range;
     }
 
@@ -141,8 +154,9 @@ class NamedRange
      * @param string value
      * @return PHPExcel_NamedRange
      */
-    public function setRange(value = null) {
-        if (value !== NULL) {
+    public function setRange(value = null) -> <\ZExcel\NameRange>
+    {
+        if (value !== null) {
             let this->_range = value;
         }
         
@@ -154,7 +168,8 @@ class NamedRange
      *
      * @return bool
      */
-    public function getLocalOnly() {
+    public function getLocalOnly()
+    {
         return this->_localOnly;
     }
 
@@ -164,7 +179,8 @@ class NamedRange
      * @param bool value
      * @return PHPExcel_NamedRange
      */
-    public function setLocalOnly(boolean value = false) {
+    public function setLocalOnly(boolean value = false) -> <\ZExcel\NameRange>
+    {
         let this->_localOnly = value;
         let this->_scope = value ? this->_worksheet : null;
         
@@ -176,7 +192,8 @@ class NamedRange
      *
      * @return PHPExcel_Worksheet|null
      */
-    public function getScope() {
+    public function getScope()
+    {
         return this->_scope;
     }
 
@@ -186,7 +203,8 @@ class NamedRange
      * @param PHPExcel_Worksheet|null value
      * @return PHPExcel_NamedRange
      */
-    public function setScope(<\ZExcel\Worksheet> value = null) {
+    public function setScope(<\ZExcel\Worksheet> value = null) -> <\ZExcel\NameRange>
+    {
         let this->_scope = value;
         let this->_localOnly = (value == null) ? false : true;
         
@@ -200,14 +218,16 @@ class NamedRange
      * @param PHPExcel_Worksheet|null pSheet Scope. Use null for global scope
      * @return PHPExcel_NamedRange
      */
-    public static function resolveRange(pNamedRange = "", <\ZExcel\Worksheet> pSheet) {
+    public static function resolveRange(pNamedRange = "", <\ZExcel\Worksheet> pSheet)
+    {
         return pSheet->getParent()->getNamedRange(pNamedRange, pSheet);
     }
 
     /**
      * Implement PHP __clone to create a deep clone, not just a shallow copy.
      */
-    public function __clone() {
+    public function __clone()
+    {
         var vars, key, value;
         
         let vars = get_object_vars(this);

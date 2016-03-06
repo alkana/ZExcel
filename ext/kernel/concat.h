@@ -142,6 +142,11 @@
 #define ZEPHIR_SCONCAT_VVVVVVVVVV(result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10) \
 	 zephir_concat_vvvvvvvvvv(&result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, 1 TSRMLS_CC);
 
+#define ZEPHIR_CONCAT_VVVVVVVVVVV(result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11) \
+	 zephir_concat_vvvvvvvvvvv(&result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11, 0 TSRMLS_CC);
+#define ZEPHIR_SCONCAT_VVVVVVVVVVV(result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11) \
+	 zephir_concat_vvvvvvvvvvv(&result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11, 1 TSRMLS_CC);
+
 #define ZEPHIR_CONCAT_VVVVVVVVVVVVVV(result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11, op12, op13, op14) \
 	 zephir_concat_vvvvvvvvvvvvvv(&result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11, op12, op13, op14, 0 TSRMLS_CC);
 #define ZEPHIR_SCONCAT_VVVVVVVVVVVVVV(result, op1, op2, op3, op4, op5, op6, op7, op8, op9, op10, op11, op12, op13, op14) \
@@ -175,6 +180,7 @@ void zephir_concat_vvvvvvv(zval **result, zval *op1, zval *op2, zval *op3, zval 
 void zephir_concat_vvvvvvvv(zval **result, zval *op1, zval *op2, zval *op3, zval *op4, zval *op5, zval *op6, zval *op7, zval *op8, int self_var TSRMLS_DC);
 void zephir_concat_vvvvvvvvv(zval **result, zval *op1, zval *op2, zval *op3, zval *op4, zval *op5, zval *op6, zval *op7, zval *op8, zval *op9, int self_var TSRMLS_DC);
 void zephir_concat_vvvvvvvvvv(zval **result, zval *op1, zval *op2, zval *op3, zval *op4, zval *op5, zval *op6, zval *op7, zval *op8, zval *op9, zval *op10, int self_var TSRMLS_DC);
+void zephir_concat_vvvvvvvvvvv(zval **result, zval *op1, zval *op2, zval *op3, zval *op4, zval *op5, zval *op6, zval *op7, zval *op8, zval *op9, zval *op10, zval *op11, int self_var TSRMLS_DC);
 void zephir_concat_vvvvvvvvvvvvvv(zval **result, zval *op1, zval *op2, zval *op3, zval *op4, zval *op5, zval *op6, zval *op7, zval *op8, zval *op9, zval *op10, zval *op11, zval *op12, zval *op13, zval *op14, int self_var TSRMLS_DC);
 #define zephir_concat_function(result, op1, op2) concat_function(result, op1, op2 TSRMLS_CC)
 

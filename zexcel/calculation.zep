@@ -100,7 +100,7 @@ class Calculation
      * @var PHPExcel_CalcEngine_Logger
      *
      */
-    private debugLog = null;
+    private _debugLog = null;
 
     /**
      * Flag to determine how formula errors should be handled
@@ -129,7 +129,7 @@ class Calculation
      * @var array of string
      *
      */
-    private cyclicReferenceStack;
+    private _cyclicReferenceStack;
 
     private cellStack = [];
 
@@ -2059,12 +2059,22 @@ class Calculation
         let this->delta = 1 * pow(10, 0 - ini_get("precision"));
         
         let this->_workbook = workbook;
-        let this->cyclicReferenceStack = new \ZExcel\CalcEngine\CyclicReferenceStack();
-        let this->debugLog = new \ZExcel\CalcEngine\Logger(this->cyclicReferenceStack);
+        let this->_cyclicReferenceStack = new \ZExcel\CalcEngine\CyclicReferenceStack();
+        let this->_debugLog = new \ZExcel\CalcEngine\Logger(this->_cyclicReferenceStack);
     }
     
-    private static function _loadLocales() {
-        throw new \Exception("Not implemented yet!");
+    private static function _loadLocales()
+    {
+        var localeFileDirectory, filename;
+        
+        let localeFileDirectory = "PHPExcel/locale/";
+        
+        for filename in glob($localeFileDirectory . "/*",GLOB_ONLYDIR) {
+            let filename = substr(filename, strlen(localeFileDirectory) + 1);
+            if (filename != "en") {
+                let self::_validLocaleLanguages[] = filename;
+            }
+        }
     }
     
     /**
@@ -2116,7 +2126,7 @@ class Calculation
      */
     public function getDebugLog() -> <\ZExcel\CalcEngine\Logger>
     {
-        return this->debugLog;
+        return this->_debugLog;
     }
 
     /**
@@ -2381,7 +2391,7 @@ class Calculation
         
         let strln = mb_strlen(formula);
         
-        for i in rage(0, strln - 1) {
+        for i in range(0, strln - 1) {
             let chrr = mb_substr(formula, i, 1);
             
             switch (chrr) {
@@ -2567,7 +2577,13 @@ class Calculation
      */
     public function calculate(<\ZExcel\Cell> pCell = null)
     {
-        throw new \Exception("Not implemented yet!");
+    	var e;
+    	
+        try {
+            return this->calculateCellValue(pCell);
+        } catch \ZExcel\Exception, e {
+            throw new \ZExcel\Calculation\Exception(e->getMessage());
+        }
     }
     
     public function calculateCellValue(<\ZExcel\Cell> pCell = null, resetLog = null)
@@ -2583,8 +2599,8 @@ class Calculation
         if (resetLog) {
             //    Initialise the logging settings if requested
             let this->formulaError = null;
-            this->debugLog->clearLog();
-            this->cyclicReferenceStack->clear();
+            this->_debugLog->clearLog();
+            this->_cyclicReferenceStack->clear();
             let this->cyclicFormulaCount = 1;
 
             let self::returnArrayAsType = self::RETURN_ARRAY_AS_ARRAY;
@@ -2652,7 +2668,22 @@ class Calculation
      */
     public function parseFormula(formula)
     {
-        throw new \Exception("Not implemented yet!");
+        //    Basic validation that this is indeed a formula
+        //    We return an empty array if not
+        let formula = trim(formula);
+        
+        if (strlen(formula) === 0 || (substr(formula, 0, 1) != "=")) {
+        	return [];
+        }
+        
+        let formula = ltrim(substr(formula, 1));
+        
+        if (strlen(formula) === 0) {
+        	return [];
+		}
+		
+        //    Parse the formula and return the token stack
+        return this->_parseFormula(formula);
     }
     /**
      * Calculate the value of a formula
@@ -2665,7 +2696,28 @@ class Calculation
      */
     public function calculateFormula(formula, cellID = null, <\ZExcel\Cell> pCell = null)
     {
-        throw new \Exception("Not implemented yet!");
+    	var resetCache, result, e;
+    	
+        let this->formulaError = null;
+        
+        this->_debugLog->clearLog();
+        this->_cyclicReferenceStack->clear();
+
+        //    Disable calculation cacheing because it only applies to cell calculations, not straight formulae
+        //    But don't actually flush any cache
+        let resetCache = this->getCalculationCacheEnabled();
+        let this->_calculationCacheEnabled = false;
+        //    Execute the calculation
+        try {
+            let result = self::_unwrapResult(this->_calculateFormulaValue(formula, cellID, pCell));
+        } catch \ZExcel\Exception, e {
+            throw new \ZExcel\Calculation\Exception(e->getMessage());
+        }
+
+        //    Reset calculation cacheing to its previous state
+        let this->_calculationCacheEnabled = resetCache;
+
+        return result;
     }
     
     public function getValueFromCache(cellReference, cellValue)
@@ -2674,9 +2726,9 @@ class Calculation
         
         // Is calculation cacheing enabled?
         // Is the value present in calculation cache?
-        this->debugLog->writeDebugLog("Testing cache value for cell ", cellReference);
+        this->_debugLog->writeDebugLog("Testing cache value for cell ", cellReference);
         if ((this->calculationCacheEnabled) && (isset(this->_calculationCache[cellReference]))) {
-            this->debugLog->writeDebugLog("Retrieving value for cell ", cellReference, " from cache");
+            this->_debugLog->writeDebugLog("Retrieving value for cell ", cellReference, " from cache");
             // Return the cached result
             return (returnValue === false) ? true : this->_calculationCache[cellReference];
         }
@@ -2717,7 +2769,7 @@ class Calculation
             return cellValue;
         }
 
-        if ((substr(wsTitle, 0, 1) !== "\x00") && (this->cyclicReferenceStack->onStack(wsCellReference))) {
+        if ((substr(wsTitle, 0, 1) !== "\x00") && (this->_cyclicReferenceStack->onStack(wsCellReference))) {
             if (this->cyclicFormulaCount <= 0) {
                 let this->cyclicFormulaCell = "";
                 return this->_raiseFormulaError("Cyclic Reference in Formula");
@@ -2736,9 +2788,9 @@ class Calculation
         }
 
         //    Parse the formula onto the token stack and calculate the value
-        this->cyclicReferenceStack->push(wsCellReference);
+        this->_cyclicReferenceStack->push(wsCellReference);
         let cellValue = this->processTokenStack(this->_parseFormula(formula, pCell), cellID, pCell);
-        this->cyclicReferenceStack->pop();
+        this->_cyclicReferenceStack->pop();
 
         // Save to calculation cache
         if (cellID !== null) {
@@ -2816,7 +2868,7 @@ class Calculation
     {
         var row, testArray, returnMatrix, pad, rpad;
         
-        if (this->debugLog->getWriteDebugLog()) {
+        if (this->_debugLog->getWriteDebugLog()) {
             let testArray = \ZExcel\Calculation\Functions::flattenArray(value);
             if (count(testArray) == 1) {
                 let value = array_pop(testArray);
@@ -2850,7 +2902,7 @@ class Calculation
         var testArray, typeString;
         string returnValue = null;
         
-        if (this->debugLog->getWriteDebugLog()) {
+        if (this->_debugLog->getWriteDebugLog()) {
             let testArray = \ZExcel\Calculation\Functions::flattenArray(value);
             if (count(testArray) == 1) {
                 let value = array_pop(testArray);
@@ -3391,7 +3443,7 @@ class Calculation
     {
         let this->formulaError = errorMessage;
         
-        this->cyclicReferenceStack->clear();
+        this->_cyclicReferenceStack->clear();
         
         if (!this->suppressFormulaErrors) {
             throw new \ZExcel\Calculation\Exception(errorMessage);
@@ -3430,7 +3482,7 @@ class Calculation
         // Loop functions
         for functionName, functionn in self::_PHPExcelFunctions {
             if (functionn["functionCall"] != "\ZExcel\Calculation\Functions::DUMMY") {
-                let returnValue[$functionName] = new \ZExcel\Calculation\Function(functionn["category"], functionName, functionn["functionCall"]);
+                let returnValue[functionName] = new \ZExcel\Calculation\Functionn(functionn["category"], functionName, functionn["functionCall"]);
             }
         }
 
