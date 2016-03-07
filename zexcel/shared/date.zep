@@ -135,21 +135,21 @@ class Date
      * @param    integer  dateValue Excel date/time value
      * @return   DateTime           PHP date/time object
      */
-    public static function ExcelToPHPObject(int dateValue = 0) -> <\DateTime>
+    public static function ExcelToPHPObject(double dateValue = 0) -> <\DateTime>
     {
         var dateTime, days, time, hours, minutes, seconds, dateObj;
         
         let dateTime = self::ExcelToPHP(dateValue);
         
-        let days = floor(dateTime / 86400);
-        let time = round(((dateTime / 86400) - days) * 86400);
-        let hours = round(time / 3600);
-        let minutes = round(time / 60) - (hours * 60);
+        let days = floor(dateTime * (1 / 86400));
+        let time = round(((dateTime * (1 / 86400)) - days) * 86400);
+        let hours = round(time * (1 / 3600));
+        let minutes = round(time * (1 / 60)) - (hours * 60);
         let seconds = round(time) - (hours * 3600) - (minutes * 60);
 
         let dateObj = date_create("1-Jan-1970+" . days . " days");
         
-        dateObj->setTime(hours,minutes,seconds);
+        dateObj->setTime(hours, minutes, seconds);
 
         return dateObj;
     }
@@ -254,10 +254,10 @@ class Date
     /**
      * Is a given cell a date/time?
      *
-     * @param     \ZExcel\CellCell    $pCell
+     * @param     \ZExcel\Cell    pCell
      * @return     boolean
      */
-    public static function isDateTime(<\ZExcel\CellCell> pCell)
+    public static function isDateTime(<\ZExcel\Cell> pCell)
     {
         return self::isDateTimeFormat(
             pCell->getWorksheet()->getStyle(
@@ -270,10 +270,10 @@ class Date
     /**
      * Is a given number format a date/time?
      *
-     * @param     \ZExcel\CellStyle_NumberFormat    $pFormat
+     * @param     \ZExcel\Style_NumberFormat    pFormat
      * @return     boolean
      */
-    public static function isDateTimeFormat(<\ZExcel\CellStyle\NumberFormat> pFormat)
+    public static function isDateTimeFormat(<\ZExcel\Style\NumberFormat> pFormat)
     {
         return self::isDateTimeFormatCode(pFormat->getFormatCode());
     }

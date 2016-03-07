@@ -2322,12 +2322,18 @@ class Engineering
      * @param    string        complexNumber2        The complex number to subtract from complexNumber1.
      * @return    string
      */
-    public static function imsub(var complexNumber1, var complexNumber2)
+    public static function imsub()
     {
-        var parsedComplex1, parsedComplex2, d1, d2;
+        var args, complexNumber1, complexNumber2, parsedComplex1, parsedComplex2, d1, d2;
         
-        let complexNumber1 = \ZEXcel\Calculation\Functions::flattenSingleValue(complexNumber1);
-        let complexNumber2 = \ZEXcel\Calculation\Functions::flattenSingleValue(complexNumber2);
+        let args = func_get_args();
+        
+        if (count(args) < 2) {
+            throw new \Exception("Required 2 arguments");
+        }
+        
+        let complexNumber1 = \ZEXcel\Calculation\Functions::flattenSingleValue(args[0]);
+        let complexNumber2 = \ZEXcel\Calculation\Functions::flattenSingleValue(args[1]);
 
         let parsedComplex1 = self::parseComplex(complexNumber1);
         let parsedComplex2 = self::parseComplex(complexNumber2);

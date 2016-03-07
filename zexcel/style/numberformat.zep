@@ -435,45 +435,45 @@ class NumberFormat extends Supervisor implements ZIComparable
         );
     }
     
-    private static function setLowercaseCallback(matches) {
+    public static function setLowercaseCallback(matches) {
         return mb_strtolower(matches[0]);
     }
     
-    private static function escapeQuotesCallback(matches) {
+    public static function escapeQuotesCallback(matches) {
         return "\\" . implode("\\", str_split(matches[1]));
     }
 
-    /**
-     * @FIXME value AND format are reference
-     */
     private static function formatAsDate(value, format)
     {
-        var key, block, blocks, dateObj;
+        var key, blocks, dateObj;
         
         let format = preg_replace("/^(\[\$[A-Z]*-[0-9A-F]*\])/i", "", format);
 
         // OpenOffice.org uses upper-case number formats, e.g. "YYYY", convert to lower-case;
         //    but we don"t want to change any quoted strings
-//        let format = preg_replace_callback("/(?:^|\")([^\"]*)(?:$|\")/", ["self", "setLowercaseCallback"], format);
+        let format = preg_replace_callback("/(?:^|\")([^\"]*)(?:$|\")/", ["\\ZExcel\\Style\\NumberFormat", "setLowercaseCallback"], format);
 
         // Only process the non-quoted blocks for date format characters
         let blocks = explode("\"", format);
-        for key, block in blocks {
+        
+        for key, _ in blocks {
             if (key % 2 == 0) {
-                let blocks[key] = strtr(block, self::dateFormatReplacements);
-                if (!strpos(block, "A")) {
+                let blocks[key] = strtr(blocks[key], self::dateFormatReplacements);
+                
+                if (!strpos(blocks[key], "A")) {
                     // 24-hour time format
-                    let blocks[key] = strtr(block, self::dateFormatReplacements24);
+                    let blocks[key] = strtr(blocks[key], self::dateFormatReplacements24);
                 } else {
                     // 12-hour time format
-                    let blocks[key] = strtr(block, self::dateFormatReplacements12);
+                    let blocks[key] = strtr(blocks[key], self::dateFormatReplacements12);
                 }
             }
         }
+        
         let format = implode("\"", blocks);
 
         // escape any quoted characters so that DateTime format() will render them correctly
-//        let format = preg_replace_callback("/\"(.*)\"/U", ["self", "escapeQuotesCallback"], format);
+        let format = preg_replace_callback("/\"(.*)\"/U", ["\\ZExcel\\Style\\NumberFormat", "escapeQuotesCallback"], format);
 
         let dateObj = \ZExcel\Shared\Date::ExcelToPHPObject(value);
         let value = dateObj->format(format);
