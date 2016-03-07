@@ -238,7 +238,7 @@ class Rule
      *
      * @param PHPExcel_Worksheet_AutoFilter_Column $pParent
      */
-    public function __construct(<\Zxcel\Worksheet\AutoFilter\Column> pParent = null)
+    public function __construct(<\Zexcel\Worksheet\AutoFilter\Column> pParent = null)
     {
         let this->_parent = pParent;
     }
