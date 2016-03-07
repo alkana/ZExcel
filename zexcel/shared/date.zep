@@ -259,7 +259,11 @@ class Date
      */
     public static function isDateTime(<\ZExcel\CellCell> pCell)
     {
-        throw new \Exception("Not implemented yet!");
+        return self::isDateTimeFormat(
+            pCell->getWorksheet()->getStyle(
+                pCell->getCoordinate()
+            )->getNumberFormat()
+        );
     }
 
 
@@ -271,7 +275,7 @@ class Date
      */
     public static function isDateTimeFormat(<\ZExcel\CellStyle\NumberFormat> pFormat)
     {
-        throw new \Exception("Not implemented yet!");
+        return self::isDateTimeFormatCode(pFormat->getFormatCode());
     }
 
 
@@ -357,9 +361,34 @@ class Date
      * @param    string    $dateValue        Examples: '2009-12-31', '2009-12-31 15:59', '2009-12-31 15:59:10'
      * @return    float|FALSE        Excel date/time serial value
      */
-    public static function stringToExcel(dateValue = "")
+    public static function stringToExcel(var dateValue = "")
     {
-        throw new \Exception("Not implemented yet!");
+        var dateValueNew, timeValue;
+        
+        if (strlen(dateValue) < 2) {
+            return false;
+        }
+        
+        if (!preg_match("/^(\d{1,4}[ \.\/\-][A-Z]{3,9}([ \.\/\-]\d{1,4})?|[A-Z]{3,9}[ \.\/\-]\d{1,4}([ \.\/\-]\d{1,4})?|\d{1,4}[ \.\/\-]\d{1,4}([ \.\/\-]\d{1,4})?)( \d{1,2}:\d{1,2}(:\d{1,2})?)?$/iu", dateValue)) {
+            return false;
+        }
+        
+        let dateValueNew = \ZExcel\Calculation\DateTime::DaTEVALUE(dateValue);
+
+        if (dateValueNew === \ZExcel\Calculation\Functions::VaLUE()) {
+            return false;
+        }
+
+        if (strpos(dateValue, ":") !== false) {
+            let timeValue = \ZExcel\Calculation\DateTime::TiMEVALUE(dateValue);
+            
+            if (timeValue === \ZExcel\Calculation\Functions::VaLUE()) {
+                return false;
+            }
+            
+            let dateValueNew = dateValueNew + timeValue;
+        }
+        return dateValueNew;
     }
 
     public static function monthStringToNumber(string month)

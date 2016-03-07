@@ -316,7 +316,7 @@ class Stringg
      * So you could end up with something like _x0008_ in a string (either in a cell value (<v>)
      * element or in the shared string <t> element.
      *
-     * @param     string    $value    Value to unescape
+     * @param     string    value    Value to unescape
      * @return     string
      */
     public static function controlCharacterOOXML2PHP(var value = "") -> string
@@ -339,7 +339,7 @@ class Stringg
      * So you could end up with something like _x0008_ in a string (either in a cell value (<v>)
      * element or in the shared string <t> element.
      *
-     * @param     string    $value    Value to escape
+     * @param     string    value    Value to escape
      * @return     string
      */
     public static function controlCharacterPHP2OOXML(var value = "") -> string
@@ -354,7 +354,7 @@ class Stringg
     /**
      * Try to sanitize UTF8, stripping invalid byte sequences. Not perfect. Does not surrogate characters.
      *
-     * @param string $value
+     * @param string value
      * @return string
      */
     public static function sanitizeUTF8(var value)
@@ -378,7 +378,7 @@ class Stringg
     /**
      * Check if a string contains UTF8 data
      *
-     * @param string $value
+     * @param string value
      * @return boolean
      */
     public static function isUTF8(var value = "") -> boolean
@@ -390,7 +390,7 @@ class Stringg
      * Formats a numeric value as a string for output in various output writers forcing
      * point as decimal separator in case locale is other than English.
      *
-     * @param mixed $value
+     * @param mixed value
      * @return string
      */
     public static function formatNumber(var value) -> string
@@ -409,13 +409,35 @@ class Stringg
      * although this will give wrong results for non-ASCII strings
      * see OpenOffice.org's Documentation of the Microsoft Excel File Format, sect. 2.5.3
      *
-     * @param string  $value    UTF-8 encoded string
-     * @param mixed[] $arrcRuns Details of rich text runs in $value
+     * @param string  value    UTF-8 encoded string
+     * @param mixed[] arrcRuns Details of rich text runs in value
      * @return string
      */
-    public static function utf8toBIFF8UnicodeShort(value, arrcRuns = [])
+    public static function utf8toBIFF8UnicodeShort(var value, var arrcRuns = [])
     {
-        throw new \Exception("Not implemented yet!");
+        var ln, opt, data, cRun;
+        
+        // character count
+        let ln = self::CountCharacters(value, "UTF-8");
+        // option flags
+        if (empty(arrcRuns)) {
+            let opt = (self::getIsIconvEnabled() || self::getIsMbstringEnabled()) ?
+                0x0001 : 0x0000;
+            let data = pack("CC", ln, opt);
+            // characters
+            let data = data . self::ConvertEncoding(value, "UTF-16LE", "UTF-8");
+        } else {
+            let data = pack("vC", ln, 0x09);
+            let data = data . pack("v", count(arrcRuns));
+            // characters
+            let data = data . self::ConvertEncoding(value, "UTF-16LE", "UTF-8");
+            for cRun in arrcRuns {
+                let data = data . pack("v", cRun["strlen"]);
+                let data = data . pack("v", cRun["fontidx"]);
+            }
+        }
+        
+        return data;
     }
 
     /**
@@ -425,7 +447,7 @@ class Stringg
      * although this will give wrong results for non-ASCII strings
      * see OpenOffice.org's Documentation of the Microsoft Excel File Format, sect. 2.5.3
      *
-     * @param string $value UTF-8 encoded string
+     * @param string value UTF-8 encoded string
      * @return string
      */
     public static function utf8toBIFF8UnicodeLong(var value)
@@ -453,9 +475,9 @@ class Stringg
     /**
      * Convert string from one encoding to another. First try mbstring, then iconv, finally strlen
      *
-     * @param string $value
-     * @param string $to Encoding to convert to, e.g. 'UTF-8'
-     * @param string $from Encoding to convert from, e.g. 'UTF-16LE'
+     * @param string value
+     * @param string to Encoding to convert to, e.g. 'UTF-8'
+     * @param string from Encoding to convert from, e.g. 'UTF-16LE'
      * @return string
      */
     public static function convertEncoding(var value, var to, var from)
@@ -484,9 +506,9 @@ class Stringg
      * Can handle both BOM'ed data and un-BOM'ed data.
      * Assumes Big-Endian byte order if no BOM is available.
      * This function was taken from http://php.net/manual/en/function.utf8-decode.php
-     * and $bom_be parameter added.
+     * and bom_be parameter added.
      *
-     * @param   string  $str  UTF-16 encoded data to decode.
+     * @param   string  str  UTF-16 encoded data to decode.
      * @return  string  UTF-8 / ISO encoded data.
      * @access  public
      * @version 0.2 / 2010-05-13
@@ -538,8 +560,8 @@ class Stringg
     /**
      * Get character count. First try mbstring, then iconv, finally strlen
      *
-     * @param string $value
-     * @param string $enc Encoding
+     * @param string value
+     * @param string enc Encoding
      * @return int Character count
      */
     public static function countCharacters(value, enc = "UTF-8")
@@ -559,9 +581,9 @@ class Stringg
     /**
      * Get a substring of a UTF-8 encoded string. First try mbstring, then iconv, finally strlen
      *
-     * @param string $pValue UTF-8 encoded string
-     * @param int $pStart Start offset
-     * @param int $pLength Maximum number of characters in substring
+     * @param string pValue UTF-8 encoded string
+     * @param int pStart Start offset
+     * @param int pLength Maximum number of characters in substring
      * @return string
      */
     public static function substring(pValue = "", pStart = 0, pLength = 0)
@@ -581,7 +603,7 @@ class Stringg
     /**
      * Convert a UTF-8 encoded string to upper case
      *
-     * @param string $pValue UTF-8 encoded string
+     * @param string pValue UTF-8 encoded string
      * @return string
      */
     public static function strToUpper(string pValue = "") -> string
@@ -596,7 +618,7 @@ class Stringg
     /**
      * Convert a UTF-8 encoded string to lower case
      *
-     * @param string $pValue UTF-8 encoded string
+     * @param string pValue UTF-8 encoded string
      * @return string
      */
     public static function strToLower(string pValue = "") -> string
@@ -612,7 +634,7 @@ class Stringg
      * Convert a UTF-8 encoded string to title/proper case
      *    (uppercase every first character in each word, lower case all other characters)
      *
-     * @param string $pValue UTF-8 encoded string
+     * @param string pValue UTF-8 encoded string
      * @return string
      */
     public static function strToTitle(string pValue = "") -> string
@@ -637,7 +659,7 @@ class Stringg
      * Reverse the case of a string, so that all uppercase characters become lowercase
      *    and all lowercase characters become uppercase
      *
-     * @param string $pValue UTF-8 encoded string
+     * @param string pValue UTF-8 encoded string
      * @return string
      */
     public static function StrCaseReverse(pValue = "")
@@ -650,7 +672,7 @@ class Stringg
                 if(self::mb_is_upper(character)) {
                     let characters[k] = mb_strtolower(character, "UTF-8");
                 } else {
-                    let character = mb_strtoupper($character, "UTF-8");
+                    let character = mb_strtoupper(character, "UTF-8");
                 }
             }
             return implode("", characters);
@@ -662,7 +684,7 @@ class Stringg
      * Identify whether a string contains a fractional numeric value,
      *    and convert it to a numeric if it is
      *
-     * @param string &$operand string value to test
+     * @param string &operand string value to test
      * @return boolean
      */
     public static function convertToNumberIfFraction(var operand)
@@ -712,7 +734,7 @@ class Stringg
      * Set the decimal separator. Only used by \ZExcel\Style_NumberFormat::toFormattedString()
      * to format output by \ZExcel\Writer_HTML and \ZExcel\Writer_PDF
      *
-     * @param string $pValue Character for decimal separator
+     * @param string pValue Character for decimal separator
      */
     public static function setDecimalSeparator(string pValue = ".")
     {
@@ -750,7 +772,7 @@ class Stringg
      * Set the thousands separator. Only used by \ZExcel\Style_NumberFormat::toFormattedString()
      * to format output by \ZExcel\Writer_HTML and \ZExcel\Writer_PDF
      *
-     * @param string $pValue Character for thousands separator
+     * @param string pValue Character for thousands separator
      */
     public static function setThousandsSeparator(string pValue = ",")
     {
@@ -789,7 +811,7 @@ class Stringg
      * Set the currency code. Only used by \ZExcel\Style_NumberFormat::toFormattedString()
      *        to format output by \ZExcel\Writer_HTML and \ZExcel\Writer_PDF
      *
-     * @param string $pValue Character for currency code
+     * @param string pValue Character for currency code
      */
     public static function setCurrencyCode(string pValue = "$")
     {
@@ -799,19 +821,30 @@ class Stringg
     /**
      * Convert SYLK encoded string to UTF-8
      *
-     * @param string $pValue
+     * @param string pValue
      * @return string UTF-8 encoded string
      */
-    public static function SYLKtoUTF8(pValue = "")
+    public static function SYLKtoUTF8(var pValue = "")
     {
-        throw new \Exception("Not implemented yet!");
+        var k, v;
+        
+        // If there is no escape character in the string there is nothing to do
+        if (strpos(pValue, "") === false) {
+            return pValue;
+        }
+
+        for k, v in self::_SYLKCharacters {
+            let pValue = str_replace(k, v, pValue);
+        }
+
+        return pValue;
     }
 
     /**
      * Retrieve any leading numeric part of a string, or return the full string if no leading numeric
      *    (handles basic integer or float, but not exponent or non decimal)
      *
-     * @param    string    $value
+     * @param    string    value
      * @return    mixed    string or only the leading numeric part of the string
      */
     public static function testStringAsNumeric(var value)
