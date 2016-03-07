@@ -3,8 +3,8 @@
 "@",					FALSE
 "0",					FALSE
 "0.00",					FALSE
-"#,##0.00",				FALSE
-"#,##0.00_-",				FALSE
+'#,##0.00',				FALSE
+'#,##0.00_-',				FALSE
 "0%",					FALSE
 "0.00%",				FALSE
 "yyyy-mm-dd",				TRUE
@@ -29,9 +29,9 @@
 "i:s.S",				TRUE
 "h:mm:ss;@",				TRUE
 "yy/mm/dd;@",				TRUE
-"\"$\"#,##0.00_-",			FALSE
-"$#,##0_-",				FALSE
-"[$EUR ]#,##0.00_-",			FALSE
-"_[$EUR ]#,##0.00_-",			FALSE
-"[Green]#,##0.00;[Red]#,##0.00_-",	FALSE
-"#,##0.00 \"dollars\"",			FALSE
+'"$"#,##0.00_-',			FALSE
+'$#,##0_-',				FALSE
+'[$EUR ]#,##0.00_-',			FALSE
+'_[$EUR ]#,##0.00_-',			FALSE
+'[Green]#,##0.00;[Red]#,##0.00_-',	FALSE
+'#,##0.00 "dollars"',			FALSE
