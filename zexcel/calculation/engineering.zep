@@ -766,10 +766,10 @@ class Engineering
 
             if (empty(imaginary) && (empty(realNumber) || (realNumber == "+") || (realNumber == "-"))) {
                 let imaginary = realNumber . "1";
-                let realNumber = "0";
+                let realNumber = strval(0);
             } elseif (empty(imaginary)) {
                 let imaginary = realNumber;
-                let realNumber = "0";
+                let realNumber = strval(0);
             } elseif ((imaginary == "+") || (imaginary == "-")) {
                 let imaginary = imaginary . "1";
             }
@@ -802,7 +802,7 @@ class Engineering
         }
         
         if (firstLetter == ".") {
-            let complexNumber = "0" . complexNumber;
+            let complexNumber = strval(0) . complexNumber;
         }
         
         if (firstLetter == "+") {
@@ -823,7 +823,7 @@ class Engineering
     {
         if (!is_null(places)) {
             if (strlen(xVal) <= places) {
-                return substr(str_pad(xVal, places, "0", STR_PAD_LEFT), -10);
+                return substr(str_pad(xVal, places, strval(0), STR_PAD_LEFT), -10);
             } else {
                 return \ZExcel\Calculation\Functions::NaN();
             }
@@ -1829,7 +1829,7 @@ class Engineering
             
             if (realNumber == 0.0) {
                 if ((imaginary) == 0.0) {
-                    return "0";
+                    return strval(0);
                 } elseif ((imaginary) == 1.0) {
                     return (suffix);
                 } elseif ((imaginary) == -1.0) {
@@ -2366,7 +2366,7 @@ class Engineering
     {
         var returnValue, activeSuffix, aArgs, arg, parsedComplex;
         
-        let returnValue = self::parseComplex("0");
+        let returnValue = self::parseComplex(strval(0));
         let activeSuffix = "";
 
         // Loop through the arguments

@@ -2,7 +2,7 @@
 "",		1,	1,	""
 "QWERTYUIOP",	-1,	1,	"#VALUE!"
 "QWERTYUIOP",	5,	-1,	"#VALUE!"
-"QWERTYUIOP",	5,		""
+"QWERTYUIOP",	5,		"TYUIOP"
 "QWERTYUIOP",	8,	20,	"IOP"
 "ABCDEFGHI",	4,	3,	"DEF"
 TRUE,		2,	1,	"R"

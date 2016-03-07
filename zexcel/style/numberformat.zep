@@ -322,7 +322,7 @@ class NumberFormat extends Supervisor implements ZIComparable
 
             // General
             let self::builtInFormats[0] = \ZExcel\Style\NumberFormat::FORMAT_GENERAL;
-            let self::builtInFormats[1] = "0";
+            let self::builtInFormats[1] = strval(0);
             let self::builtInFormats[2] = "0.00";
             let self::builtInFormats[3] = "#,##0";
             let self::builtInFormats[4] = "#,##0.00";
@@ -510,7 +510,7 @@ class NumberFormat extends Supervisor implements ZIComparable
     {
         var sign, integerPart, decimalPart, decimalLength, decimalDivisor, adjustedDecimalPart, adjustedDecimalDivisor, gcd;
         
-        let sign = ($value < 0) ? "-" : "";
+        let sign = (floatval(value) < 0) ? "-" : "";
 
         let integerPart = floor(abs(value));
         let decimalPart = trim(fmod(abs(value), 1), "0.");
@@ -522,7 +522,7 @@ class NumberFormat extends Supervisor implements ZIComparable
         let adjustedDecimalPart = decimalPart / gcd;
         let adjustedDecimalDivisor = decimalDivisor / gcd;
 
-        if ((strpos(format, "0") !== false) || (strpos(format, "#") !== false) || (substr(format, 0, 3) == "? ?")) {
+        if ((strpos(format, strval(0)) !== false) || (strpos(format, "#") !== false) || (substr(format, 0, 3) == "? ?")) {
             if (integerPart == 0) {
                 let integerPart = "";
             }
@@ -723,7 +723,7 @@ class NumberFormat extends Supervisor implements ZIComparable
                     let scale = pow(1000, strlen(matches[2]));
 
                     // strip the commas
-                    let format = preg_replace("/0,+/", "0", format);
+                    let format = preg_replace("/0,+/", strval(0), format);
                     let format = preg_replace("/#,+/", "#", format);
                 }
                 
@@ -742,7 +742,7 @@ class NumberFormat extends Supervisor implements ZIComparable
                     let value = value / scale;
 
                     // Strip #
-                    let format = preg_replace("/\\#/", "0", format);
+                    let format = preg_replace("/\\#/", strval(0), format);
 
                     let n = "/\[[^\]]+\]/";
                     let m = preg_replace(n, "", format);

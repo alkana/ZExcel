@@ -673,7 +673,7 @@ class Html
         preg_match_all("/\d+/", rgb, values);
         
         for key, value in values[0] {
-            let values[0][key] = str_pad(dechex(value), 2, "0", STR_PAD_LEFT);
+            let values[0][key] = str_pad(dechex(value), 2, strval(0), STR_PAD_LEFT);
         }
         return implode("", values[0]);
     }

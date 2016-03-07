@@ -237,9 +237,9 @@ class Color extends Supervisor implements ZIComparable
         }
 
         let rgb = strtoupper(
-            str_pad(dechex(red), 2, "0", 0) .
-            str_pad(dechex(green), 2, "0", 0) .
-            str_pad(dechex(blue), 2, "0", 0)
+            str_pad(dechex(red), 2, strval(0), 0) .
+            str_pad(dechex(green), 2, strval(0), 0) .
+            str_pad(dechex(blue), 2, strval(0), 0)
         );
         
         return ((rgba) ? "FF" : "") . rgb;

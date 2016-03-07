@@ -765,6 +765,7 @@ class Stringg
                 let self::thousandsSeparator = ",";
             }
         }
+        
         return self::thousandsSeparator;
     }
 

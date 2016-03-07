@@ -1554,7 +1554,7 @@ class MathTrig
         // Truncate
         let adjust = pow(10, digits);
 
-        if ((digits > 0) && (rtrim(intval((abs(value) - abs(intval(value))) * adjust), "0") < adjust/10)) {
+        if ((digits > 0) && (rtrim(intval((abs(value) - abs(intval(value))) * adjust), strval(0)) < adjust/10)) {
             return value;
         }
 

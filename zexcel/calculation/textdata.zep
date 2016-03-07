@@ -15,7 +15,7 @@ class TextData
         let c4 = substr(c, 4, 1);
         let c5 = substr(c, 5, 1);
         
-        if (ord(c0) >=0 && ord(c0) <= 127) {
+        if (ord(c0) >= 0 && ord(c0) <= 127) {
             return ord(c0);
         } elseif (ord(c0) >= 192 && ord(c0) <= 223) {
             return (ord(c0) - 192) * 64 + (ord(c1) - 128);
@@ -126,8 +126,10 @@ class TextData
         if (is_bool(characters)) {
             if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_OPENOFFICE) {
                 let characters = (int) characters;
+            } elseif (characters === true) {
+                let characters = \ZExcel\Calculation::getTRUE();
             } else {
-                let characters = (characters) ? \ZExcel\Calculation::getTRUE() : \ZExcel\Calculation::getFALSE();
+                let characters = \ZExcel\Calculation::getFALSE();
             }
         }
 
@@ -204,9 +206,9 @@ class TextData
         }
         let decimals = floor(decimals);
 
-        let mask = "#,##0";
+        let mask = "$#,##0";
         if (decimals > 0) {
-            let mask = mask . "." . str_repeat("0", decimals);
+            let mask = mask . "." . str_repeat(strval(0), decimals);
         } else {
             let round = pow(10, abs(decimals));
             if (value < 0) {
@@ -655,8 +657,9 @@ class TextData
             let numberValue = str_replace(
                 \ZExcel\Shared\Stringg::getThousandsSeparator(),
                 "",
-                trim(value, " \t\n\r\0\x0B" . \ZExcel\Shared\Stringg::getCurrencyCode())
+                trim(value, chr(0) . chr(9) . chr(10) . chr(11) . chr(32) . chr(104) . \ZExcel\Shared\Stringg::getCurrencyCode())
             );
+            
             if (is_numeric(numberValue)) {
                 return (float) numberValue;
             }
