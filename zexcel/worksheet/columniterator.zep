@@ -43,6 +43,7 @@ class ColumnIterator implements \Iterator
     {
         // Set subject
         let this->subject = subject;
+        
         this->resetEnd(endColumn);
         this->resetStart(startColumn);
     }
@@ -79,7 +80,7 @@ class ColumnIterator implements \Iterator
      * @param string    $endColumn    The column address at which to stop iterating
      * @return \ZExcel\Worksheet\ColumnIterator
      */
-    public function resetEnd(endColumn = null) -> <\ZExcel\Worksheet\ColumnIterator>
+    public function resetEnd(var endColumn = null) -> <\ZExcel\Worksheet\ColumnIterator>
     {
         let endColumn = (endColumn !== null) ? endColumn : this->subject->getHighestColumn();
         let this->endColumn = \ZExcel\Cell::columnIndexFromString(endColumn) - 1;

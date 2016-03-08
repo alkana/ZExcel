@@ -827,6 +827,7 @@ class Cell
         //    We also use the language construct isset() rather than the more costly strlen() function to match the length of pString
         //        for improved performance
         let len = strlen(pString);
+        
         if (len > 0) {
             if (len < 2) {
                 let self::_indexCache[pString] = self::_columnLookup[pString];
