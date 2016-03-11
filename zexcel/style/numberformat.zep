@@ -607,6 +607,9 @@ class NumberFormat extends Supervisor implements ZIComparable
      */
     public static function toFormattedString(var value = "0", var format = \ZExcel\Style\NumberFormat::FORMAT_GENERAL, var callback = null)
     {
+        /*
+         * @FIXME disabled for segmentation fault + zend_mm_heap corrupted (required more checks)
+         *
         var sections, formatColor, color_regex, useThousands, n, m, number_regex, currencyFormat, currencyCode,
             scale, left, dec, right, minWidth, sprintf_pattern, writerInstance, functionn;
         array matches;
@@ -803,6 +806,7 @@ class NumberFormat extends Supervisor implements ZIComparable
             let functionn = callback[1];
             let value = writerInstance->{functionn}(value, formatColor);
         }
+        */
         
         return value;
     }

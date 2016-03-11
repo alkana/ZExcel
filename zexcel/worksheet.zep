@@ -132,11 +132,11 @@ class Worksheet implements IComparable
     private _styles = [];
 
     /**
-     * Conditional styles. Indexed by cell coordinate, e.g. 'A1'
+     * Conditional styles. Indexed by cell coordinate, e.g. "A1"
      *
      * @var array
      */
-    private _conditionalStylesCollection = [];
+    private conditionalStylesCollection = [];
 
     /**
      * Is the current cell collection sorted already?
@@ -150,21 +150,21 @@ class Worksheet implements IComparable
      *
      * @var array
      */
-    private _breaks = [];
+    private breaks = [];
 
     /**
      * Collection of merged cell ranges
      *
      * @var array
      */
-    private _mergeCells = [];
+    private mergeCells = [];
 
     /**
      * Collection of protected cell ranges
      *
      * @var array
      */
-    private _protectedCells = [];
+    private protectedCells = [];
 
     /**
      * Autofilter Range and selection
@@ -178,7 +178,7 @@ class Worksheet implements IComparable
      *
      * @var string
      */
-    private _freezePane = "";
+    private freezePane = "";
 
     /**
      * Show gridlines?
@@ -258,14 +258,14 @@ class Worksheet implements IComparable
     private _rightToLeft = false;
 
     /**
-     * Hyperlinks. Indexed by cell coordinate, e.g. 'A1'
+     * Hyperlinks. Indexed by cell coordinate, e.g. "A1"
      *
      * @var array
      */
     private _hyperlinkCollection = [];
 
     /**
-     * Data validation objects. Indexed by cell coordinate, e.g. 'A1'
+     * Data validation objects. Indexed by cell coordinate, e.g. "A1"
      *
      * @var array
      */
@@ -274,7 +274,7 @@ class Worksheet implements IComparable
     /**
      * Tab color
      *
-     * @var \ZExcel\Style_Color
+     * @var \ZExcel\Style\Color
      */
     private _tabColor;
 
@@ -801,7 +801,21 @@ class Worksheet implements IComparable
      */
     public function rebindParent(<ZExcel> parent)
     {
-        throw new \Exception("Not implemented yet!");
+        var namedRanges, namedRange;
+        
+        if (this->parent !== null) {
+            let namedRanges = this->parent->getNamedRanges();
+            
+            for namedRange in namedRanges {
+                parent->addNamedRange(namedRange);
+            }
+
+            this->parent->removeSheetByIndex(this->parent->getIndex(this));
+        }
+        
+        let this->parent = parent;
+
+        return this;
     }
 
     /**
@@ -829,7 +843,7 @@ class Worksheet implements IComparable
     {
         var oldTitle, newTitle, altTitle, i;
         
-        // Is this a 'rename' or not?
+        // Is this a "rename" or not?
         if (this->getTitle() == pValue) {
             return this;
         }
@@ -1089,9 +1103,17 @@ class Worksheet implements IComparable
      * @param bool returnCell   Return the worksheet (false, default) or the cell (true)
      * @return \ZExcel\Worksheet|\ZExcel\Cell    Depending on the last parameter being specified
      */
-    public function setCellValue(pCoordinate = "A1", pValue = null, returnCell = false)
+    public function setCellValue(var pCoordinate = "A1", var pValue = null, boolean returnCell = false)
     {
-        throw new \Exception("Not implemented yet!");
+        var cell;
+        
+        let cell = this->getCell(strtoupper(pCoordinate))->setValue(pValue);
+        
+        if (returnCell === true) {
+            return cell;
+        }
+        
+        return this;
     }
 
     /**
@@ -1103,9 +1125,17 @@ class Worksheet implements IComparable
      * @param bool returnCell Return the worksheet (false, default) or the cell (true)
      * @return \ZExcel\Worksheet|\ZExcel\Cell    Depending on the last parameter being specified
      */
-    public function setCellValueByColumnAndRow(pColumn = 0, pRow = 1, pValue = null, returnCell = false)
+    public function setCellValueByColumnAndRow(var pColumn = 0, var pRow = 1, var pValue = null, boolean returnCell = false)
     {
-        throw new \Exception("Not implemented yet!");
+        var cell;
+        
+        let cell = this->getCellByColumnAndRow(pColumn, pRow)->setValue(pValue);
+        
+        if (returnCell === true) {
+            return cell;
+        }
+        
+        return this;
     }
 
     /**
@@ -1117,9 +1147,17 @@ class Worksheet implements IComparable
      * @param bool returnCell Return the worksheet (false, default) or the cell (true)
      * @return \ZExcel\Worksheet|\ZExcel\Cell    Depending on the last parameter being specified
      */
-    public function setCellValueExplicit(pCoordinate = "A1", pValue = null, pDataType = \ZExcel\Cell\DataType::TYPE_STRING, returnCell = false)
+    public function setCellValueExplicit(var pCoordinate = "A1", var pValue = null, var pDataType = \ZExcel\Cell\DataType::TYPE_STRING, boolean returnCell = false)
     {
-        throw new \Exception("Not implemented yet!");
+        var cell;
+        
+        let cell = this->getCell(strtoupper(pCoordinate))->setValueExplicit(pValue, pDataType);
+        
+        if (returnCell === true) {
+            return cell;
+        }
+        
+        return this;
     }
 
     /**
@@ -1132,21 +1170,29 @@ class Worksheet implements IComparable
      * @param bool returnCell Return the worksheet (false, default) or the cell (true)
      * @return \ZExcel\Worksheet|\ZExcel\Cell    Depending on the last parameter being specified
      */
-    public function setCellValueExplicitByColumnAndRow(pColumn = 0, pRow = 1, pValue = null, pDataType = \ZExcel\Cell\DataType::TYPE_STRING, returnCell = false)
+    public function setCellValueExplicitByColumnAndRow(var pColumn = 0, var pRow = 1, var pValue = null, var pDataType = \ZExcel\Cell\DataType::TYPE_STRING, boolean returnCell = false)
     {
-        throw new \Exception("Not implemented yet!");
+        var cell;
+        
+        let cell = this->getCellByColumnAndRow(pColumn, pRow)->setValueExplicit(pValue, pDataType);
+        
+        if (returnCell === true) {
+            return cell;
+        }
+        
+        return this;
     }
 
     /**
      * Get cell at a specific coordinate
      *
      * @param string pCoordinate    Coordinate of the cell
-     * @param boolean createIfNotExists  Flag indicating whether a new cell should be created if it doesn't
+     * @param boolean createIfNotExists  Flag indicating whether a new cell should be created if it doesn"t
      *                                       already exist, or a null should be returned instead
      * @throws \ZExcel\Exception
      * @return \ZExcel\Cell Cell that was found
      */
-    public function getCell(pCoordinate = "A1", boolean createIfNotExists = true)
+    public function getCell(var pCoordinate = "A1", boolean createIfNotExists = true)
     {
         var worksheetReference, namedRange;
         
@@ -1193,9 +1239,23 @@ class Worksheet implements IComparable
      * @param string pRow Numeric row coordinate of the cell
      * @return \ZExcel\Cell Cell that was found
      */
-    public function getCellByColumnAndRow(pColumn = 0, pRow = 1)
+    public function getCellByColumnAndRow(var pColumn = 0, var pRow = 1, boolean createIfNotExists = true)
     {
-        throw new \Exception("Not implemented yet!");
+        var columnLetter, coordinate;
+        
+        let columnLetter = \ZExcel\Cell::stringFromColumnIndex(pColumn);
+        let coordinate = columnLetter . pRow;
+
+        if (this->cellCollection->isDataSet(coordinate)) {
+            return this->cellCollection->getCacheData(coordinate);
+        }
+
+        // Create new cell object, if required
+        if (createIfNotExists === true) {
+            return this->createNewCell(coordinate);
+        }
+        
+        return null;
     }
 
     /**
@@ -1225,7 +1285,7 @@ class Worksheet implements IComparable
         let this->cachedHighestRow = max(this->cachedHighestRow, aCoordinates[1]);
 
         // Cell needs appropriate xfIndex from dimensions records
-        // but don't create dimension records if they don't already exist
+        // but don"t create dimension records if they don"t already exist
         let rowDimension    = this->getRowDimension(aCoordinates[1], false);
         let columnDimension = this->getColumnDimension(aCoordinates[0], false);
 
@@ -1247,9 +1307,50 @@ class Worksheet implements IComparable
      * @throws \ZExcel\Exception
      * @return boolean
      */
-    public function cellExists(pCoordinate = "A1")
+    public function cellExists(var pCoordinate = "A1")
     {
-        throw new \Exception("Not implemented yet!");
+        var worksheetReference, namedRange;
+        
+       // Worksheet reference?
+        if (strpos(pCoordinate, "!") !== false) {
+            let worksheetReference = \ZExcel\Worksheet::extractSheetTitle(pCoordinate, true);
+            
+            return this->parent->getSheetByName(worksheetReference[0])->cellExists(strtoupper(worksheetReference[1]));
+        }
+
+        // Named range?
+        if ((!preg_match("/^" . \ZExcel\Calculation::CALCULATION_REGEXP_CELLREF . "/i", pCoordinate)) && (preg_match("/^" . \ZExcel\Calculation::CALCULATION_REGEXP_NAMEDRANGE . "/i", pCoordinate))) {
+            let namedRange = \ZExcel\NamedRange::resolveRange(pCoordinate, this);
+            
+            if (namedRange !== null) {
+                let pCoordinate = namedRange->getRange();
+                
+                if (this->getHashCode() != namedRange->getWorksheet()->getHashCode()) {
+                    if (!namedRange->getLocalOnly()) {
+                        return namedRange->getWorksheet()->cellExists(pCoordinate);
+                    } else {
+                        throw new \ZExcel\Exception("Named range " . namedRange->getName() . " is not accessible from within sheet " . this->getTitle());
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+
+        // Uppercase coordinate
+        let pCoordinate = strtoupper(pCoordinate);
+
+        if (strpos(pCoordinate, ":") !== false || strpos(pCoordinate, ",") !== false) {
+            throw new \ZExcel\Exception("Cell coordinate can not be a range of cells.");
+        } elseif (strpos(pCoordinate, "") !== false) {
+            throw new \ZExcel\Exception("Cell coordinate must not be absolute.");
+        } else {
+            // Coordinates
+            \ZExcel\Cell::coordinateFromString(pCoordinate);
+
+            // Cell exists?
+            return this->cellCollection->isDataSet(pCoordinate);
+        }
     }
 
     /**
@@ -1354,9 +1455,16 @@ class Worksheet implements IComparable
      * @throws \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function setDefaultStyle(<\ZExcel\Style> pValue)
+    public function setDefaultStyle(<\ZExcel\Style> pValue) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        this->parent->getDefaultStyle()->applyFromArray([
+            "font": [
+                "name": pValue->getFont()->getName(),
+                "size": pValue->getFont()->getSize()
+            ]
+        ]);
+        
+        return this;
     }
 
     /**
@@ -1381,11 +1489,17 @@ class Worksheet implements IComparable
      * Get conditional styles for a cell
      *
      * @param string pCoordinate
-     * @return \ZExcel\Style_Conditional[]
+     * @return \ZExcel\Style\Conditional[]
      */
-    public function getConditionalStyles(pCoordinate = "A1")
+    public function getConditionalStyles(var pCoordinate = "A1")
     {
-        throw new \Exception("Not implemented yet!");
+        let pCoordinate = strtoupper(pCoordinate);
+        
+        if (!isset(this->conditionalStylesCollection[pCoordinate])) {
+            let this->conditionalStylesCollection[pCoordinate] = [];
+        }
+        
+        return this->conditionalStylesCollection[pCoordinate];
     }
 
     /**
@@ -1396,7 +1510,7 @@ class Worksheet implements IComparable
      */
     public function conditionalStylesExists(pCoordinate = "A1")
     {
-        if (isset(this->_conditionalStylesCollection[strtoupper(pCoordinate)])) {
+        if (isset(this->conditionalStylesCollection[strtoupper(pCoordinate)])) {
             return true;
         }
         return false;
@@ -1410,7 +1524,7 @@ class Worksheet implements IComparable
      */
     public function removeConditionalStyles(pCoordinate = "A1")
     {
-        unset(this->_conditionalStylesCollection[strtoupper(pCoordinate)]);
+        unset(this->conditionalStylesCollection[strtoupper(pCoordinate)]);
         return this;
     }
 
@@ -1421,19 +1535,21 @@ class Worksheet implements IComparable
      */
     public function getConditionalStylesCollection()
     {
-        return this->_conditionalStylesCollection;
+        return this->conditionalStylesCollection;
     }
 
     /**
      * Set conditional styles
      *
-     * @param pCoordinate string E.g. 'A1'
-     * @param pValue \ZExcel\Style_Conditional[]
+     * @param pCoordinate string E.g. "A1"
+     * @param pValue \ZExcel\Style\Conditional[]
      * @return \ZExcel\Worksheet
      */
-    public function setConditionalStyles(pCoordinate = "A1", pValue)
+    public function setConditionalStyles(var pCoordinate = "A1", var pValue) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        let this->conditionalStylesCollection[strtoupper(pCoordinate)] = pValue;
+        
+        return this;
     }
 
     /**
@@ -1445,9 +1561,17 @@ class Worksheet implements IComparable
      * @param int pRow2 Numeric row coordinate of the range cell
      * @return \ZExcel\Style
      */
-    public function getStyleByColumnAndRow(pColumn = 0, pRow = 1, pColumn2 = null, pRow2 = null)
+    public function getStyleByColumnAndRow(var pColumn = 0, var pRow = 1, var pColumn2 = null, var pRow2 = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var cellRange;
+        
+        if (!is_null(pColumn2) && !is_null(pRow2)) {
+            let cellRange = \ZExcel\Cell::stringFromColumnIndex(pColumn) . pRow . ":" . \ZExcel\Cell::stringFromColumnIndex(pColumn2) . pRow2;
+            
+            return this->getStyle(cellRange);
+        }
+
+        return this->getStyle(\ZExcel\Cell::stringFromColumnIndex(pColumn) . pRow);
     }
 
     /**
@@ -1461,9 +1585,11 @@ class Worksheet implements IComparable
      * @throws \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function setSharedStyle(<\ZExcel\Style> pSharedCellStyle = null, pRange = "")
+    public function setSharedStyle(<\ZExcel\Style> pSharedCellStyle = null, var pRange = "")
     {
-        throw new \Exception("Not implemented yet!");
+        this->duplicateStyle(pSharedCellStyle, pRange);
+        
+        return this;
     }
 
     /**
@@ -1476,9 +1602,45 @@ class Worksheet implements IComparable
      * @throws \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function duplicateStyle(<\ZExcel\Style> pCellStyle = null, string pRange = "")
+    public function duplicateStyle(<\ZExcel\Style> pCellStyle = null, string pRange = "") -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        var style, workbook, existingStyle, xfIndex, rangeStart, rangeEnd, tmp, col, row;
+        
+        // make sure we have a real style and not supervisor
+        let style = pCellStyle->getIsSupervisor() ? pCellStyle->getSharedComponent() : pCellStyle;
+
+        // Add the style to the workbook if necessary
+        let workbook = this->parent;
+        let existingStyle = this->parent->getCellXfByHashCode(pCellStyle->getHashCode());
+        if (existingStyle) {
+            // there is already such cell Xf in our collection
+            let xfIndex = existingStyle->getIndex();
+        } else {
+            // we don"t have such a cell Xf, need to add
+            workbook->addCellXf(pCellStyle);
+            let xfIndex = pCellStyle->getIndex();
+        }
+
+        // Calculate range outer borders
+        let tmp = \ZExcel\Cell::rangeBoundaries(pRange . ":" . pRange);
+        let rangeStart = tmp[0];
+        let rangeEnd = tmp[1];
+
+        // Make sure we can loop upwards on rows and columns
+        if (rangeStart[0] > rangeEnd[0] && rangeStart[1] > rangeEnd[1]) {
+            let tmp = rangeStart;
+            let rangeStart = rangeEnd;
+            let rangeEnd = tmp;
+        }
+
+        // Loop through cells and apply styles
+        for col in range(rangeStart[0], rangeEnd[0]) {
+            for row in range(rangeStart[1], rangeEnd[1]) {
+                this->getCell(\ZExcel\Cell::stringFromColumnIndex(col - 1) . row)->setXfIndex(xfIndex);
+            }
+        }
+
+        return this;
     }
 
     /**
@@ -1486,14 +1648,41 @@ class Worksheet implements IComparable
      *
      * Please note that this will overwrite existing cell styles for cells in range!
      *
-     * @param    array of \ZExcel\Style_Conditional    pCellStyle    Cell style to duplicate
+     * @param    array of \ZExcel\Style\Conditional    pCellStyle    Cell style to duplicate
      * @param string pRange Range of cells (i.e. "A1:B10"), or just one cell (i.e. "A1")
      * @throws \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function duplicateConditionalStyle(array pCellStyle = null, string pRange = "")
+    public function duplicateConditionalStyle(array pCellStyle = null, string pRange = "") -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        var cellStyle, rangeStart, rangeEnd, tmp, col, row;
+        
+        for cellStyle in pCellStyle {
+            if (!(cellStyle instanceof \ZExcel\Style\Conditional)) {
+                throw new \ZExcel\Exception("Style is not a conditional style");
+            }
+        }
+
+        // Calculate range outer borders
+        let tmp = \ZExcel\Cell::rangeBoundaries(pRange . ":" . pRange);
+        let rangeStart = tmp[0];
+        let rangeEnd = tmp[1];
+
+        // Make sure we can loop upwards on rows and columns
+        if (rangeStart[0] > rangeEnd[0] && rangeStart[1] > rangeEnd[1]) {
+            let tmp = rangeStart;
+            let rangeStart = rangeEnd;
+            let rangeEnd = tmp;
+        }
+
+        // Loop through cells and apply styles
+        for col in range(rangeStart[0], rangeEnd[0]) {
+            for row in range(rangeStart[1], rangeEnd[1]) {
+                this->setConditionalStyles(\ZExcel\Cell::stringFromColumnIndex(col - 1) . row, pCellStyle);
+            }
+        }
+
+        return this;
     }
 
     /**
@@ -1510,9 +1699,11 @@ class Worksheet implements IComparable
      * @throws \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function duplicateStyleArray(var pStyles = null, string pRange = "", boolean pAdvanced = true)
+    public function duplicateStyleArray(var pStyles = null, string pRange = "", boolean pAdvanced = true) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        this->getStyle(pRange)->applyFromArray(pStyles, pAdvanced);
+        
+        return this;
     }
 
     /**
@@ -1523,9 +1714,24 @@ class Worksheet implements IComparable
      * @throws \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function setBreak(string pCell = "A1", var pBreak = \ZExcel\Worksheet::BREAK_NONE)
+    public function setBreak(string pCell = "A1", var pBreak = \ZExcel\Worksheet::BREAK_NONE) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        // Uppercase coordinate
+        let pCell = strtoupper(pCell);
+
+        if (pCell != "") {
+            if (pBreak == \ZExcel\Worksheet::BREAK_NONE) {
+                if (isset(this->breaks[pCell])) {
+                    unset(this->breaks[pCell]);
+                }
+            } else {
+                let this->breaks[pCell] = pBreak;
+            }
+        } else {
+            throw new \ZExcel\Exception("No cell coordinate specified.");
+        }
+
+        return this;
     }
 
     /**
@@ -1548,7 +1754,7 @@ class Worksheet implements IComparable
      */
     public function getBreaks()
     {
-        return this->_breaks;
+        return this->breaks;
     }
 
     /**
@@ -1558,9 +1764,41 @@ class Worksheet implements IComparable
      * @throws \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function mergeCells(string pRange = "A1:A1")
+    public function mergeCells(string pRange = "A1:A1") -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        var aReferences, upperLeft, count, i;
+        
+        // Uppercase coordinate
+        let pRange = strtoupper(pRange);
+
+        if (strpos(pRange, ":") !== false) {
+            let this->mergeCells[pRange] = pRange;
+
+            // make sure cells are created
+
+            // get the cells in the range
+            let aReferences = \ZExcel\Cell::extractAllCellReferencesInRange(pRange);
+
+            // create upper left cell if it does not already exist
+            let upperLeft = aReferences[0];
+            
+            if (!this->cellExists(upperLeft)) {
+                this->getCell(upperLeft)->setValueExplicit(null, \ZExcel\Cell\DataType::TYPE_NULL);
+            }
+
+            // Blank out the rest of the cells in the range (if they exist)
+            let count = count(aReferences);
+            
+            for i in range(1, count - 1) {
+                if (this->cellExists(aReferences[i])) {
+                    this->getCell(aReferences[i])->setValueExplicit(null, \ZExcel\Cell\DataType::TYPE_NULL);
+                }
+            }
+        } else {
+            throw new \ZExcel\Exception("Merge must be set on a range of cells.");
+        }
+
+        return this;
     }
 
     /**
@@ -1573,9 +1811,13 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function mergeCellsByColumnAndRow(int pColumn1 = 0, int pRow1 = 1, int pColumn2 = 0, int pRow2 = 1)
+    public function mergeCellsByColumnAndRow(int pColumn1 = 0, int pRow1 = 1, int pColumn2 = 0, int pRow2 = 1) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        var cellRange;
+        
+        let cellRange = \ZExcel\Cell::stringFromColumnIndex(pColumn1) . pRow1 . ":" . \ZExcel\Cell::stringFromColumnIndex(pColumn2) . pRow2;
+        
+        return this->mergeCells(cellRange);
     }
 
     /**
@@ -1585,9 +1827,22 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function unmergeCells(string pRange = "A1:A1")
+    public function unmergeCells(string pRange = "A1:A1") -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        // Uppercase coordinate
+        let pRange = strtoupper(pRange);
+
+        if (strpos(pRange, ":") !== false) {
+            if (isset(this->mergeCells[pRange])) {
+                unset(this->mergeCells[pRange]);
+            } else {
+                throw new \ZExcel\Exception("Cell range " . pRange . " not known as merged.");
+            }
+        } else {
+            throw new \ZExcel\Exception("Merge can only be removed from a range of cells.");
+        }
+
+        return this;
     }
 
     /**
@@ -1600,9 +1855,13 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function unmergeCellsByColumnAndRow(int pColumn1 = 0, int pRow1 = 1, int pColumn2 = 0, int pRow2 = 1)
+    public function unmergeCellsByColumnAndRow(int pColumn1 = 0, int pRow1 = 1, int pColumn2 = 0, int pRow2 = 1) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        var cellRange;
+        
+        let cellRange = \ZExcel\Cell::stringFromColumnIndex(pColumn1) . pRow1 . ":" . \ZExcel\Cell::stringFromColumnIndex(pColumn2) . pRow2;
+        
+        return this->unmergeCells(cellRange);
     }
 
     /**
@@ -1612,7 +1871,7 @@ class Worksheet implements IComparable
      */
     public function getMergeCells()
     {
-        return this->_mergeCells;
+        return this->mergeCells;
     }
 
     /**
@@ -1621,9 +1880,9 @@ class Worksheet implements IComparable
      *
      * @param array
      */
-    public function setMergeCells(array pValue = [])
+    public function setMergeCells(array pValue = []) -> <\ZExcel\Worksheet>
     {
-        let this->_mergeCells = pValue;
+        let this->mergeCells = pValue;
 
         return this;
     }
@@ -1637,9 +1896,17 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function protectCells(string pRange = "A1", string pPassword = "", boolean pAlreadyHashed = false)
+    public function protectCells(string pRange = "A1", string pPassword = "", boolean pAlreadyHashed = false) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        // Uppercase coordinate
+        let pRange = strtoupper(pRange);
+
+        if (!pAlreadyHashed) {
+            let pPassword = \ZExcel\Shared\PasswordHasher::hashPassword(pPassword);
+        }
+        let this->protectedCells[pRange] = pPassword;
+
+        return this;
     }
 
     /**
@@ -1654,9 +1921,13 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function protectCellsByColumnAndRow(int pColumn1 = 0, int pRow1 = 1, int pColumn2 = 0, int pRow2 = 1, string pPassword = "", boolean pAlreadyHashed = false)
+    public function protectCellsByColumnAndRow(int pColumn1 = 0, int pRow1 = 1, int pColumn2 = 0, int pRow2 = 1, string pPassword = "", boolean pAlreadyHashed = false) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        var cellRange;
+        
+        let cellRange = \ZExcel\Cell::stringFromColumnIndex(pColumn1) . pRow1 . ":" . \ZExcel\Cell::stringFromColumnIndex(pColumn2) . pRow2;
+        
+        return this->protectCells(cellRange, pPassword, pAlreadyHashed);
     }
 
     /**
@@ -1666,9 +1937,17 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function unprotectCells(string pRange = "A1")
+    public function unprotectCells(string pRange = "A1") -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        // Uppercase coordinate
+        let pRange = strtoupper(pRange);
+
+        if (isset(this->protectedCells[pRange])) {
+            unset(this->protectedCells[pRange]);
+        } else {
+            throw new \ZExcel\Exception("Cell range " . pRange . " not known as protected.");
+        }
+        return this;
     }
 
     /**
@@ -1685,7 +1964,11 @@ class Worksheet implements IComparable
      */
     public function unprotectCellsByColumnAndRow(int pColumn1 = 0, int pRow1 = 1, int pColumn2 = 0, int pRow2 = 1, string pPassword = "", boolean pAlreadyHashed = false)
     {
-        throw new \Exception("Not implemented yet!");
+        var cellRange;
+        
+        let cellRange = \ZExcel\Cell::stringFromColumnIndex(pColumn1) . pRow1 . ":" . \ZExcel\Cell::stringFromColumnIndex(pColumn2) . pRow2;
+        
+        return this->unprotectCells(cellRange);
     }
 
     /**
@@ -1695,7 +1978,7 @@ class Worksheet implements IComparable
      */
     public function getProtectedCells()
     {
-        return this->_protectedCells;
+        return this->protectedCells;
     }
 
     /**
@@ -1712,7 +1995,7 @@ class Worksheet implements IComparable
      *    Set AutoFilter
      *
      *    @param    \ZExcel\Worksheet\AutoFilter|string   pValue
-     *            A simple string containing a Cell range like 'A1:E10' is permitted for backward compatibility
+     *            A simple string containing a Cell range like "A1:E10" is permitted for backward compatibility
      *    @throws    \ZExcel\Exception
      *    @return \ZExcel\Worksheet
      */
@@ -1742,7 +2025,11 @@ class Worksheet implements IComparable
      */
     public function setAutoFilterByColumnAndRow(int pColumn1 = 0, int pRow1 = 1, int pColumn2 = 0, int pRow2 = 1)
     {
-        throw new \Exception("Not implemented yet!");
+        return this->setAutoFilter(
+            \ZExcel\Cell::stringFromColumnIndex(pColumn1) . pRow1
+            . ":" .
+            \ZExcel\Cell::stringFromColumnIndex(pColumn2) . pRow2
+        );
     }
 
     /**
@@ -1764,7 +2051,7 @@ class Worksheet implements IComparable
      */
     public function getFreezePane()
     {
-        return this->_freezePane;
+        return this->freezePane;
     }
 
     /**
@@ -1779,9 +2066,18 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function freezePane(string pCell = "")
+    public function freezePane(string pCell = "") -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        // Uppercase coordinate
+        let pCell = strtoupper(pCell);
+        
+        if (strpos(pCell, ":") === false && strpos(pCell, ",") === false) {
+            let this->freezePane = pCell;
+        } else {
+            throw new \ZExcel\Exception("Freeze pane can not be set on a range of cells.");
+        }
+        
+        return this;
     }
 
     /**
@@ -1815,9 +2111,18 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function insertNewRowBefore(pBefore = 1, pNumRows = 1)
+    public function insertNewRowBefore(pBefore = 1, pNumRows = 1) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        var objReferenceHelper;
+        
+        if (pBefore >= 1) {
+            let objReferenceHelper = \ZExcel\ReferenceHelper::getInstance();
+            objReferenceHelper->insertNewBefore("A" . pBefore, 0, pNumRows, this);
+        } else {
+            throw new \ZExcel\Exception("Rows can only be inserted before at least row 1.");
+        }
+        
+        return this;
     }
 
     /**
@@ -1828,7 +2133,7 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function insertNewColumnBefore(string pBefore = "A", int pNumCols = 1)
+    public function insertNewColumnBefore(string pBefore = "A", int pNumCols = 1) -> <\ZExcel\Worksheet>
     {
         var objReferenceHelper;
         
@@ -1850,7 +2155,8 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function insertNewColumnBeforeByIndex(int pBefore = 0, int pNumCols = 1) {
+    public function insertNewColumnBeforeByIndex(int pBefore = 0, int pNumCols = 1)
+    {
         if (pBefore >= 0) {
             return this->insertNewColumnBefore(\ZExcel\Cell::stringFromColumnIndex(pBefore), pNumCols);
         } else {
@@ -1866,9 +2172,25 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function removeRow(int pRow = 1, int pNumRows = 1)
+    public function removeRow(int pRow = 1, int pNumRows = 1) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        var highestRow, objReferenceHelper, r;
+        
+        if (pRow >= 1) {
+            let highestRow = this->getHighestDataRow();
+            let objReferenceHelper = \ZExcel\ReferenceHelper::getInstance();
+            
+            objReferenceHelper->insertNewBefore("A" . (pRow + pNumRows), 0, -pNumRows, this);
+            
+            for r in range(0, pNumRows - 1) {
+                this->getCellCacheController()->removeRow(highestRow);
+                let highestRow = highestRow - 1;
+            }
+        } else {
+            throw new \ZExcel\Exception("Rows to be deleted should at least start from row 1.");
+        }
+        
+        return this;
     }
 
     /**
@@ -1879,9 +2201,25 @@ class Worksheet implements IComparable
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function removeColumn(string pColumn = "A", int pNumCols = 1)
+    public function removeColumn(var pColumn = "A", int pNumCols = 1)
     {
-        throw new \Exception("Not implemented yet!");
+        var highestColumn, objReferenceHelper, c;
+        
+        if (!is_numeric(pColumn)) {
+            let highestColumn = this->getHighestDataColumn();
+            let pColumn = \ZExcel\Cell::stringFromColumnIndex(\ZExcel\Cell::columnIndexFromString(pColumn) - 1 + pNumCols);
+            let objReferenceHelper = \ZExcel\ReferenceHelper::getInstance();
+            
+            objReferenceHelper->insertNewBefore(pColumn . "1", -pNumCols, 0, this);
+            
+            for c in range(0, pNumCols - 1) {
+                this->getCellCacheController()->removeColumn(highestColumn);
+                let highestColumn = \ZExcel\Cell::stringFromColumnIndex(\ZExcel\Cell::columnIndexFromString(highestColumn) - 2);
+            }
+        } else {
+            throw new \ZExcel\Exception("Column references should not be numeric.");
+        }
+        return this;
     }
 
     /**
@@ -2075,7 +2413,7 @@ class Worksheet implements IComparable
     /**
      * Get active cell
      *
-     * @return string Example: 'A1'
+     * @return string Example: "A1"
      */
     public function getActiveCell()
     {
@@ -2106,7 +2444,7 @@ class Worksheet implements IComparable
     /**
      * Select a range of cells.
      *
-     * @param    string        pCoordinate    Cell range, examples: 'A1', 'B2:G5', 'A:C', '3:6'
+     * @param    string        pCoordinate    Cell range, examples: "A1", "B2:G5", "A:C", "3:6"
      * @throws    \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
@@ -2116,16 +2454,16 @@ class Worksheet implements IComparable
         // Uppercase coordinate
         let pCoordinate = strtoupper(pCoordinate);
 
-        // Convert 'A' to 'A:A'
+        // Convert "A" to "A:A"
         let pCoordinate = preg_replace("/^([A-Z]+)$/", "${1}:${1}", pCoordinate);
 
-        // Convert '1' to '1:1'
+        // Convert "1" to "1:1"
         let pCoordinate = preg_replace("/^([0-9]+)$/", "${1}:${1}", pCoordinate);
 
-        // Convert 'A:C' to 'A1:C1048576'
+        // Convert "A:C" to "A1:C1048576"
         let pCoordinate = preg_replace("/^([A-Z]+):([A-Z]+)$/", "${1}1:${2}1048576", pCoordinate);
 
-        // Convert '1:3' to 'A1:XFD3'
+        // Convert "1:3" to "A1:XFD3"
         let pCoordinate = preg_replace("/^([0-9]+):([0-9]+)$/", "A${1}:XFD${2}", pCoordinate);
 
         if (strpos(pCoordinate, ":") !== false || strpos(pCoordinate, ",") !== false) {
@@ -2194,7 +2532,7 @@ class Worksheet implements IComparable
      * Create array from a range of cells
      *
      * @param string pRange Range of cells (i.e. "A1:B10"), or just one cell (i.e. "A1")
-     * @param mixed nullValue Value returned in the array entry if a cell doesn't exist
+     * @param mixed nullValue Value returned in the array entry if a cell doesn"t exist
      * @param boolean calculateFormulas Should formulas be calculated?
      * @param boolean formatData Should formatting be applied to cell values?
      * @param boolean returnCellRef False - Return a simple array of rows and columns indexed by number counting from zero
@@ -2211,7 +2549,7 @@ class Worksheet implements IComparable
      * Create array from a range of cells
      *
      * @param  string pNamedRange Name of the Named Range
-     * @param  mixed  nullValue Value returned in the array entry if a cell doesn't exist
+     * @param  mixed  nullValue Value returned in the array entry if a cell doesn"t exist
      * @param  boolean calculateFormulas  Should formulas be calculated?
      * @param  boolean formatData  Should formatting be applied to cell values?
      * @param  boolean returnCellRef False - Return a simple array of rows and columns indexed by number counting from zero
@@ -2228,7 +2566,7 @@ class Worksheet implements IComparable
     /**
      * Create array from worksheet
      *
-     * @param mixed nullValue Value returned in the array entry if a cell doesn't exist
+     * @param mixed nullValue Value returned in the array entry if a cell doesn"t exist
      * @param boolean calculateFormulas Should formulas be calculated?
      * @param boolean formatData  Should formatting be applied to cell values?
      * @param boolean returnCellRef False - Return a simple array of rows and columns indexed by number counting from zero
@@ -2289,8 +2627,8 @@ class Worksheet implements IComparable
     /**
      * Extract worksheet title from range.
      *
-     * Example: extractSheetTitle("testSheet!A1") ==> 'A1'
-     * Example: extractSheetTitle("'testSheet 1'!A1", true) ==> array('testSheet 1', 'A1');
+     * Example: extractSheetTitle("testSheet!A1") ==> "A1"
+     * Example: extractSheetTitle(""testSheet 1"!A1", true) ==> array("testSheet 1", "A1");
      *
      * @param string pRange    Range to extract title from
      * @param bool returnRange    Return range? (see example)
@@ -2428,7 +2766,7 @@ class Worksheet implements IComparable
     /**
      * Get tab color
      *
-     * @return \ZExcel\Style_Color
+     * @return \ZExcel\Style\Color
      */
     public function getTabColor()
     {
