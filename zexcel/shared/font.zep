@@ -158,7 +158,7 @@ class Font
     /**
      * Set autoSize method
      *
-     * @param string $pValue
+     * @param string pValue
      * @return     boolean                    Success or failure
      */
     public static function setAutoSizeMethod(string pValue = self::AUTOSIZE_METHOD_APPROX)
@@ -178,7 +178,7 @@ class Font
      */
     public static function getAutoSizeMethod()
     {
-        return self::$autoSizeMethod;
+        return self::autoSizeMethod;
     }
 
     /**
@@ -190,7 +190,7 @@ class Font
      *        <li>~/.fonts/</li>
      *    </ul>
      *
-     * @param string $pValue
+     * @param string pValue
      */
     public static function setTrueTypeFontPath(string pValue = "")
     {
@@ -210,48 +210,155 @@ class Font
     /**
      * Calculate an (approximate) OpenXML column width, based on font size and text contained
      *
-     * @param     PHPExcel_Style_Font            $font            Font object
-     * @param     PHPExcel_RichText|string    $cellText        Text to calculate width
-     * @param     integer                        $rotation        Rotation angle
-     * @param     PHPExcel_Style_Font|NULL    $defaultFont    Font object
+     * @param     \ZExcel\Style_Font            font            Font object
+     * @param     \ZExcel\RichText|string    cellText        Text to calculate width
+     * @param     integer                        rotation        Rotation angle
+     * @param     \ZExcel\Style_Font|NULL    defaultFont    Font object
      * @return     integer        Column width
      */
-    public static function calculateColumnWidth(<\ZExcel\Style\Font> font, string cellText = "", int rotation = 0, <\ZExcel\Style\Font> defaultFont = null)
+    public static function calculateColumnWidth(<\ZExcel\Style\Font> font, var cellText = "", int rotation = 0, <\ZExcel\Style\Font> defaultFont = null)
     {
-        throw new \Exception("Not implemented yet!");
+        var lineTexts, lineText, approximate, columnWidthAdjust, columnWidth, e;
+        array lineWidths = []; 
+        
+        // If it is rich text, use plain text
+        if (cellText instanceof \ZExcel\RichText) {
+            let cellText = cellText->getPlainText();
+        }
+
+        // Special case if there are one or more newline characters ("\n")
+        if (strpos(cellText, "\n") !== false) {
+            let lineTexts = explode("\n", cellText);
+            let lineWidths = [];
+            
+            for lineText in lineTexts {
+                let lineWidths[] = self::calculateColumnWidth(font, lineText, rotation, defaultFont);
+            }
+            return max(lineWidths); // width of longest line in cell
+        }
+
+        // Try to get the exact text width in pixels
+        let approximate = (self::autoSizeMethod == self::AUTOSIZE_METHOD_APPROX);
+        
+        if (!approximate) {
+            let columnWidthAdjust = ceil(self::getTextWidthPixelsExact("n", font, 0) * 1.07);
+            try {
+                // Width of text in pixels excl. padding
+                // and addition because Excel adds some padding, just use approx width of "n" glyph
+                let columnWidth = self::getTextWidthPixelsExact(cellText, font, rotation) + columnWidthAdjust;
+            } catch \ZExcel\Exception, e {
+                let approximate = true;
+            }
+        }
+
+        if (approximate) {
+            let columnWidthAdjust = self::getTextWidthPixelsApprox("n", font, 0);
+            // Width of text in pixels excl. padding, approximation
+            // and addition because Excel adds some padding, just use approx width of "n" glyph
+            let columnWidth = self::getTextWidthPixelsApprox(cellText, font, rotation) + columnWidthAdjust;
+        }
+
+        // Convert from pixel width to column width
+        let columnWidth = \ZExcel\Shared\Drawing::pixelsToCellDimension(columnWidth, defaultFont);
+
+        // Return
+        return round(columnWidth, 6);
     }
 
     /**
      * Get GD text width in pixels for a string of text in a certain font at a certain rotation angle
      *
-     * @param string $text
-     * @param PHPExcel_Style_Font
-     * @param int $rotation
+     * @param string text
+     * @param \ZExcel\Style_Font
+     * @param int rotation
      * @return int
-     * @throws PHPExcel_Exception
+     * @throws \ZExcel\Exception
      */
     public static function getTextWidthPixelsExact(string text, <\ZExcel\Style\Font> font, int rotation = 0)
     {
-        throw new \Exception("Not implemented yet!");
+        var fontFile, textBox, textWidth, lowerLeftCornerX, lowerRightCornerX, upperRightCornerX, upperLeftCornerX;
+        
+        if (!function_exists("imagettfbbox")) {
+            throw new \ZExcel\Exception("GD library needs to be enabled");
+        }
+
+        // font size should really be supplied in pixels in GD2,
+        // but since GD2 seems to assume 72dpi, pixels and points are the same
+        let fontFile = self::getTrueTypeFontFileFromFont(font);
+        let textBox = imagettfbbox(font->getSize(), rotation, fontFile, text);
+
+        // Get corners positions
+        let lowerLeftCornerX  = textBox[0];
+        let lowerRightCornerX = textBox[2];
+        let upperRightCornerX = textBox[4];
+        let upperLeftCornerX  = textBox[6];
+
+        // Consider the rotation when calculating the width
+        let textWidth = max(lowerRightCornerX - upperLeftCornerX, upperRightCornerX - lowerLeftCornerX);
+
+        return textWidth;
     }
 
     /**
      * Get approximate width in pixels for a string of text in a certain font at a certain rotation angle
      *
-     * @param string $columnText
-     * @param PHPExcel_Style_Font $font
-     * @param int $rotation
+     * @param string columnText
+     * @param \ZExcel\Style_Font font
+     * @param int rotation
      * @return int Text width in pixels (no padding added)
      */
     public static function getTextWidthPixelsApprox(string columnText, <\ZExcel\Style\Font> font = null, int rotation = 0)
     {
-        throw new \Exception("Not implemented yet!");
+        var fontName, fontSize, columnWidth;
+        
+        let fontName = font->getName();
+        let fontSize = font->getSize();
+
+        // Calculate column width in pixels. We assume fixed glyph width. Result varies with font name and size.
+        switch (fontName) {
+            case "Calibri":
+                // value 8.26 was found via interpolation by inspecting real Excel files with Calibri 11 font.
+                let columnWidth = (int) (8.26 * \ZExcel\Shared\Stringg::CountCharacters(columnText));
+                let columnWidth = columnWidth * fontSize / 11; // extrapolate from font size
+                break;
+            case "Arial":
+                // value 7 was found via interpolation by inspecting real Excel files with Arial 10 font.
+//                columnWidth = (int) (7 * \ZExcel\Shared\Stringg::CountCharacters(columnText));
+                // value 8 was set because of experience in different exports at Arial 10 font.
+                let columnWidth = (int) (8 * \ZExcel\Shared\Stringg::CountCharacters(columnText));
+                let columnWidth = columnWidth * fontSize / 10; // extrapolate from font size
+                break;
+            case "Verdana":
+                // value 8 was found via interpolation by inspecting real Excel files with Verdana 10 font.
+                let columnWidth = (int) (8 * \ZExcel\Shared\Stringg::CountCharacters(columnText));
+                let columnWidth = columnWidth * fontSize / 10; // extrapolate from font size
+                break;
+            default:
+                // just assume Calibri
+                let columnWidth = (int) (8.26 * \ZExcel\Shared\Stringg::CountCharacters(columnText));
+                let columnWidth = columnWidth * fontSize / 11; // extrapolate from font size
+                break;
+        }
+
+        // Calculate approximate rotated column width
+        if (rotation !== 0) {
+            if (rotation == -165) {
+                // stacked text
+                let columnWidth = 4; // approximation
+            } else {
+                // rotated text
+                let columnWidth = columnWidth * cos(deg2rad(rotation)) + fontSize * abs(sin(deg2rad(rotation))) / 5; // approximation
+            }
+        }
+
+        // pixel width is an integer
+        return (int) columnWidth;
     }
 
     /**
      * Calculate an (approximate) pixel size, based on a font points size
      *
-     * @param     int        $fontSizeInPoints    Font size (in points)
+     * @param     int        fontSizeInPoints    Font size (in points)
      * @return     int        Font size (in pixels)
      */
     public static function fontSizeToPixels(float fontSizeInPoints = 11) -> int
@@ -262,7 +369,7 @@ class Font
     /**
      * Calculate an (approximate) pixel size, based on inch size
      *
-     * @param     int        $sizeInInch    Font size (in inch)
+     * @param     int        sizeInInch    Font size (in inch)
      * @return     int        Size (in pixels)
      */
     public static function inchSizeToPixels(float sizeInInch = 1) -> float
@@ -273,7 +380,7 @@ class Font
     /**
      * Calculate an (approximate) pixel size, based on centimeter size
      *
-     * @param     int        $sizeInCm    Font size (in centimeters)
+     * @param     int        sizeInCm    Font size (in centimeters)
      * @return     int        Size (in pixels)
      */
     public static function centimeterSizeToPixels(float sizeInCm = 1) -> float
@@ -284,7 +391,7 @@ class Font
     /**
      * Returns the font path given the font
      *
-     * @param PHPExcel_Style_Font
+     * @param \ZExcel\Style_Font
      * @return string Path to TrueType font file
      */
     public static function getTrueTypeFontFileFromFont(<\ZExcel\Style\Font> font)
@@ -295,12 +402,12 @@ class Font
     /**
      * Returns the associated charset for the font name.
      *
-     * @param string $name Font name
+     * @param string name Font name
      * @return int Character set code
      */
     public static function getCharsetFromFontName(string name)
     {
-        switch ($name) {
+        switch (name) {
             // Add more cases. Check FONT records in real Excel files.
             case "EucrosiaUPC":
                 return self::CHARSET_ANSI_THAI;
@@ -319,8 +426,8 @@ class Font
      * Get the effective column width for columns without a column dimension or column with width -1
      * For example, for Calibri 11 this is 9.140625 (64 px)
      *
-     * @param PHPExcel_Style_Font $font The workbooks default font
-     * @param boolean $pPixels true = return column width in pixels, false = return in OOXML units
+     * @param \ZExcel\Style_Font font The workbooks default font
+     * @param boolean pPixels true = return column width in pixels, false = return in OOXML units
      * @return mixed Column width
      */
     public static function getDefaultColumnWidthByFont(<\ZExcel\Style\Font> font, boolean pPixels = false)
@@ -332,7 +439,7 @@ class Font
      * Get the effective row height for rows without a row dimension or rows with height -1
      * For example, for Calibri 11 this is 15 points
      *
-     * @param PHPExcel_Style_Font $font The workbooks default font
+     * @param \ZExcel\Style_Font font The workbooks default font
      * @return float Row height in points
      */
     public static function getDefaultRowHeightByFont(<\ZExcel\Style\Font> font)
