@@ -66,7 +66,7 @@ class Worksheet implements IComparable
      *
      * @var \ZExcel\Worksheet\BaseDrawing[]
      */
-    private _drawingCollection = null;
+    private drawingCollection = null;
 
     /**
      * Collection of Chart objects
@@ -80,7 +80,7 @@ class Worksheet implements IComparable
      *
      * @var string
      */
-    private _title;
+    private title;
 
     /**
      * Sheet state
@@ -122,7 +122,7 @@ class Worksheet implements IComparable
      *
      * @var \ZExcel\Worksheet\Protection
      */
-    private _protection;
+    private protection;
 
     /**
      * Collection of styles
@@ -171,7 +171,7 @@ class Worksheet implements IComparable
      *
      * @var \ZExcel\Worksheet\AutoFilter
      */
-    private _autoFilter = null;
+    private autoFilter = null;
 
     /**
      * Freeze pane
@@ -220,7 +220,7 @@ class Worksheet implements IComparable
      *
      * @var \ZExcel\Comment[]
      */
-    private _comments = [];
+    private comments = [];
 
     /**
      * Active cell. (Only one!)
@@ -283,14 +283,14 @@ class Worksheet implements IComparable
      *
      * @var boolean
      */
-    private _dirty    = true;
+    private dirty    = true;
 
     /**
      * Hash
      *
      * @var string
      */
-    private _hash    = null;
+    private hash    = null;
 
     /**
     * CodeName
@@ -331,13 +331,13 @@ class Worksheet implements IComparable
         let this->_sheetView = new \ZExcel\Worksheet\SheetView();
 
         // Drawing collection
-        let this->_drawingCollection = new \ArrayObject();
+        let this->drawingCollection = new \ArrayObject();
 
         // Chart collection
         let this->chartCollection = new \ArrayObject();
 
         // Protection
-        let this->_protection = new \ZExcel\Worksheet\Protection();
+        let this->protection = new \ZExcel\Worksheet\Protection();
 
         // Default row dimension
         let this->_defaultRowDimension = new \ZExcel\Worksheet\RowDimension(null);
@@ -345,7 +345,7 @@ class Worksheet implements IComparable
         // Default column dimension
         let this->_defaultColumnDimension = new \ZExcel\Worksheet\ColumnDimension(null);
 
-        let this->_autoFilter = new \ZExcel\Worksheet\AutoFilter(null, this);
+        let this->autoFilter = new \ZExcel\Worksheet\AutoFilter(null, this);
     }
 
 
@@ -370,7 +370,7 @@ class Worksheet implements IComparable
      */
     public function __destruct()
     {
-        \ZExcel\Calculation::getInstance(this->parent)->clearCalculationCacheForWorksheet(this->_title);
+        \ZExcel\Calculation::getInstance(this->parent)->clearCalculationCacheForWorksheet(this->title);
 
         this->disconnectCells();
     }
@@ -535,7 +535,7 @@ class Worksheet implements IComparable
      */
     public function getDrawingCollection()
     {
-        return this->_drawingCollection;
+        return this->drawingCollection;
     }
 
     /**
@@ -825,7 +825,7 @@ class Worksheet implements IComparable
      */
     public function getTitle() -> string
     {
-        return this->_title;
+        return this->title;
     }
 
     /**
@@ -883,8 +883,8 @@ class Worksheet implements IComparable
             }
         }
         
-        let this->_title = pValue;
-        let this->_dirty = true;
+        let this->title = pValue;
+        let this->dirty = true;
         
         if (is_object(this->parent) && this->parent instanceof \ZExcel\ZExcel) {
             let newTitle = this->getTitle();
@@ -1014,7 +1014,7 @@ class Worksheet implements IComparable
      */
     public function getProtection()
     {
-        return this->_protection;
+        return this->protection;
     }
 
     /**
@@ -1025,8 +1025,8 @@ class Worksheet implements IComparable
      */
     public function setProtection(<\ZExcel\Worksheet\Protection> pValue)
     {
-        let this->_protection = pValue;
-        let this->_dirty = true;
+        let this->protection = pValue;
+        let this->dirty = true;
 
         return this;
     }
@@ -1988,7 +1988,7 @@ class Worksheet implements IComparable
      */
     public function getAutoFilter()
     {
-        return this->_autoFilter;
+        return this->autoFilter;
     }
 
     /**
@@ -2006,9 +2006,9 @@ class Worksheet implements IComparable
         let pRange = strtoupper(pValue);
 
         if (is_string(pValue)) {
-            this->_autoFilter->setRange(pValue);
+            this->autoFilter->setRange(pValue);
         } elseif(is_object(pValue) && (pValue instanceof \ZExcel\Worksheet\AutoFilter)) {
-            let this->_autoFilter = pValue;
+            let this->autoFilter = pValue;
         }
         return this;
     }
@@ -2039,7 +2039,7 @@ class Worksheet implements IComparable
      */
     public function removeAutoFilter()
     {
-        this->_autoFilter->setRange(null);
+        this->autoFilter->setRange(null);
         
         return this;
     }
@@ -2359,7 +2359,7 @@ class Worksheet implements IComparable
      */
     public function getComments()
     {
-        return this->_comments;
+        return this->comments;
     }
 
     /**
@@ -2368,9 +2368,9 @@ class Worksheet implements IComparable
      * @param array of \ZExcel\Comment
      * @return \ZExcel\Worksheet
      */
-    public function setComments(array pValue = [])
+    public function setComments(array pValue = []) -> <\ZExcel\Worksheet>
     {
-        let this->_comments = pValue;
+        let this->comments = pValue;
 
         return this;
     }
@@ -2382,9 +2382,31 @@ class Worksheet implements IComparable
      * @return \ZExcel\Comment
      * @throws \ZExcel\Exception
      */
-    public function getComment(pCellCoordinate = "A1")
+    public function getComment(string pCellCoordinate = "A1")
     {
-        throw new \Exception("Not implemented yet!");
+        var newComment;
+        
+        // Uppercase coordinate
+        let pCellCoordinate = strtoupper(pCellCoordinate);
+
+        if (strpos(pCellCoordinate, ":") !== false || strpos(pCellCoordinate, ",") !== false) {
+            throw new \ZExcel\Exception("Cell coordinate string can not be a range of cells.");
+        } elseif (strpos(pCellCoordinate, "") !== false) {
+            throw new \ZExcel\Exception("Cell coordinate string must not be absolute.");
+        } elseif (pCellCoordinate == "") {
+            throw new \ZExcel\Exception("Cell coordinate can not be zero-length string.");
+        } else {
+            // Check if we already have a comment for this cell.
+            // If not, create a new comment.
+            if (isset(this->comments[pCellCoordinate])) {
+                return this->comments[pCellCoordinate];
+            } else {
+                let newComment = new \ZExcel\Comment();
+                let this->comments[pCellCoordinate] = newComment;
+                
+                return newComment;
+            }
+        }
     }
 
     /**
@@ -2523,9 +2545,48 @@ class Worksheet implements IComparable
      * @throws \ZExcel\Exception
      * @return \ZExcel\Worksheet
      */
-    public function fromArray(array source = null, var nullValue = null, string startCell = "A1", boolean strictNullComparison = false)
+    public function fromArray(var source = null, var nullValue = null, string startCell = "A1", boolean strictNullComparison = false) -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        var startColumn, startRow, rowData, currentColumn, cellValue, tmp;
+        
+        if (is_array(source)) {
+            //    Convert a 1-D array to 2-D (for ease of looping)
+            if (!is_array(end(source))) {
+                let source = [source];
+            }
+
+            // start coordinate
+            let tmp = \ZEXcel\Cell::coordinateFromString(startCell);
+            let startColumn = tmp[0];
+            let startRow = tmp[1];
+
+            // Loop through source
+            for rowData in source {
+                let currentColumn = startColumn;
+                
+                for cellValue in rowData {
+                    if (strictNullComparison) {
+                        if (cellValue !== nullValue) {
+                            // Set cell value
+                            this->getCell(currentColumn . startRow)->setValue(cellValue);
+                        }
+                    } else {
+                        if (cellValue != nullValue) {
+                            // Set cell value
+                            this->getCell(currentColumn . startRow)->setValue(cellValue);
+                        }
+                    }
+                    
+                    let currentColumn = currentColumn + 1;
+                }
+                
+                let startRow = startRow + 1;
+            }
+        } else {
+            throw new \ZEXcel\Exception("Parameter $source should be an array.");
+        }
+        
+        return this;
     }
 
     /**
@@ -2541,7 +2602,83 @@ class Worksheet implements IComparable
      */
     public function rangeToArray(string pRange = "A1", var nullValue = null, boolean calculateFormulas = true, boolean formatData = true, boolean returnCellRef = false)
     {
-        throw new \Exception("Not implemented yet!");
+        var returnCellReg, rangeStart, rangeEnd, minCol, minRow, maxCol, maxRow, r, c, row, col, rRef, cRef, cell, tmp, style;
+        array returnValue = [];
+        
+        //    Identify the range that we need to extract from the worksheet
+        let tmp = \ZExcel\Cell::rangeBoundaries(pRange);
+        let rangeStart = tmp[0];
+        let rangeEnd = tmp[1];
+        let minCol = \ZExcel\Cell::stringFromColumnIndex(rangeStart[0] - 1);
+        let minRow = rangeStart[1];
+        let maxCol = \ZExcel\Cell::stringFromColumnIndex(rangeEnd[0] - 1);
+        let maxRow = rangeEnd[1];
+
+        let maxCol = maxCol + 1;
+        // Loop through rows
+        let r = -1;
+        
+        for row in range(minRow, maxRow) {
+            if (returnCellRef) {
+                let rRef = row;
+            } else {
+                let r = r + 1;
+                let rRef = r;
+            }
+            
+            let c = -1;
+            
+            // Loop through columns in the current row
+            let col = minCol;
+            
+            while (col != maxCol) {
+                
+                if (returnCellReg) {
+                    let cRef = col;
+                } else {
+                    let c = c + 1;
+                    let cRef = c;
+                }
+                
+                //    Using getCell() will create a new cell if it doesn"t already exist. We don"t want that to happen
+                //        so we test and retrieve directly against cellCollection
+                if (this->cellCollection->isDataSet(col . row)) {
+                    // Cell exists
+                    let cell = this->cellCollection->getCacheData(col . row);
+                    
+                    if (cell->getValue() !== null) {
+                        if (cell->getValue() instanceof \ZExcel\RichText) {
+                            let returnValue[rRef][cRef] = cell->getValue()->getPlainText();
+                        } else {
+                            if (calculateFormulas) {
+                                let returnValue[rRef][cRef] = cell->getCalculatedValue();
+                            } else {
+                                let returnValue[rRef][cRef] = cell->getValue();
+                            }
+                        }
+
+                        if (formatData) {
+                            let style = this->parent->getCellXfByIndex(cell->getXfIndex());
+                            let returnValue[rRef][cRef] = \ZExcel\Style\NumberFormat::toFormattedString(
+                                returnValue[rRef][cRef],
+                                (style && style->getNumberFormat()) ? style->getNumberFormat()->getFormatCode() : \ZExcel\Style\NumberFormat::FORMAT_GENERAL
+                            );
+                        }
+                    } else {
+                        // Cell holds a NULL
+                        let returnValue[rRef][cRef] = nullValue;
+                    }
+                } else {
+                    // Cell doesn"t exist
+                    let returnValue[rRef][cRef] = nullValue;
+                }
+                
+                let col = col + 1;
+            }
+        }
+
+        // Return
+        return returnValue;
     }
 
 
@@ -2559,7 +2696,18 @@ class Worksheet implements IComparable
      */
     public function namedRangeToArray(string pNamedRange = "", var nullValue = null, boolean calculateFormulas = true, boolean formatData = true, boolean returnCellRef = false)
     {
-        throw new \Exception("Not implemented yet!");
+        var namedRange, pWorkSheet, pCellRange;
+        
+        let namedRange = \ZExcel\NamedRange::resolveRange(pNamedRange, this);
+        
+        if (namedRange !== null) {
+            let pWorkSheet = namedRange->getWorksheet();
+            let pCellRange = namedRange->getRange();
+
+            return pWorkSheet->rangeToArray(pCellRange, nullValue, calculateFormulas, formatData, returnCellRef);
+        }
+
+        throw new \ZExcel\Exception("Named Range " . pNamedRange . " does not exist.");
     }
 
 
@@ -2573,9 +2721,18 @@ class Worksheet implements IComparable
      *                               True - Return rows and columns indexed by their actual row and column IDs
      * @return array
      */
-    public function toArray(nullValue = null, calculateFormulas = true, formatData = true, returnCellRef = false)
+    public function toArray(var nullValue = null, boolean calculateFormulas = true, boolean formatData = true, boolean returnCellRef = false)
     {
-        throw new \Exception("Not implemented yet!");
+        var maxCol, maxRow;
+        
+        // Garbage collect...
+        this->garbageCollect();
+
+        //    Identify the range that we need to extract from the worksheet
+        let maxCol = this->getHighestColumn();
+        let maxRow = this->getHighestRow();
+        // Return
+        return this->rangeToArray("A1:" . maxCol . maxRow, nullValue, calculateFormulas, formatData, returnCellRef);
     }
 
     /**
@@ -2609,9 +2766,40 @@ class Worksheet implements IComparable
      *
      * @return \ZExcel\Worksheet
      */
-    public function garbageCollect()
+    public function garbageCollect() -> <\ZExcel\Worksheet>
     {
-        throw new \Exception("Not implemented yet!");
+        var colRow, highestRow, highestColumn, dimension;
+        
+        // Flush cache
+        this->cellCollection->getCacheData("A1");
+
+        // Lookup highest column and highest row if cells are cleaned
+        let colRow = this->cellCollection->getHighestRowAndColumn();
+        let highestRow = colRow["row"];
+        let highestColumn = \ZExcel\Cell::columnIndexFromString(colRow["column"]);
+
+        // Loop through column dimensions
+        for dimension in this->columnDimensions {
+            let highestColumn = max(highestColumn, \ZExcel\Cell::columnIndexFromString(dimension->getColumnIndex()));
+        }
+
+        // Loop through row dimensions
+        for dimension in this->rowDimensions {
+            let highestRow = max(highestRow, dimension->getRowIndex());
+        }
+
+        // Cache values
+        if (highestColumn < 0) {
+            let this->cachedHighestColumn = "A";
+        } else {
+            let highestColumn = highestColumn - 1;
+            let this->cachedHighestColumn = \ZExcel\Cell::stringFromColumnIndex(highestColumn);
+        }
+        
+        let this->cachedHighestRow = highestRow;
+
+        // Return
+        return this;
     }
 
     /**
@@ -2621,7 +2809,12 @@ class Worksheet implements IComparable
      */
     public function getHashCode()
     {
-        throw new \Exception("Not implemented yet!");
+        if (this->dirty) {
+            let this->hash = md5(this->title . this->autoFilter . (this->protection->isProtectionEnabled() ? "t" : "f") . get_class(this));
+            let this->dirty = false;
+        }
+        
+        return this->hash;
     }
 
     /**
@@ -2634,9 +2827,22 @@ class Worksheet implements IComparable
      * @param bool returnRange    Return range? (see example)
      * @return mixed
      */
-    public static function extractSheetTitle(pRange, returnRange = false)
+    public static function extractSheetTitle(var pRange, returnRange = false)
     {
-        throw new \Exception("Not implemented yet!");
+        var sep;
+        
+        let sep = strpos(pRange, "!");
+        
+        // Sheet title included?
+        if (sep === false) {
+            return "";
+        }
+
+        if (returnRange) {
+            return [trim(substr(pRange, 0, sep), "\""), substr(pRange, sep + 1)];
+        }
+
+        return substr(pRange, sep + 1);
     }
 
     /**
@@ -2758,9 +2964,37 @@ class Worksheet implements IComparable
      * @param string range
      * @return string Adjusted range value
      */
-    public function shrinkRangeToFit(range)
+    public function shrinkRangeToFit(var range)
     {
-        throw new \Exception("Not implemented yet!");
+        var maxCol, maxRow, k, rangeSet, rangeBlocks, rangeBoundaries, stRange;
+        
+        let maxCol = this->getHighestColumn();
+        let maxRow = this->getHighestRow();
+        let maxCol = \ZExcel\Cell::columnIndexFromString(maxCol);
+
+        let rangeBlocks = explode(" ", range);
+        for k, rangeSet in rangeBlocks {
+            let rangeBoundaries = \ZExcel\Cell::getRangeBoundaries(rangeSet);
+
+            if (\ZExcel\Cell::columnIndexFromString(rangeBoundaries[0][0]) > maxCol) {
+                let rangeBoundaries[0][0] = \ZExcel\Cell::stringFromColumnIndex(maxCol);
+            }
+            if (rangeBoundaries[0][1] > maxRow) {
+                let rangeBoundaries[0][1] = maxRow;
+            }
+            if (\ZExcel\Cell::columnIndexFromString(rangeBoundaries[1][0]) > maxCol) {
+                let rangeBoundaries[1][0] = \ZExcel\Cell::stringFromColumnIndex(maxCol);
+            }
+            if (rangeBoundaries[1][1] > maxRow) {
+                let rangeBoundaries[1][1] = maxRow;
+            }
+            
+            let rangeBlocks[k] = rangeBoundaries[0][0].rangeBoundaries[0][1].":".rangeBoundaries[1][0].rangeBoundaries[1][1];
+        }
+        
+        let stRange = implode(" ", rangeBlocks);
+
+        return stRange;
     }
 
     /**
@@ -2815,10 +3049,39 @@ class Worksheet implements IComparable
     /**
      * Implement PHP __clone to create a deep clone, not just a shallow copy.
      */
-    public function __clone() {
-        throw new \Exception("Not implemented yet!");
+    public function __clone()
+    {
+        var vars, key, val, newCollection, newAutoFilter;
+        
+        let vars = get_object_vars(this);
+        
+        for key, val in vars {
+            if (key == "parent") {
+                continue;
+            }
+
+            if (is_object(val) || (is_array(val))) {
+                if (key == "cellCollection") {
+                    let newCollection = clone this->cellCollection;
+                    
+                    newCollection->copyCellCollection(this);
+                    
+                    let this->cellCollection = newCollection;
+                } elseif (key == "drawingCollection") {
+                    let newCollection = clone this->drawingCollection;
+                    let this->drawingCollection = newCollection;
+                } elseif ((key == "autoFilter") && (this->autoFilter instanceof \ZExcel\Worksheet\AutoFilter)) {
+                    let newAutoFilter = clone this->autoFilter;
+                    let this->autoFilter = newAutoFilter;
+                    this->autoFilter->setParent(this);
+                } else {
+                    let this->{key} = unserialize(serialize(val));
+                }
+            }
+        }
     }
-/**
+
+    /**
      * Define the code name of the sheet
      *
      * @param null|string Same rule as Title minus space not allowed (but, like Excel, change silently space to underscore)
