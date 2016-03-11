@@ -557,7 +557,6 @@ class Worksheet implements IComparable
      */
     public function addChart(<\ZExcel\Chart> pChart = null, var iChartIndex = null)
     {
-        /* chart not implemented yet !
         pChart->setWorksheet(this);
         
         if (is_null(iChartIndex)) {
@@ -568,7 +567,6 @@ class Worksheet implements IComparable
         }
 
         return pChart;
-        */
     }
 
     /**
