@@ -396,7 +396,109 @@ class Font
      */
     public static function getTrueTypeFontFileFromFont(<\ZExcel\Style\Font> font)
     {
-        throw new \Exception("Not implemented yet!");
+        var name, bold, italic, fontFile;
+        
+        if (!file_exists(self::trueTypeFontPath) || !is_dir(self::trueTypeFontPath)) {
+            throw new \ZExcel\Exception("Valid directory to TrueType Font files not specified");
+        }
+
+        let name   = font->getName();
+        let bold   = font->getBold();
+        let italic = font->getItalic();
+
+        // Check if we can map font to true type font file
+        switch (name) {
+            case "Arial":
+                let fontFile = (
+                    bold ? (italic ? self::ARIAL_BOLD_ITALIC : self::ARIAL_BOLD)
+                          : (italic ? self::ARIAL_ITALIC : self::ARIAL)
+                );
+                break;
+            case "Calibri":
+                let fontFile = (
+                    bold ? (italic ? self::CALIBRI_BOLD_ITALIC : self::CALIBRI_BOLD)
+                          : (italic ? self::CALIBRI_ITALIC : self::CALIBRI)
+                );
+                break;
+            case "Courier New":
+                let fontFile = (
+                    bold ? (italic ? self::COURIER_NEW_BOLD_ITALIC : self::COURIER_NEW_BOLD)
+                          : (italic ? self::COURIER_NEW_ITALIC : self::COURIER_NEW)
+                );
+                break;
+            case "Comic Sans MS":
+                let fontFile = (
+                    bold ? self::COMIC_SANS_MS_BOLD : self::COMIC_SANS_MS
+                );
+                break;
+            case "Georgia":
+                let fontFile = (
+                    bold ? (italic ? self::GEORGIA_BOLD_ITALIC : self::GEORGIA_BOLD)
+                          : (italic ? self::GEORGIA_ITALIC : self::GEORGIA)
+                );
+                break;
+            case "Impact":
+                let fontFile = self::IMPACT;
+                break;
+            case "Liberation Sans":
+                let fontFile = (
+                    bold ? (italic ? self::LIBERATION_SANS_BOLD_ITALIC : self::LIBERATION_SANS_BOLD)
+                          : (italic ? self::LIBERATION_SANS_ITALIC : self::LIBERATION_SANS)
+                );
+                break;
+            case "Lucida Console":
+                let fontFile = self::LUCIDA_CONSOLE;
+                break;
+            case "Lucida Sans Unicode":
+                let fontFile = self::LUCIDA_SANS_UNICODE;
+                break;
+            case "Microsoft Sans Serif":
+                let fontFile = self::MICROSOFT_SANS_SERIF;
+                break;
+            case "Palatino Linotype":
+                let fontFile = (
+                    bold ? (italic ? self::PALATINO_LINOTYPE_BOLD_ITALIC : self::PALATINO_LINOTYPE_BOLD)
+                          : (italic ? self::PALATINO_LINOTYPE_ITALIC : self::PALATINO_LINOTYPE)
+                );
+                break;
+            case "Symbol":
+                let fontFile = self::SYMBOL;
+                break;
+            case "Tahoma":
+                let fontFile = (
+                    bold ? self::TAHOMA_BOLD : self::TAHOMA
+                );
+                break;
+            case "Times New Roman":
+                let fontFile = (
+                    bold ? (italic ? self::TIMES_NEW_ROMAN_BOLD_ITALIC : self::TIMES_NEW_ROMAN_BOLD)
+                          : (italic ? self::TIMES_NEW_ROMAN_ITALIC : self::TIMES_NEW_ROMAN)
+                );
+                break;
+            case "Trebuchet MS":
+                let fontFile = (
+                    bold ? (italic ? self::TREBUCHET_MS_BOLD_ITALIC : self::TREBUCHET_MS_BOLD)
+                          : (italic ? self::TREBUCHET_MS_ITALIC : self::TREBUCHET_MS)
+                );
+                break;
+            case "Verdana":
+                let fontFile = (
+                    bold ? (italic ? self::VERDANA_BOLD_ITALIC : self::VERDANA_BOLD)
+                          : (italic ? self::VERDANA_ITALIC : self::VERDANA)
+                );
+                break;
+            default:
+                throw new \ZExcel\Exception("Unknown font name \"" . name . "\" . Cannot map to TrueType font file");
+        }
+
+        let fontFile = self::trueTypeFontPath . fontFile;
+
+        // Check if file actually exists
+        if (!file_exists(fontFile)) {
+            throw new \ZExcel\Exception("TrueType Font file not found");
+        }
+
+        return fontFile;
     }
 
     /**
@@ -432,7 +534,29 @@ class Font
      */
     public static function getDefaultColumnWidthByFont(<\ZExcel\Style\Font> font, boolean pPixels = false)
     {
-        throw new \Exception("Not implemented yet!");
+        var columnWidth;
+        
+        if (isset(self::defaultColumnWidths[font->getName()][font->getSize()])) {
+            // Exact width can be determined
+            let columnWidth = pPixels ?
+                self::defaultColumnWidths[font->getName()][font->getSize()]["px"]
+                    : self::defaultColumnWidths[font->getName()][font->getSize()]["width"];
+
+        } else {
+            // We don"t have data for this particular font and size, use approximation by
+            // extrapolating from Calibri 11
+            let columnWidth = pPixels ?
+                self::defaultColumnWidths["Calibri"][11]["px"]
+                    : self::defaultColumnWidths["Calibri"][11]["width"];
+            let columnWidth = columnWidth * font->getSize() / 11;
+
+            // Round pixels to closest integer
+            if (pPixels) {
+                let columnWidth = (int) round(columnWidth);
+            }
+        }
+
+        return columnWidth;
     }
 
     /**
@@ -444,6 +568,147 @@ class Font
      */
     public static function getDefaultRowHeightByFont(<\ZExcel\Style\Font> font)
     {
-        throw new \Exception("Not implemented yet!");
+        var rowHeight;
+        
+        switch (font->getName()) {
+            case "Arial":
+                switch (font->getSize()) {
+                    case 10:
+                        // inspection of Arial 10 workbook says 12.75pt ~17px
+                        let rowHeight = 12.75;
+                        break;
+                    case 9:
+                        // inspection of Arial 9 workbook says 12.00pt ~16px
+                        let rowHeight = 12;
+                        break;
+                    case 8:
+                        // inspection of Arial 8 workbook says 11.25pt ~15px
+                        let rowHeight = 11.25;
+                        break;
+                    case 7:
+                        // inspection of Arial 7 workbook says 9.00pt ~12px
+                        let rowHeight = 9;
+                        break;
+                    case 6:
+                    case 5:
+                        // inspection of Arial 5,6 workbook says 8.25pt ~11px
+                        let rowHeight = 8.25;
+                        break;
+                    case 4:
+                        // inspection of Arial 4 workbook says 6.75pt ~9px
+                        let rowHeight = 6.75;
+                        break;
+                    case 3:
+                        // inspection of Arial 3 workbook says 6.00pt ~8px
+                        let rowHeight = 6;
+                        break;
+                    case 2:
+                    case 1:
+                        // inspection of Arial 1,2 workbook says 5.25pt ~7px
+                        let rowHeight = 5.25;
+                        break;
+                    default:
+                        // use Arial 10 workbook as an approximation, extrapolation
+                        let rowHeight = 12.75 * font->getSize() / 10;
+                        break;
+                }
+                break;
+
+            case "Calibri":
+                switch (font->getSize()) {
+                    case 11:
+                        // inspection of Calibri 11 workbook says 15.00pt ~20px
+                        let rowHeight = 15;
+                        break;
+                    case 10:
+                        // inspection of Calibri 10 workbook says 12.75pt ~17px
+                        let rowHeight = 12.75;
+                        break;
+                    case 9:
+                        // inspection of Calibri 9 workbook says 12.00pt ~16px
+                        let rowHeight = 12;
+                        break;
+                    case 8:
+                        // inspection of Calibri 8 workbook says 11.25pt ~15px
+                        let rowHeight = 11.25;
+                        break;
+                    case 7:
+                        // inspection of Calibri 7 workbook says 9.00pt ~12px
+                        let rowHeight = 9;
+                        break;
+                    case 6:
+                    case 5:
+                        // inspection of Calibri 5,6 workbook says 8.25pt ~11px
+                        let rowHeight = 8.25;
+                        break;
+                    case 4:
+                        // inspection of Calibri 4 workbook says 6.75pt ~9px
+                        let rowHeight = 6.75;
+                        break;
+                    case 3:
+                        // inspection of Calibri 3 workbook says 6.00pt ~8px
+                        let rowHeight = 6.00;
+                        break;
+                    case 2:
+                    case 1:
+                        // inspection of Calibri 1,2 workbook says 5.25pt ~7px
+                        let rowHeight = 5.25;
+                        break;
+                    default:
+                        // use Calibri 11 workbook as an approximation, extrapolation
+                        let rowHeight = 15 * font->getSize() / 11;
+                        break;
+                }
+                break;
+
+            case "Verdana":
+                switch (font->getSize()) {
+                    case 10:
+                        // inspection of Verdana 10 workbook says 12.75pt ~17px
+                        let rowHeight = 12.75;
+                        break;
+                    case 9:
+                        // inspection of Verdana 9 workbook says 11.25pt ~15px
+                        let rowHeight = 11.25;
+                        break;
+                    case 8:
+                        // inspection of Verdana 8 workbook says 10.50pt ~14px
+                        let rowHeight = 10.50;
+                        break;
+                    case 7:
+                        // inspection of Verdana 7 workbook says 9.00pt ~12px
+                        let rowHeight = 9.00;
+                        break;
+                    case 6:
+                    case 5:
+                        // inspection of Verdana 5,6 workbook says 8.25pt ~11px
+                        let rowHeight = 8.25;
+                        break;
+                    case 4:
+                        // inspection of Verdana 4 workbook says 6.75pt ~9px
+                        let rowHeight = 6.75;
+                        break;
+                    case 3:
+                        // inspection of Verdana 3 workbook says 6.00pt ~8px
+                        let rowHeight = 6;
+                        break;
+                    case 2:
+                    case 1:
+                        // inspection of Verdana 1,2 workbook says 5.25pt ~7px
+                        let rowHeight = 5.25;
+                        break;
+                    default:
+                        // use Verdana 10 workbook as an approximation, extrapolation
+                        let rowHeight = 12.75 * font->getSize() / 10;
+                        break;
+                }
+                break;
+            default:
+                // just use Calibri as an approximation
+                let rowHeight = 15 * font->getSize() / 11;
+                break;
+        }
+
+        return rowHeight;
     }
 }

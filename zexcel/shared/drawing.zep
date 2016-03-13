@@ -148,7 +148,7 @@ class Drawing
      */
     public static function imagecreatefrombmp(var p_sFile)
     {
-        var file, read, temp, hex, header, header_parts, header_part, header_size,
+        var file, read, temp, hex, header, header_parts, header_size,
             width, height, b, i, x, y, g, d, r, image, color,
             body, body_size, usePadding, i_pos;
         
