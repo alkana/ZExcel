@@ -149,7 +149,7 @@ class Drawing
     public static function imagecreatefrombmp(var p_sFile)
     {
         var file, read, temp, hex, header, header_parts, header_size,
-            width, height, b, i, x, y, g, d, r, image, color,
+            width, height, b, i, x, y, g, r, image, color,
             body, body_size, usePadding, i_pos;
         
         //    Load the image into a string
@@ -175,9 +175,6 @@ class Drawing
 
             //    Get the height        4 bytes
             let height = hexdec(header_parts[23].header_parts[22]);
-
-            //    Unset the header params
-            let header_parts = null;
         }
 
         //    Define starting X and Y
@@ -239,9 +236,6 @@ class Drawing
             let x = x + 1;
             let i = i + 3;
         }
-
-        // Unset the body / free the memory
-        let body = null;
 
         //    Return image-object
         return image;
