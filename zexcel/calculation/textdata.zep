@@ -65,7 +65,7 @@ class TextData
      */
     public static function trimNonPrintable(var stringValue = "")
     {
-        string trimer = "\x00..\x1F";
+        string trimer = chr(0) . ".." . chr(31);
         
         let stringValue = \ZExcel\Calculation\Functions::flattenSingleValue(stringValue);
 

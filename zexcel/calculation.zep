@@ -2762,14 +2762,14 @@ class Calculation
         }
 
         let pCellParent = (pCell !== null) ? pCell->getWorksheet() : null;
-        let wsTitle = (pCellParent !== null) ? pCellParent->getTitle() : "\x00Wrk";
+        let wsTitle = (pCellParent !== null) ? pCellParent->getTitle() : chr(0) . "Wrk";
         let wsCellReference = wsTitle . "!" . cellID;
 
         if ((cellID !== null) && (this->getValueFromCache(wsCellReference, cellValue))) {
             return cellValue;
         }
 
-        if ((substr(wsTitle, 0, 1) !== "\x00") && (this->_cyclicReferenceStack->onStack(wsCellReference))) {
+        if ((substr(wsTitle, 0, 1) !== chr(0)) && (this->_cyclicReferenceStack->onStack(wsCellReference))) {
             if (this->cyclicFormulaCount <= 0) {
                 let this->cyclicFormulaCell = "";
                 return this->_raiseFormulaError("Cyclic Reference in Formula");
