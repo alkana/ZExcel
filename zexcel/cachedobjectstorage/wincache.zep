@@ -63,8 +63,8 @@ class Wincache extends CacheBase implements ICache
         if ((pCoord !== this->currentObjectID) && (this->currentObjectID !== null)) {
             this->storeData();
         }
+        
         let this->cellCache[pCoord] = true;
-
         let this->currentObjectID = pCoord;
         let this->currentObject = cell;
         let this->currentCellIsDirty = true;
@@ -87,13 +87,16 @@ class Wincache extends CacheBase implements ICache
             if (this->currentObjectID == pCoord) {
                 return true;
             }
+            
             //    Check if the requested entry still exists in cache
             let success = wincache_ucache_exists(this->cachePrefix.pCoord.".cache");
+            
             if (success === false) {
                 //    Entry no longer exists in Wincache, so clear it from the cache array
                 parent::deleteCacheData(pCoord);
                 throw new \ZExcel\Exception("Cell entry ".pCoord." no longer exists in WinCache");
             }
+            
             return true;
         }
         return false;
@@ -115,18 +118,22 @@ class Wincache extends CacheBase implements ICache
         if (pCoord === this->currentObjectID) {
             return this->currentObject;
         }
+        
         this->storeData();
 
         //    Check if the entry that has been requested actually exists
         let obj = null;
+        
         if (parent::isDataSet(pCoord)) {
             let success = false;
             let obj = wincache_ucache_get(this->cachePrefix.pCoord.".cache", success);
+            
             if (success === false) {
                 //    Entry no longer exists in WinCache, so clear it from the cache array
                 parent::deleteCacheData(pCoord);
                 throw new \ZExcel\Exception("Cell entry ".pCoord." no longer exists in WinCache");
             }
+            
         } else {
             //    Return null if requested entry doesn"t exist in cache
             return null;
@@ -188,21 +195,25 @@ class Wincache extends CacheBase implements ICache
         let baseUnique = this->getUniqueID();
         let newCachePrefix = substr(md5(baseUnique), 0, 8) . ".";
         let cacheList = this->getCellList();
+        
         for cellID in cacheList {
             if (cellID != this->currentObjectID) {
                 let success = false;
                 let obj = wincache_ucache_get(this->cachePrefix.cellID.".cache", success);
+                
                 if (success === false) {
                     //    Entry no longer exists in WinCache, so clear it from the cache array
                     parent::deleteCacheData(cellID);
                     throw new \ZExcel\Exception("Cell entry ".cellID." no longer exists in Wincache");
                 }
+                
                 if (!wincache_ucache_add(newCachePrefix.cellID.".cache", obj, this->cacheTime)) {
                     this->__destruct();
                     throw new \ZExcel\Exception("Failed to store cell ".cellID." in Wincache");
                 }
             }
         }
+        
         let this->cachePrefix = newCachePrefix;
     }
 
@@ -258,6 +269,7 @@ class Wincache extends CacheBase implements ICache
         var cacheList, cellID;
         
         let cacheList = this->getCellList();
+        
         for cellID in cacheList {
             wincache_ucache_delete(this->cachePrefix . cellID . ".cache");
         }

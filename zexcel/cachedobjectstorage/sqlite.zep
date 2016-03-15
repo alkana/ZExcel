@@ -77,6 +77,7 @@ class SQLite extends CacheBase implements ICache
 
         let query = "SELECT value FROM kvp_" . this->TableName . " WHERE id='" . pCoord . "'";
         let cellResultSet = this->DBHandle->query(query, SQLITE_ASSOC);
+        
         if (cellResultSet === false) {
             throw new \ZExcel\Exception(sqlite_error_string(this->DBHandle->lastError()));
         } elseif (cellResultSet->numRows() == 0) {
