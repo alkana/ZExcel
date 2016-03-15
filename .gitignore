@@ -1,4 +1,7 @@
 .temp
+.project
+.settings*
+.buildpath
 compile-errors.log
 compile.log
 
