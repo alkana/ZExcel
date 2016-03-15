@@ -61,7 +61,7 @@ class DataType
      */
     public static function checkString(pValue = null)
     {
-        if (pValue instanceof \ZExcel\RichText) {
+        if (is_object(pValue) && pValue instanceof \ZExcel\RichText) {
             // TODO: Sanitize Rich-Text string (max. character count is 32,767)
             return pValue;
         }

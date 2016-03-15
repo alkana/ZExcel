@@ -201,7 +201,7 @@ class Excel2007 extends Abstrac implements IReader
         return worksheetInfo;
     }
 
-    private static function castToBoolean(var c)
+    public static function castToBoolean(var c)
     {
         var value;
         
@@ -218,23 +218,23 @@ class Excel2007 extends Abstrac implements IReader
         return value;
     }
 
-    private static function castToError(var c)
+    public static function castToError(var c)
     {
         return isset(c->v) ? (string) c->v : null;
     }
 
-    private static function _castToString(var c)
+    public static function castToString(var c)
     {
         return isset(c->v) ? (string) c->v : null;
     }
 
-    private function castToFormula(var c, var r, var cellDataType, var value, var calculatedValue, var sharedFormulas, var castBaseType)
+    public function castToFormula(var c, var r, var cellDataType, var value, var calculatedValue, var sharedFormulas, var castBaseType)
     {
         var instance, sharedFormulas, master, current, difference;
         
         let cellDataType    = "f";
         let value           = "=" . c->f;
-        let calculatedValue = call_user_func(["self", castBaseType], c);
+        let calculatedValue = call_user_func(["\\ZExcel\\Reader\\Excel2007", castBaseType], c);
 
         // Shared formula?
         if (isset(c->f["t"]) && strtolower((string)c->f["t"]) == "shared") {
@@ -294,16 +294,16 @@ class Excel2007 extends Abstrac implements IReader
             themeOrderArray, themeOrderAdditional,
             xmlTheme, xmlThemeName, themeName, themePos,
             colourScheme, colourSchemeName, themeColours,
-            k, xmlColour, xmlColourData,
+            k, xmlColour, xmlColourData, cell, styles,
             dir, relsWorkbook, sharedStrings, xpath, xmlStrings, val,
             worksheets, macros, customUI, ele,
             sheetId, oldSheetId, countSkippedSheets, mapSheetId,
-            charts, chartDetails,
+            charts, chartDetails, roww, row, tmp,
             xmlCore, xmlWorkbook, xmlProperty, propertyName, attributeType, attributeValue,
-            cellDataOfficeAttributes, cellDataOfficeChildren,
-            eleSheet, docSheet, docProps,
+            cellDataOfficeAttributes, cellDataOfficeChildren, cellDataType, value, calculatedValue,
+            eleSheet, docSheet, docProps, coordinates,
             fileWorksheet, xmlSheet, sharedFormulas,
-            xSplit, ySplit, sqref, col, i,
+            xSplit, ySplit, sqref, col, i, c, r, att,
             sheetViewAttr, paneAttr, selectionAttr,
             activeTab;
         
@@ -492,16 +492,12 @@ class Excel2007 extends Abstrac implements IReader
                         \ZExcel\Settings::getLibXmlLoaderOptions()
                     );
                     
-                    if (xmlStrings !== false) {
-                        let xmlStrings = reset(xmlStrings);
-                        if (isset(xmlStrings["si"])) {
-                            for val in xmlStrings {
-                                let val = reset(val);
-                                if (isset(val["t"])) {
-                                    let sharedStrings[] = \ZExcel\Shared\Stringg::ControlCharacterOOXML2PHP( (string) val["t"] );
-                                } elseif (isset(val["r"])) {
-                                    let sharedStrings[] = this->parseRichText(val);
-                                }
+                    if (is_object(xmlStrings) && isset(xmlStrings->si)) {
+                        for val in iterator(xmlStrings) {
+                            if (isset(val->t)) {
+                                let sharedStrings[] = \ZExcel\Shared\Stringg::ControlCharacterOOXML2PHP( (string) val->t );
+                            } elseif (isset(val->r)) {
+                                let sharedStrings[] = this->parseRichText(val);
                             }
                         }
                     }
@@ -720,7 +716,7 @@ class Excel2007 extends Abstrac implements IReader
                                             docSheet->getColumnDimension(\ZExcel\Cell::stringFromColumnIndex(i))->setCollapsed(true);
                                         }
                                         
-                                        if (col["outlineLevel"] > 0) {
+                                        if (isset(col["outlineLevel"]) && col["outlineLevel"] > 0) {
                                             docSheet->getColumnDimension(\ZExcel\Cell::stringFromColumnIndex(i))->setOutlineLevel(intval(col["outlineLevel"]));
                                         }
                                         
@@ -734,17 +730,144 @@ class Excel2007 extends Abstrac implements IReader
                             }
 
                             if (isset(xmlSheet->printOptions) && !this->readDataOnly) {
-                                if (self::booleann((string) xmlSheet->printOptions["gridLinesSet"])) {
+                                let r = reset(xmlSheet->printOptions);
+
+                                if (self::booleann((string) r["gridLinesSet"])) {
                                     docSheet->setShowGridlines(true);
                                 }
-                                if (self::booleann((string) xmlSheet->printOptions["gridLines"])) {
+                                if (self::booleann((string) r["gridLines"])) {
                                     docSheet->setPrintGridlines(true);
                                 }
-                                if (self::booleann((string) xmlSheet->printOptions["horizontalCentered"])) {
+                                if (self::booleann((string) r["horizontalCentered"])) {
                                     docSheet->getPageSetup()->setHorizontalCentered(true);
                                 }
-                                if (self::booleann((string) xmlSheet->printOptions["verticalCentered"])) {
+                                if (self::booleann((string) r["verticalCentered"])) {
                                     docSheet->getPageSetup()->setVerticalCentered(true);
+                                }
+                            }
+                            
+                            if (xmlSheet && xmlSheet->sheetData && xmlSheet->sheetData->row) {
+                                for roww in iterator(xmlSheet->sheetData->row) {
+                                    let row = reset(roww);
+                                    
+                                    if (isset(row["ht"]) && !this->readDataOnly) {
+                                        docSheet->getRowDimension(intval(row["r"]))->setRowHeight(floatval(row["ht"]));
+                                    }
+                                    if (self::booleann(row["hidden"]) && !this->readDataOnly) {
+                                        docSheet->getRowDimension(intval(row["r"]))->setVisible(false);
+                                    }
+                                    if (self::booleann(row["collapsed"])) {
+                                        docSheet->getRowDimension(intval(row["r"]))->setCollapsed(true);
+                                    }
+                                    if (isset(row["outlineLevel"]) && row["outlineLevel"] > 0) {
+                                        docSheet->getRowDimension(intval(row["r"]))->setOutlineLevel(intval(row["outlineLevel"]));
+                                    }
+                                    if (isset(row["s"]) && !this->readDataOnly) {
+                                        docSheet->getRowDimension(intval(row["r"]))->setXfIndex(intval(row["s"]));
+                                    }
+
+                                    for c in iterator(roww->c) {
+                                        let tmp = reset(c);
+                                        
+                                        let r               = (string) tmp["r"];
+                                        let cellDataType    = (string) tmp["t"];
+                                        let value           = null;
+                                        let calculatedValue = null;
+
+                                        // Read cell?
+                                        if (this->getReadFilter() !== null) {
+                                            let coordinates = \ZExcel\Cell::coordinateFromString(r);
+
+                                            if (!this->getReadFilter()->readCell(coordinates[0], coordinates[1], docSheet->getTitle())) {
+                                                continue;
+                                            }
+                                        }
+
+                                        // Read cell!
+                                        switch (cellDataType) {
+                                            case "s":
+                                                if ((string) c->v != "") {
+                                                    let value = sharedStrings[intval(c->v)];
+
+                                                    if (is_object(value) && value instanceof \ZExcel\RichText) {
+                                                        let value = clone value;
+                                                    }
+                                                } else {
+                                                    let value = "";
+                                                }
+                                                break;
+                                            case "b":
+                                                if (!isset(c->f)) {
+                                                    let value = self::castToBoolean(c);
+                                                } else {
+                                                    // Formula
+                                                    this->castToFormula(c, r, cellDataType, value, calculatedValue, sharedFormulas, "castToBoolean");
+                                                    
+                                                    if (isset(c->f["t"])) {
+                                                        let att = c->f;
+                                                        docSheet->getCell(r)->setFormulaAttributes(att);
+                                                    }
+                                                }
+                                                break;
+                                            case "inlineStr":
+                                                if (isset(c->f)) {
+                                                    this->castToFormula(c, r, cellDataType, value, calculatedValue, sharedFormulas, "castToError");
+                                                } else {
+                                                    let value = this->parseRichText(c->is);
+                                                }
+                                                break;
+                                            case "e":
+                                                if (!isset(c->f)) {
+                                                    let value = self::castToError(c);
+                                                } else {
+                                                    // Formula
+                                                    this->castToFormula(c, r, cellDataType, value, calculatedValue, sharedFormulas, "castToError");
+                                                }
+                                                break;
+                                            default:
+                                                if (!isset(c->f)) {
+                                                    let value = self::castToString(c);
+                                                } else {
+                                                    // Formula
+                                                    this->castToFormula(c, r, cellDataType, value, calculatedValue, sharedFormulas, "castToString");
+                                                }
+                                                break;
+                                        }
+
+                                        // Check for numeric values
+                                        if (is_numeric(value) && cellDataType != "s") {
+                                            if (value == (int) value) {
+                                                let value = (int) value;
+                                            } elseif (value == (float) value) {
+                                                let value = (float) value;
+                                            } elseif (value == (double)value) {
+                                                let value = (double) value;
+                                            }
+                                        }
+
+                                        // Rich text?
+                                        if (is_object(value) && value instanceof \ZExcel\RichText && this->readDataOnly) {
+                                            let value = value->getPlainText();
+                                        }
+
+                                        let cell = docSheet->getCell(r);
+                                        
+                                        // Assign value
+                                        if (cellDataType != "") {
+                                            cell->setValueExplicit(value, cellDataType);
+                                        } else {
+                                            cell->setValue(value);
+                                        }
+                                        if (calculatedValue !== null) {
+                                            cell->setCalculatedValue(calculatedValue);
+                                        }
+
+                                        // Style information?
+                                        if (tmp["s"] && !this->readDataOnly) {
+                                            // no style index means 0, it seems
+                                            cell->setXfIndex(isset(styles[intval(tmp["s"])]) ? intval(tmp["s"]) : 0);
+                                        }
+                                    }
                                 }
                             }
                             
@@ -1081,7 +1204,7 @@ class Excel2007 extends Abstrac implements IReader
         var data = null;
         
         // SimpleXMLElement is not an array
-        if (arry instanceof \SimpleXMLElement) {
+        if (is_object(arry) && arry instanceof \SimpleXMLElement) {
             let arry = reset(arry);
         }
         

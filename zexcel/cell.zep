@@ -278,7 +278,7 @@ class Cell
             }
 
             return result;
-        } elseif (this->_value instanceof \ZExcel\RichText) {
+        } elseif (is_object(this->_value) && this->_value instanceof \ZExcel\RichText) {
             return this->_value->getPlainText();
         }
 

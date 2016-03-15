@@ -1222,7 +1222,7 @@ class Worksheet implements IComparable
 
         if (strpos(pCoordinate, ":") !== false || strpos(pCoordinate, ",") !== false) {
             throw new \ZExcel\Exception("Cell coordinate can not be a range of cells.");
-        } elseif (strpos(pCoordinate, "") !== false) {
+        } elseif (strpos(pCoordinate, "$") !== false) {
             throw new \ZExcel\Exception("Cell coordinate must not be absolute.");
         }
 
@@ -2645,7 +2645,7 @@ class Worksheet implements IComparable
                     let cell = this->cellCollection->getCacheData(col . row);
                     
                     if (cell->getValue() !== null) {
-                        if (cell->getValue() instanceof \ZExcel\RichText) {
+                        if (is_object(cell->getValue()) && cell->getValue() instanceof \ZExcel\RichText) {
                             let returnValue[rRef][cRef] = cell->getValue()->getPlainText();
                         } else {
                             if (calculateFormulas) {
@@ -3068,7 +3068,7 @@ class Worksheet implements IComparable
                 } elseif (key == "drawingCollection") {
                     let newCollection = clone this->drawingCollection;
                     let this->drawingCollection = newCollection;
-                } elseif ((key == "autoFilter") && (this->autoFilter instanceof \ZExcel\Worksheet\AutoFilter)) {
+                } elseif ((key == "autoFilter") && is_object(this->autoFilter) && (this->autoFilter instanceof \ZExcel\Worksheet\AutoFilter)) {
                     let newAutoFilter = clone this->autoFilter;
                     let this->autoFilter = newAutoFilter;
                     this->autoFilter->setParent(this);

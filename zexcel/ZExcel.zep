@@ -699,8 +699,9 @@ class ZExcel
         
         let worksheet = this->getSheetByName(pValue);
         
-        if (worksheet instanceof \ZExcel\Worksheet) {
+        if (is_object(worksheet) && worksheet instanceof \ZExcel\Worksheet) {
             this->setActiveSheetIndex(this->getIndex(worksheet));
+            
             return worksheet;
         }
 

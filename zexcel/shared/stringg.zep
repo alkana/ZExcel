@@ -10,7 +10,7 @@ class Stringg
      *
      * @var string[]
      */
-    private static _controlCharacters;
+    private static controlCharacters = [];
 
     /**
      * SYLK Characters array
@@ -65,7 +65,7 @@ class Stringg
             if (i != 9 && i != 10 && i != 13) {
                 let find = "_x" . sprintf("%04s" , strtoupper(dechex(i))) . "_";
                 let replace = chr(i);
-                let self::_controlCharacters[find] = replace;
+                let self::controlCharacters[find] = replace;
             }
         }
     }
@@ -296,7 +296,7 @@ class Stringg
 
     public static function buildCharacterSets()
     {
-        if(empty(self::_controlCharacters)) {
+        if(empty(self::controlCharacters)) {
             self::_buildControlCharacters();
         }
         
@@ -322,8 +322,8 @@ class Stringg
     public static function controlCharacterOOXML2PHP(var value = "") -> string
     {
         return str_replace(
-            array_keys(self::_controlCharacters),
-            array_values(self::_controlCharacters),
+            array_keys(self::controlCharacters),
+            array_values(self::controlCharacters),
             value
         );
     }
@@ -345,8 +345,8 @@ class Stringg
     public static function controlCharacterPHP2OOXML(var value = "") -> string
     {
         return str_replace(
-            array_values(self::_controlCharacters),
-            array_keys(self::_controlCharacters),
+            array_values(self::controlCharacters),
+            array_keys(self::controlCharacters),
             value
         );
     }

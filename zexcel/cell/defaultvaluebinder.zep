@@ -16,9 +16,9 @@ class DefaultValueBinder implements IValueBinder
             let value = \ZExcel\Shared\Stringg::SanitizeUTF8(value);
         } elseif (is_object(value)) {
             // Handle any objects that might be injected
-            if (value instanceof \DateTime) {
+            if (is_object(value) && value instanceof \DateTime) {
                 let value = value->format("Y-m-d H:i:s");
-            } elseif (!(value instanceof \ZExcel\RichText)) {
+            } elseif (!is_object(value) || !(value instanceof \ZExcel\RichText)) {
                 let value = (string) value;
             }
         }

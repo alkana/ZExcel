@@ -198,7 +198,8 @@ class Ole
         let instanceId = end(array_keys(self::instances));
 
         let path = "ole-chainedblockstream://oleInstanceId=" . instanceId;
-        if (blockIdOrPps instanceof \ZExcel\Shared\OLE\Pps) {
+        
+        if (is_object(blockIdOrPps) && blockIdOrPps instanceof \ZExcel\Shared\OLE\Pps) {
             let path = path . "&blockId=" . blockIdOrPps->_StartBlock;
             let path = path . "&size=" . blockIdOrPps->Size;
         } else {

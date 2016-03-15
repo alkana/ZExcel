@@ -222,7 +222,7 @@ class Font
         array lineWidths = []; 
         
         // If it is rich text, use plain text
-        if (cellText instanceof \ZExcel\RichText) {
+        if (is_object(cellText) && cellText instanceof \ZExcel\RichText) {
             let cellText = cellText->getPlainText();
         }
 

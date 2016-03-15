@@ -822,9 +822,9 @@ class Html
         var child;
         
         for child in element->childNodes {
-            if (child instanceof DOMText) {
+            if (child instanceof \DOMText) {
                 this->parseTextNode(child);
-            } elseif (child instanceof DOMElement) {
+            } elseif (child instanceof \DOMElement) {
                 this->parseElementNode(child);
             }
         }
