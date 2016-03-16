@@ -2,17 +2,17 @@ namespace ZExcel;
 
 class CachedObjectStorageFactory
 {
-    const CACHE_IN_MEMORY               = "Memory";
-    const CACHE_IN_MEMORY_GZIP          = "MemoryGZip";
-    const CACHE_IN_MEMORY_SERIALIZED    = "MemorySerialized";
-    const CACHE_IGBINARY                = "Igbinary";
-    const CACHE_TO_DISCISAM             = "DiscISAM";
-    const CACHE_TO_APC                  = "APC";
-    const CACHE_TO_MEMCACHE             = "Memcache";
-    const CACHE_TO_PHPTEMP              = "PHPTemp";
-    const CACHE_TO_WINCACHE             = "Wincache";
-    const CACHE_TO_SQLITE               = "SQLite";
-    const CACHE_TO_SQLITE3              = "SQLite3";
+    const CACHE_IN_MEMORY            = "Memory";
+    const CACHE_IN_MEMORY_GZIP       = "MemoryGZip";
+    const CACHE_IN_MEMORY_SERIALIZED = "MemorySerialized";
+    const CACHE_IGBINARY             = "Igbinary";
+    const CACHE_TO_DISCISAM          = "DiscISAM";
+    const CACHE_TO_APC               = "APC";
+    const CACHE_TO_MEMCACHE          = "Memcache";
+    const CACHE_TO_PHPTEMP           = "PHPTemp";
+    const CACHE_TO_WINCACHE          = "Wincache";
+    const CACHE_TO_SQLITE            = "SQLite";
+    const CACHE_TO_SQLITE3           = "SQLite3";
 
     /**
      * Name of the method used for cell cacheing
@@ -33,64 +33,49 @@ class CachedObjectStorageFactory
      *
      * @var string[]
      */
-    private static storageMethods;
+    private static storageMethods = [
+        self::CACHE_IN_MEMORY,
+        self::CACHE_IN_MEMORY_GZIP,
+        self::CACHE_IN_MEMORY_SERIALIZED,
+        self::CACHE_IGBINARY,
+        self::CACHE_TO_PHPTEMP,
+        self::CACHE_TO_DISCISAM,
+        self::CACHE_TO_APC,
+        self::CACHE_TO_MEMCACHE,
+        self::CACHE_TO_WINCACHE,
+        self::CACHE_TO_SQLITE,
+        self::CACHE_TO_SQLITE3
+    ];
 
     /**
      * Default arguments for each cache storage method
      *
      * @var array of mixed array
      */
-    private static storageMethodDefaultParameters;
+    private static storageMethodDefaultParameters = [
+        "Memory": [],
+        "MemoryGZip": [],
+        "MemorySerialized": [],
+        "Igbinary": [],
+        "PHPTemp": ["memoryCacheSize": "1MB"],
+        "DiscISAM": ["dir": null],
+        "APC": ["cacheTime": 600],
+        "Memcache": [
+            "memcacheServer": "localhost",
+            "memcachePort": 11211,
+            "cacheTime": 600
+        ],
+        "Wincache": ["cacheTime": 600],
+        "SQLite": [],
+        "SQLite3": []
+    ];
 
     /**
      * Arguments for the active cache storage method
      *
      * @var array of mixed array
      */
-    private static storageMethodParameters;
-
-    private static function initStaticArray()
-    {
-        if (self::storageMethods == null) {
-            let self::storageMethods = [
-                self::CACHE_IN_MEMORY,
-                self::CACHE_IN_MEMORY_GZIP,
-                self::CACHE_IN_MEMORY_SERIALIZED,
-                self::CACHE_IGBINARY,
-                self::CACHE_TO_PHPTEMP,
-                self::CACHE_TO_DISCISAM,
-                self::CACHE_TO_APC,
-                self::CACHE_TO_MEMCACHE,
-                self::CACHE_TO_WINCACHE,
-                self::CACHE_TO_SQLITE,
-                self::CACHE_TO_SQLITE3
-            ];
-        }
-        
-        if (self::storageMethodDefaultParameters == null) {
-            let self::storageMethodDefaultParameters = [
-                self::CACHE_IN_MEMORY: [],
-                self::CACHE_IN_MEMORY_GZIP: [],
-                self::CACHE_IN_MEMORY_SERIALIZED: [],
-                self::CACHE_IGBINARY: [],
-                self::CACHE_TO_PHPTEMP: ["memoryCacheSize": "1MB"],
-                self::CACHE_TO_DISCISAM: ["dir": null],
-                self::CACHE_TO_APC: ["cacheTime": 600],
-                self::CACHE_TO_MEMCACHE: [
-                    "memcacheServer": "localhost",
-                    "memcachePort": 11211,
-                    "cacheTime": 600
-                ],
-                self::CACHE_TO_WINCACHE: ["cacheTime": 600],
-                self::CACHE_TO_SQLITE: [],
-                self::CACHE_TO_SQLITE3: []
-            ];
-        }
-        
-        if (self::storageMethodParameters == null) {
-            let self::storageMethodParameters = [];
-        }
-    }
+    private static storageMethodParameters = [];
     
     /**
      * Return the current cache storage method
@@ -99,8 +84,6 @@ class CachedObjectStorageFactory
      **/
     public static function getCacheStorageMethod()
     {
-        self::initStaticArray();
-        
         return self::cacheStorageMethod;
     }
 
@@ -111,8 +94,6 @@ class CachedObjectStorageFactory
      **/
     public static function getCacheStorageClass()
     {
-        self::initStaticArray();
-        
         return self::cacheStorageClass;
     }
 
@@ -123,8 +104,6 @@ class CachedObjectStorageFactory
      **/
     public static function getAllCacheStorageMethods()
     {
-        self::initStaticArray();
-        
         return self::storageMethods;
     }
 
@@ -137,8 +116,6 @@ class CachedObjectStorageFactory
     {
         var storageMethod, cacheStorageClass;
         array activeMethods = [];
-        
-        self::initStaticArray();
         
         for storageMethod in self::storageMethods {
             let cacheStorageClass = "\\ZExcel\\CachedObjectStorage\\" . storageMethod;
@@ -158,17 +135,15 @@ class CachedObjectStorageFactory
      *                                        when instantiating
      * @return boolean
      **/
-    public static function initialize(var method = self::CACHE_IN_MEMORY, arguments = [])
+    public static function initialize(var method = self::CACHE_IN_MEMORY, arguments = []) -> boolean
     {
         var cacheStorageClass, k, v;
-        
-        self::initStaticArray();
         
         if (!in_array(method, self::storageMethods)) {
             return false;
         }
 
-        let cacheStorageClass = "\\ZExcel\CachedObjectStorage\\" . method;
+        let cacheStorageClass = "\\ZExcel\\CachedObjectStorage\\" . method;
         if (!call_user_func([cacheStorageClass, "cacheMethodIsAvailable"])) {
             return false;
         }
@@ -196,8 +171,6 @@ class CachedObjectStorageFactory
     public static function getInstance(<\ZExcel\Worksheet> parent)
     {
         var instance, cacheMethodIsAvailable, functionn;
-        
-        self::initStaticArray();
         
         let cacheMethodIsAvailable = true;
         if (self::cacheStorageMethod === null) {
