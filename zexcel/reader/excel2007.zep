@@ -294,7 +294,7 @@ class Excel2007 extends Abstrac implements IReader
             themeOrderArray, themeOrderAdditional,
             xmlTheme, xmlThemeName, themeName, themePos,
             colourScheme, colourSchemeName, themeColours,
-            k, xmlColour, xmlColourData, cell, styles,
+            k, xmlColour, xmlColourData, cell, styles, cellStyles,
             dir, relsWorkbook, sharedStrings, xpath, xmlStrings, val,
             worksheets, macros, customUI, ele,
             sheetId, oldSheetId, countSkippedSheets, mapSheetId,
@@ -483,7 +483,6 @@ class Excel2007 extends Abstrac implements IReader
                     
                     relsWorkbook->registerXPathNamespace("rel", "http://schemas.openxmlformats.org/package/2006/relationships");
 
-                    let sharedStrings = [];
                     let xpath = reset(self::getArrayItem(relsWorkbook->xpath("rel:Relationship[@Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings']")));
                     
                     let xmlStrings = simplexml_load_string(
@@ -491,6 +490,8 @@ class Excel2007 extends Abstrac implements IReader
                         "SimpleXMLElement",
                         \ZExcel\Settings::getLibXmlLoaderOptions()
                     );
+                    
+                    let sharedStrings = [];
                     
                     if (is_object(xmlStrings) && isset(xmlStrings->si)) {
                         for val in iterator(xmlStrings) {
@@ -520,7 +521,10 @@ class Excel2007 extends Abstrac implements IReader
                         }
                     }
                     
-                    // @TODO code from lines 492 - 608
+                    // @TODO code from lines 482 - 603
+                    
+                    let styles = [];
+                    let cellStyles = [];
                     
                     let xmlWorkbook = simplexml_load_string(
                         this->securityScan(this->getFromZipArchive(zip, rel["Target"])),
@@ -753,19 +757,23 @@ class Excel2007 extends Abstrac implements IReader
                                     if (isset(row["ht"]) && !this->readDataOnly) {
                                         docSheet->getRowDimension(intval(row["r"]))->setRowHeight(floatval(row["ht"]));
                                     }
+                                    
                                     if (self::booleann(row["hidden"]) && !this->readDataOnly) {
                                         docSheet->getRowDimension(intval(row["r"]))->setVisible(false);
                                     }
+                                    
                                     if (self::booleann(row["collapsed"])) {
                                         docSheet->getRowDimension(intval(row["r"]))->setCollapsed(true);
                                     }
+                                    
                                     if (isset(row["outlineLevel"]) && row["outlineLevel"] > 0) {
                                         docSheet->getRowDimension(intval(row["r"]))->setOutlineLevel(intval(row["outlineLevel"]));
                                     }
+                                    
                                     if (isset(row["s"]) && !this->readDataOnly) {
                                         docSheet->getRowDimension(intval(row["r"]))->setXfIndex(intval(row["s"]));
                                     }
-
+                                    
                                     for c in iterator(roww->c) {
                                         let tmp = reset(c);
                                         
@@ -787,8 +795,8 @@ class Excel2007 extends Abstrac implements IReader
                                         switch (cellDataType) {
                                             case "s":
                                                 if ((string) c->v != "") {
-                                                    let value = sharedStrings[intval(c->v)];
-
+                                                    let value = sharedStrings[(string) c->v];
+                                                    
                                                     if (is_object(value) && value instanceof \ZExcel\RichText) {
                                                         let value = clone value;
                                                     }
@@ -844,7 +852,7 @@ class Excel2007 extends Abstrac implements IReader
                                                 let value = (double) value;
                                             }
                                         }
-
+                                        
                                         // Rich text?
                                         if (is_object(value) && value instanceof \ZExcel\RichText && this->readDataOnly) {
                                             let value = value->getPlainText();
@@ -858,14 +866,21 @@ class Excel2007 extends Abstrac implements IReader
                                         } else {
                                             cell->setValue(value);
                                         }
+                                        
                                         if (calculatedValue !== null) {
                                             cell->setCalculatedValue(calculatedValue);
                                         }
-
+                                        
                                         // Style information?
                                         if (tmp["s"] && !this->readDataOnly) {
+                                            let tmp = intval(tmp["s"]);
+                                            
                                             // no style index means 0, it seems
-                                            cell->setXfIndex(isset(styles[intval(tmp["s"])]) ? intval(tmp["s"]) : 0);
+                                            if (isset(styles[tmp])) {
+                                                cell->setXfIndex(tmp);
+                                            } else {
+                                                cell->setXfIndex(0);
+                                            }
                                         }
                                     }
                                 }
@@ -873,7 +888,7 @@ class Excel2007 extends Abstrac implements IReader
                             
                             // @TODO add code from lines 792 - 1553
                             
-                            excel->addSheet(docSheet, eleSheet->attributes()->sheetId);
+                            excel->addSheet(docSheet);
                         }
                     }
                     

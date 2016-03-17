@@ -29,7 +29,7 @@ class Worksheet implements IComparable
     /**
      * Cacheable collection of cells
      *
-     * @var \ZExcel\CachedObjectStorage_xxx
+     * @var \ZExcel\CachedObjectStorage\xxx
      */
     private cellCollection = null;
 
@@ -356,7 +356,7 @@ class Worksheet implements IComparable
      */
     public function disconnectCells()
     {
-        if ( this->cellCollection !== null){
+        if (this->cellCollection !== null){
             this->cellCollection->unsetWorksheetCells();
             let this->cellCollection = null;
         }
@@ -378,7 +378,7 @@ class Worksheet implements IComparable
    /**
      * Return the cache controller for the cell collection
      *
-     * @return \ZExcel\CachedObjectStorage_xxx
+     * @return \ZExcel\CachedObjectStorage\ICache
      */
     public function getCellCacheController()
     {
@@ -468,6 +468,7 @@ class Worksheet implements IComparable
             // Re-order cell collection
             return this->sortCellCollection();
         }
+        
         if (this->cellCollection !== null) {
             return this->cellCollection->getCellList();
         }
@@ -1198,7 +1199,7 @@ class Worksheet implements IComparable
         if (this->cellCollection->isDataSet(strtoupper(pCoordinate))) {
             return this->cellCollection->getCacheData(pCoordinate);
         }
-
+        
         // Worksheet reference?
         if (strpos(pCoordinate, "!") !== false) {
             let worksheetReference = \ZExcel\Worksheet::extractSheetTitle(pCoordinate, true);

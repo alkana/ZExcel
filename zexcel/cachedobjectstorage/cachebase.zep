@@ -101,7 +101,7 @@ abstract class CacheBase
     
     public function addCacheData(pCoord, <\ZExcel\Cell> cell)
     {
-        // Implemented in childs
+        throw new \Exception("Can't be implemented in the abstract class");
     }
 
     /**
