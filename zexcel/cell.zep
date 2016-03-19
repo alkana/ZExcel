@@ -286,8 +286,10 @@ class Cell
             }
 
             return result;
-        } elseif (is_object(this->value) && this->value instanceof \ZExcel\RichText) {
-            return this->value->getPlainText();
+        } else {
+            if (is_object(this->value) && this->value instanceof \ZExcel\RichText) {
+                return this->value->getPlainText();
+            }
         }
 
         return this->value;
@@ -584,10 +586,14 @@ class Cell
         
         if (preg_match("/^([$]?[A-Z]{1,3})([$]?\d{1,7})$/", pCoordinateString, matches)) {
             return [matches[1],matches[2]];
-        } elseif ((strpos(pCoordinateString,":") !== false) || (strpos(pCoordinateString,",") !== false)) {
-            throw new \ZExcel\Exception("Cell coordinate string can not be a range of cells");
-        } elseif (pCoordinateString == "") {
-            throw new \ZExcel\Exception("Cell coordinate can not be zero-length string");
+        } else {
+            if ((strpos(pCoordinateString,":") !== false) || (strpos(pCoordinateString,",") !== false)) {
+                throw new \ZExcel\Exception("Cell coordinate string can not be a range of cells");
+            } else {
+                if (pCoordinateString == "") {
+                    throw new \ZExcel\Exception("Cell coordinate can not be zero-length string");
+                }
+            }
         }
 
         throw new \ZExcel\Exception("Invalid cell coordinate ".pCoordinateString);
@@ -624,8 +630,10 @@ class Cell
             // Create absolute coordinate
             if (ctype_digit(pCoordinateString)) {
                 return worksheet . "$" . pCoordinateString;
-            } elseif (ctype_alpha(pCoordinateString)) {
-                return worksheet . "$" . strtoupper(pCoordinateString);
+            } else {
+                if (ctype_alpha(pCoordinateString)) {
+                    return worksheet . "$" . strtoupper(pCoordinateString);
+                }
             }
             
             return worksheet . self::absoluteCoordinate(pCoordinateString);
@@ -841,12 +849,16 @@ class Cell
             if (len < 2) {
                 let self::indexCache[pString] = self::columnLookup[pString];
                 return self::indexCache[pString];
-            } elseif (len < 3) {
-                let self::indexCache[pString] = self::columnLookup[substr(pString, 0, 1)] * 26 + self::columnLookup[substr(pString, 1, 1)];
-                return self::indexCache[pString];
-            } elseif (len < 4) {
-                let self::indexCache[pString] = self::columnLookup[substr(pString, 0, 1)] * 676 + self::columnLookup[substr(pString, 1, 1)] * 26 + self::columnLookup[substr(pString, 2, 1)];
-                return self::indexCache[pString];
+            } else {
+                if (len < 3) {
+                    let self::indexCache[pString] = self::columnLookup[substr(pString, 0, 1)] * 26 + self::columnLookup[substr(pString, 1, 1)];
+                    return self::indexCache[pString];
+                } else {
+                    if (len < 4) {
+                        let self::indexCache[pString] = self::columnLookup[substr(pString, 0, 1)] * 676 + self::columnLookup[substr(pString, 1, 1)] * 26 + self::columnLookup[substr(pString, 2, 1)];
+                        return self::indexCache[pString];
+                    }
+                }
             }
         }
         
@@ -865,10 +877,12 @@ class Cell
             // Determine column string
             if (pColumnIndex < 26) {
                 let self::indexCache[pColumnIndex] = chr(65 + pColumnIndex);
-            } elseif (pColumnIndex < 702) {
-                let self::indexCache[pColumnIndex] = chr(64 + (pColumnIndex / 26)) . chr(65 + pColumnIndex % 26);
             } else {
-                let self::indexCache[pColumnIndex] = chr(64 + ((pColumnIndex - 26) / 676)) . chr(65 + (((pColumnIndex - 26) % 676) / 26)) . chr(65 + pColumnIndex % 26);
+                if (pColumnIndex < 702) {
+                    let self::indexCache[pColumnIndex] = chr(64 + (pColumnIndex / 26)) . chr(65 + pColumnIndex % 26);
+                } else {
+                    let self::indexCache[pColumnIndex] = chr(64 + ((pColumnIndex - 26) / 676)) . chr(65 + (((pColumnIndex - 26) % 676) / 26)) . chr(65 + pColumnIndex % 26);
+                }
             }
         }
         
@@ -967,12 +981,16 @@ class Cell
     {
         if (a->getRow() < b->getRow()) {
             return -1;
-        } elseif (a->getRow() > b->getRow()) {
-            return 1;
-        } elseif (self::columnIndexFromString(a->getColumn()) < self::columnIndexFromString(b->getColumn())) {
-            return -1;
         } else {
-            return 1;
+            if (a->getRow() > b->getRow()) {
+                return 1;
+            } else {
+                if (self::columnIndexFromString(a->getColumn()) < self::columnIndexFromString(b->getColumn())) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
         }
     }
 

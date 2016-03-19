@@ -492,8 +492,10 @@ class Stringg
 
         if (from == "UTF-16LE"){
             return self::utf16_decode(value, false);
-        } elseif (from == "UTF-16BE"){
-            return self::utf16_decode(value);
+        } else {
+            if (from == "UTF-16BE"){
+                return self::utf16_decode(value);
+            }
         }
         
         // else, no conversion
@@ -526,11 +528,13 @@ class Stringg
         let c0 = ord(substr(str, 0, 1));
         let c1 = ord(substr(str, 1, 1));
         
-        if( c0 == 0xfe && c1 == 0xff ) {
+        if(c0 == 0xfe && c1 == 0xff) {
             let str = substr(str,2);
-        } elseif( c0 == 0xff && c1 == 0xfe ) {
-            let str = substr(str,2);
-            let bom_be = false;
+        } else {
+            if(c0 == 0xff && c1 == 0xfe) {
+                let str = substr(str,2);
+                let bom_be = false;
+            }
         }
         
         let len = strlen(str);

@@ -174,10 +174,14 @@ class Statistical
         
         if (x <= 0.0) {
             return 0.0;
-        } elseif (x >= 1.0) {
-            return 1.0;
-        } elseif ((p <= 0.0) || (q <= 0.0) || ((p + q) > floatval(self::LOG_GAMMA_X_MAX_VALUE))) {
-            return 0.0;
+        } else {
+            if (x >= 1.0) {
+                return 1.0;
+            } else {
+                if ((p <= 0.0) || (q <= 0.0) || ((p + q) > floatval(self::LOG_GAMMA_X_MAX_VALUE))) {
+                    return 0.0;
+                }
+            }
         }
         
         let beta_gam = exp((0 - self::logBeta(p, q)) + p * log(x) + q * log(1.0 - x));
@@ -333,74 +337,80 @@ class Statistical
         if (y > 0.0 && y <= floatval(self::LOG_GAMMA_X_MAX_VALUE)) {
             if (y <= floatval(self::EPS)) {
                 let res = -log(y);
-            } elseif (y <= 1.5) {
-                // ---------------------
-                //    floatval(self::EPS) .LT. X .LE. 1.5
-                // ---------------------
-                if (y < self::pnt68) {
-                    let corr = -log(y);
-                    let xm1 = y;
-                } else {
-                    let corr = 0.0;
-                    let xm1 = y - 1.0;
-                }
-                
-                if (y <= 0.5 || y >= self::pnt68) {
-                    let xden = 1.0;
-                    let xnum = 0.0;
-                    for i in range(1, 7) {
-                        let xnum = xnum * xm1 + self::lg_p1[i];
-                        let xden = xden * xm1 + self::lg_q1[i];
-                    }
-                    let res = corr + xm1 * (self::lg_d1 + xm1 * (xnum / xden));
-                } else {
-                    let xm2 = y - 1.0;
-                    let xden = 1.0;
-                    let xnum = 0.0;
-                    for i in range(1, 7) {
-                        let xnum = xnum * xm2 + self::lg_p2[i];
-                        let xden = xden * xm2 + self::lg_q2[i];
-                    }
-                    let res = corr + xm2 * (self::lg_d2 + xm2 * (xnum / xden));
-                }
-            } elseif (y <= 4.0) {
-                // ---------------------
-                //    1.5 .LT. X .LE. 4.0
-                // ---------------------
-                let xm2 = y - 2.0;
-                let xden = 1.0;
-                let xnum = 0.0;
-                for i in range(1, 7) {
-                    let xnum = xnum * xm2 + self::lg_p2[i];
-                    let xden = xden * xm2 + self::lg_q2[i];
-                }
-                let res = xm2 * (self::lg_d2 + xm2 * (xnum / xden));
-            } elseif (y <= 12.0) {
-                // ----------------------
-                //    4.0 .LT. X .LE. 12.0
-                // ----------------------
-                let xm4 = y - 4.0;
-                let xden = -1.0;
-                let xnum = 0.0;
-                for i in range(1, 7) {
-                    let xnum = xnum * xm4 +  self::lg_p4[i];
-                    let xden = xden * xm4 + self::lg_q4[i];
-                }
-                let res = self::lg_d4 + xm4 * (xnum / xden);
             } else {
-                // ---------------------------------
-                //    Evaluate for argument .GE. 12.0
-                // ---------------------------------
-                let res = 0.0;
-                if (y <= floatval(self::lg_frtbig)) {
-                    let res =   floatval(self::lg_c[6]);
-                    let ysq = y * y;
-                    for i in range(1, 5) {
-                        let res = res / ysq +   floatval(self::lg_c[i]);
+                if (y <= 1.5) {
+                    // ---------------------
+                    //    floatval(self::EPS) .LT. X .LE. 1.5
+                    // ---------------------
+                    if (y < self::pnt68) {
+                        let corr = -log(y);
+                        let xm1 = y;
+                    } else {
+                        let corr = 0.0;
+                        let xm1 = y - 1.0;
                     }
-                    let res = res / y;
-                    let corr = log(y);
-                    let res = res + (y * (corr - 1.0));
+                    
+                    if (y <= 0.5 || y >= self::pnt68) {
+                        let xden = 1.0;
+                        let xnum = 0.0;
+                        for i in range(1, 7) {
+                            let xnum = xnum * xm1 + self::lg_p1[i];
+                            let xden = xden * xm1 + self::lg_q1[i];
+                        }
+                        let res = corr + xm1 * (self::lg_d1 + xm1 * (xnum / xden));
+                    } else {
+                        let xm2 = y - 1.0;
+                        let xden = 1.0;
+                        let xnum = 0.0;
+                        for i in range(1, 7) {
+                            let xnum = xnum * xm2 + self::lg_p2[i];
+                            let xden = xden * xm2 + self::lg_q2[i];
+                        }
+                        let res = corr + xm2 * (self::lg_d2 + xm2 * (xnum / xden));
+                    }
+                } else {
+                    if (y <= 4.0) {
+                        // ---------------------
+                        //    1.5 .LT. X .LE. 4.0
+                        // ---------------------
+                        let xm2 = y - 2.0;
+                        let xden = 1.0;
+                        let xnum = 0.0;
+                        for i in range(1, 7) {
+                            let xnum = xnum * xm2 + self::lg_p2[i];
+                            let xden = xden * xm2 + self::lg_q2[i];
+                        }
+                        let res = xm2 * (self::lg_d2 + xm2 * (xnum / xden));
+                    } else {
+                        if (y <= 12.0) {
+                            // ----------------------
+                            //    4.0 .LT. X .LE. 12.0
+                            // ----------------------
+                            let xm4 = y - 4.0;
+                            let xden = -1.0;
+                            let xnum = 0.0;
+                            for i in range(1, 7) {
+                                let xnum = xnum * xm4 +  self::lg_p4[i];
+                                let xden = xden * xm4 + self::lg_q4[i];
+                            }
+                            let res = self::lg_d4 + xm4 * (xnum / xden);
+                        } else {
+                            // ---------------------------------
+                            //    Evaluate for argument .GE. 12.0
+                            // ---------------------------------
+                            let res = 0.0;
+                            if (y <= floatval(self::lg_frtbig)) {
+                                let res =   floatval(self::lg_c[6]);
+                                let ysq = y * y;
+                                for i in range(1, 5) {
+                                    let res = res / ysq +   floatval(self::lg_c[i]);
+                                }
+                                let res = res / y;
+                                let corr = log(y);
+                                let res = res + (y * (corr - 1.0));
+                            }
+                        }
+                    }
                 }
             }
         } else {
@@ -488,37 +498,37 @@ class Statistical
     {
         var p, q, r, p_low, p_high;
         array a, b, c, d;
-	    
-	    //    Coefficients in rational approximations
-	    let a = [
-	        1: -39.69683028665376,
-	        2: 220.9460984245205,
-	        3: -275.9285104469687,
-	        4: 138.3577518672690,
-	        5: -30.66479806614716,
-	        6: 2.506628277459239
-	    ];
-	    let b = [
-	        1: -54.47609879822406,
-	        2: 161.5858368580409,
-	        3: -155.6989798598866,
-	        4: 66.80131188771972,
-	        5: -13.28068155288572
-	    ];
-	    let c = [
-	        1: -0.007784894002430293,
-	        2: -0.3223964580411365,
-	        3: -2.400758277161838,
-	        4: -2.549732539343734,
-	        5: 4.374664141464968,
-	        6: 2.938163982698783
-	    ];
-	    let d = [
-	        1: 0.007784695709041462,
-	        2: 0.3224671290700398,
-	        3: 2.445134137142996,
-	        4: 3.754408661907416
-	    ];
+        
+        //    Coefficients in rational approximations
+        let a = [
+            1: -39.69683028665376,
+            2: 220.9460984245205,
+            3: -275.9285104469687,
+            4: 138.3577518672690,
+            5: -30.66479806614716,
+            6: 2.506628277459239
+        ];
+        let b = [
+            1: -54.47609879822406,
+            2: 161.5858368580409,
+            3: -155.6989798598866,
+            4: 66.80131188771972,
+            5: -13.28068155288572
+        ];
+        let c = [
+            1: -0.007784894002430293,
+            2: -0.3223964580411365,
+            3: -2.400758277161838,
+            4: -2.549732539343734,
+            5: 4.374664141464968,
+            6: 2.938163982698783
+        ];
+        let d = [
+            1: 0.007784695709041462,
+            2: 0.3224671290700398,
+            3: 2.445134137142996,
+            4: 3.754408661907416
+        ];
     
         //    Inverse ncdf approximation by Peter J. Acklam, implementation adapted to
         //    PHP by Michael Nickerson, using Dr. Thomas Ziegler's C implementation as
@@ -541,18 +551,23 @@ class Statistical
             let q = sqrt(-2 * log(p));
             return (((((c[1] * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) * q + c[6]) /
                     ((((d[1] * q + d[2]) * q + d[3]) * q + d[4]) * q + 1);
-        } elseif (p_low <= p && p <= p_high) {
-            //    Rational approximation for central region.
-            let q = p - 0.5;
-            let r = q * q;
-            return (((((a[1] * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * r + a[6]) * q /
-                   (((((b[1] * r + b[2]) * r + b[3]) * r + b[4]) * r + b[5]) * r + 1);
-        } elseif (p_high < p && p < 1) {
-            //    Rational approximation for upper region.
-            let q = sqrt(-2 * log(1 - p));
-            return -(((((c[1] * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) * q + c[6]) /
-                     ((((d[1] * q + d[2]) * q + d[3]) * q + d[4]) * q + 1);
+        } else {
+            if (p_low <= p && p <= p_high) {
+                //    Rational approximation for central region.
+                let q = p - 0.5;
+                let r = q * q;
+                return (((((a[1] * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * r + a[6]) * q /
+                       (((((b[1] * r + b[2]) * r + b[3]) * r + b[4]) * r + b[5]) * r + 1);
+            } else {
+                if (p_high < p && p < 1) {
+                    //    Rational approximation for upper region.
+                    let q = sqrt(-2 * log(1 - p));
+                    return -(((((c[1] * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) * q + c[6]) /
+                             ((((d[1] * q + d[2]) * q + d[3]) * q + d[4]) * q + 1);
+                }
+            }
         }
+        
         //    If 0 < p < 1, return a null value
         return \ZExcel\Calculation\Functions::NuLLL();
     }
@@ -827,14 +842,18 @@ class Statistical
                 if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) && (arg != "")))) {
                     if (is_bool(arg)) {
                         let arg = (int) arg;
-                    } elseif (is_string(arg)) {
-                        let arg = 0;
+                    } else {
+                        if (is_string(arg)) {
+                            let arg = 0;
+                        }
                     }
+                    
                     if (is_null(returnValue)) {
                         let returnValue = arg;
                     } else {
                         let returnValue = returnValue + arg;
                     }
+                    
                     let aCount = aCount + 1;
                 }
             }
@@ -986,10 +1005,12 @@ class Statistical
                 let result = self::BeTADIST(guess, alpha, beta);
                 if ((result == probability) || (result == 0)) {
                     let b = a;
-                } elseif (result > probability) {
-                    let b = guess;
                 } else {
-                    let a = guess;
+                    if (result > probability) {
+                        let b = guess;
+                    } else {
+                        let a = guess;
+                    }
                 }
             }
             if (i == \ZExcel\Calculation\Functions::MAX_ITERATIONS) {
@@ -1114,13 +1135,17 @@ class Statistical
                 // Apply Newton-Raphson step
                 let result = self::CHiDIST(x, degrees);
                 let error = result - probability;
+                
                 if (error == 0.0) {
                     let dx = 0;
-                } elseif (error < 0.0) {
-                    let xLo = x;
                 } else {
-                    let xHi = x;
+                    if (error < 0.0) {
+                        let xLo = x;
+                    } else {
+                        let xHi = x;
+                    }
                 }
+                
                 // Avoid division by zero
                 if (result != 0.0) {
                     let dx = error / result;
@@ -1208,8 +1233,10 @@ class Statistical
 
         if ((yValueCount == 0) || (yValueCount != xValueCount)) {
             return \ZExcel\Calculation\Functions::Na();
-        } elseif (yValueCount == 1) {
-            return \ZExcel\Calculation\Functions::DiV0();
+        } else {
+            if (yValueCount == 1) {
+                return \ZExcel\Calculation\Functions::DiV0();
+            }
         }
 
         let bestFitLinear = \ZExcel\Shared\TrendClass::calculate(\ZExcel\Shared\TrendClass::TREND_LINEAR, yValues, xValues);
@@ -1380,8 +1407,10 @@ class Statistical
 
         if ((yValueCount == 0) || (yValueCount != xValueCount)) {
             return \ZExcel\Calculation\Functions::Na();
-        } elseif (yValueCount == 1) {
-            return \ZExcel\Calculation\Functions::DiV0();
+        } else {
+            if (yValueCount == 1) {
+                return \ZExcel\Calculation\Functions::DiV0();
+            }
         }
 
         let bestFitLinear = \ZExcel\Shared\TrendClass::calculate(\ZExcel\Shared\TrendClass::TREND_LINEAR, yValues, xValues);
@@ -1423,24 +1452,32 @@ class Statistical
         if ((is_numeric(trials)) && (is_numeric(probability)) && (is_numeric(alpha))) {
             if (trials < 0) {
                 return \ZExcel\Calculation\Functions::NaN();
-            } elseif ((probability < 0) || (probability > 1)) {
-                return \ZExcel\Calculation\Functions::NaN();
-            } elseif ((alpha < 0) || (alpha > 1)) {
-                return \ZExcel\Calculation\Functions::NaN();
-            } elseif (alpha <= 0.5) {
-                let t = sqrt(log(1 / (alpha * alpha)));
-                let trialsApprox = 0 - (t + (2.515517 + 0.802853 * t + 0.010328 * t * t) / (1 + 1.432788 * t + 0.189269 * t * t + 0.001308 * t * t * t));
             } else {
-                let t = sqrt(log(1 / pow(1 - alpha, 2)));
-                let trialsApprox = t - (2.515517 + 0.802853 * t + 0.010328 * t * t) / (1 + 1.432788 * t + 0.189269 * t * t + 0.001308 * t * t * t);
+                if ((probability < 0) || (probability > 1)) {
+                    return \ZExcel\Calculation\Functions::NaN();
+                } else {
+                    if ((alpha < 0) || (alpha > 1)) {
+                        return \ZExcel\Calculation\Functions::NaN();
+                    } else {
+                        if (alpha <= 0.5) {
+                            let t = sqrt(log(1 / (alpha * alpha)));
+                            let trialsApprox = 0 - (t + (2.515517 + 0.802853 * t + 0.010328 * t * t) / (1 + 1.432788 * t + 0.189269 * t * t + 0.001308 * t * t * t));
+                        } else {
+                            let t = sqrt(log(1 / pow(1 - alpha, 2)));
+                            let trialsApprox = t - (2.515517 + 0.802853 * t + 0.010328 * t * t) / (1 + 1.432788 * t + 0.189269 * t * t + 0.001308 * t * t * t);
+                        }
+                    }
+                }
             }
             
             let Guess = floor(trials * probability + trialsApprox * sqrt(trials * probability * (1 - probability)));
             
             if (Guess < 0) {
                 let Guess = 0;
-            } elseif (Guess > trials) {
-                let Guess = trials;
+            } else {
+                if (Guess > trials) {
+                    let Guess = trials;
+                }
             }
 
             let TotalUnscaledProbability = 0.0;
@@ -1513,18 +1550,22 @@ class Statistical
             while (true) {
                 if ((CumPGuessMinus1 < alpha) && (CumPGuess >= alpha)) {
                     return Guess;
-                } elseif ((CumPGuessMinus1 < alpha) && (CumPGuess < alpha)) {
-                    let PGuessPlus1 = PGuess * (trials - Guess) * probability / Guess / (1 - probability);
-                    let CumPGuessMinus1 = CumPGuess;
-                    let CumPGuess = CumPGuess + PGuessPlus1;
-                    let PGuess = PGuessPlus1;
-                    let Guess = Guess + 1;
-                } elseif ((CumPGuessMinus1 >= alpha) && (CumPGuess >= alpha)) {
-                    let PGuessMinus1 = PGuess * Guess * (1 - probability) / (trials - Guess + 1) / probability;
-                    let CumPGuess = CumPGuessMinus1;
-                    let CumPGuessMinus1 = CumPGuessMinus1 - PGuess;
-                    let PGuess = PGuessMinus1;
-                    let Guess = Guess - 1;
+                } else {
+                    if ((CumPGuessMinus1 < alpha) && (CumPGuess < alpha)) {
+                        let PGuessPlus1 = PGuess * (trials - Guess) * probability / Guess / (1 - probability);
+                        let CumPGuessMinus1 = CumPGuess;
+                        let CumPGuess = CumPGuess + PGuessPlus1;
+                        let PGuess = PGuessPlus1;
+                        let Guess = Guess + 1;
+                    } else {
+                        if ((CumPGuessMinus1 >= alpha) && (CumPGuess >= alpha)) {
+                            let PGuessMinus1 = PGuess * Guess * (1 - probability) / (trials - Guess + 1) / probability;
+                            let CumPGuess = CumPGuessMinus1;
+                            let CumPGuessMinus1 = CumPGuessMinus1 - PGuess;
+                            let PGuess = PGuessMinus1;
+                            let Guess = Guess - 1;
+                        }
+                    }
                 }
             }
         }
@@ -1687,8 +1728,10 @@ class Statistical
         
         if (!is_numeric(xValue)) {
             return \ZExcel\Calculation\Functions::VaLUE();
-        } elseif (!self::checkTrendArrays()) {
-            return \ZExcel\Calculation\Functions::VaLUE();
+        } else {
+            if (!self::checkTrendArrays()) {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
         }
         
         let yValues = self::array1;
@@ -1699,8 +1742,10 @@ class Statistical
 
         if ((yValueCount == 0) || (yValueCount != xValueCount)) {
             return \ZExcel\Calculation\Functions::Na();
-        } elseif (yValueCount == 1) {
-            return \ZExcel\Calculation\Functions::DiV0();
+        } else {
+            if (yValueCount == 1) {
+                return \ZExcel\Calculation\Functions::DiV0();
+            }
         }
 
         let bestFitLinear = \ZExcel\Shared\TrendClass::calculate(\ZExcel\Shared\TrendClass::TREND_LINEAR, yValues, xValues);
@@ -2023,8 +2068,10 @@ class Statistical
 
         if ((yValueCount == 0) || (yValueCount != xValueCount)) {
             return \ZExcel\Calculation\Functions::Na();
-        } elseif (yValueCount == 1) {
-            return \ZExcel\Calculation\Functions::DiV0();
+        } else {
+            if (yValueCount == 1) {
+                return \ZExcel\Calculation\Functions::DiV0();
+            }
         }
 
         let bestFitLinear = \ZExcel\Shared\TrendClass::calculate(\ZExcel\Shared\TrendClass::TREND_LINEAR, yValues, xValues);
@@ -2165,8 +2212,10 @@ class Statistical
 
         if ((yValueCount == 0) || (yValueCount != xValueCount)) {
             return \ZExcel\Calculation\Functions::Na();
-        } elseif (yValueCount == 1) {
-            return 0;
+        } else {
+            if (yValueCount == 1) {
+                return 0;
+            }
         }
 
         let bestFitLinear = \ZExcel\Shared\TrendClass::calculate(\ZExcel\Shared\TrendClass::TREND_LINEAR, yValues, xValues, constt);
@@ -2242,8 +2291,10 @@ class Statistical
 
         if ((yValueCount == 0) || (yValueCount != xValueCount)) {
             return \ZExcel\Calculation\Functions::Na();
-        } elseif (yValueCount == 1) {
-            return 1;
+        } else {
+            if (yValueCount == 1) {
+                return 1;
+            }
         }
 
         let bestFitExponential = \ZExcel\Shared\TrendClass::calculate(\ZExcel\Shared\TrendClass::TREND_EXPONENTIAL, yValues, xValues, constt);
@@ -2392,9 +2443,12 @@ class Statistical
             if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) && (arg != "")))) {
                 if (is_bool(arg)) {
                     let arg = (int) arg;
-                } elseif (is_string(arg)) {
-                    let arg = 0;
+                } else {
+                    if (is_string(arg)) {
+                        let arg = 0;
+                    }
                 }
+                
                 if ((is_null(returnValue)) || (arg > returnValue)) {
                     let returnValue = arg;
                 }
@@ -2563,9 +2617,12 @@ class Statistical
             if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) && (arg != "")))) {
                 if (is_bool(arg)) {
                     let arg = (int) arg;
-                } elseif (is_string(arg)) {
-                    let arg = 0;
+                } else {
+                    if (is_string(arg)) {
+                        let arg = 0;
+                    }
                 }
+                
                 if ((is_null(returnValue)) || (arg < returnValue)) {
                     let returnValue = arg;
                 }
@@ -2729,14 +2786,18 @@ class Statistical
         if ((is_numeric(failures)) && (is_numeric(successes)) && (is_numeric(probability))) {
             if ((failures < 0) || (successes < 1)) {
                 return \ZExcel\Calculation\Functions::NaN();
-            } elseif ((probability < 0) || (probability > 1)) {
-                return \ZExcel\Calculation\Functions::NaN();
+            } else {
+                if ((probability < 0) || (probability > 1)) {
+                    return \ZExcel\Calculation\Functions::NaN();
+                }
             }
+            
             if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_GNUMERIC) {
                 if ((failures + successes - 1) <= 0) {
                     return \ZExcel\Calculation\Functions::NaN();
                 }
             }
+            
             return (\ZExcel\Calculation\MathTrig::CoMBIN(failures + successes - 1, successes - 1)) * (pow(probability, successes)) * (pow(1 - probability, failures));
         }
         return \ZExcel\Calculation\Functions::VaLUE();
@@ -3131,8 +3192,10 @@ class Statistical
 
         if ((yValueCount == 0) || (yValueCount != xValueCount)) {
             return \ZExcel\Calculation\Functions::Na();
-        } elseif (yValueCount == 1) {
-            return \ZExcel\Calculation\Functions::DiV0();
+        } else {
+            if (yValueCount == 1) {
+                return \ZExcel\Calculation\Functions::DiV0();
+            }
         }
 
         let bestFitLinear = \ZExcel\Shared\TrendClass::calculate(\ZExcel\Shared\TrendClass::TREND_LINEAR, yValues, xValues);
@@ -3212,8 +3275,10 @@ class Statistical
 
         if ((yValueCount == 0) || (yValueCount != xValueCount)) {
             return \ZExcel\Calculation\Functions::Na();
-        } elseif (yValueCount == 1) {
-            return \ZExcel\Calculation\Functions::DiV0();
+        } else {
+            if (yValueCount == 1) {
+                return \ZExcel\Calculation\Functions::DiV0();
+            }
         }
 
         let bestFitLinear = \ZExcel\Shared\TrendClass::calculate(\ZExcel\Shared\TrendClass::TREND_LINEAR, yValues, xValues);
@@ -3376,14 +3441,18 @@ class Statistical
                     if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) & (arg != "")))) {
                         if (is_bool(arg)) {
                             let arg = (int) arg;
-                        } elseif (is_string(arg)) {
-                            let arg = 0;
+                        } else {
+                            if (is_string(arg)) {
+                                let arg = 0;
+                            }
                         }
+                        
                         if (is_null(returnValue)) {
                             let returnValue = pow((arg - aMean), 2);
                         } else {
                             let returnValue = returnValue + pow((arg - aMean), 2);
                         }
+                        
                         let aCount = aCount + 1;
                     }
                 }
@@ -3475,14 +3544,18 @@ class Statistical
                     if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) & (arg != "")))) {
                         if (is_bool(arg)) {
                             let arg = (int) arg;
-                        } elseif (is_string(arg)) {
-                            let arg = 0;
+                        } else {
+                            if (is_string(arg)) {
+                                let arg = 0;
+                            }
                         }
+                        
                         if (is_null(returnValue)) {
                             let returnValue = pow((arg - aMean), 2);
                         } else {
                             let returnValue = returnValue + pow((arg - aMean), 2);
                         }
+                        
                         let aCount = aCount + 1;
                     }
                 }
@@ -3525,10 +3598,12 @@ class Statistical
 
         if ((yValueCount == 0) || (yValueCount != xValueCount)) {
             return \ZExcel\Calculation\Functions::Na();
-        } elseif (yValueCount == 1) {
-            return \ZExcel\Calculation\Functions::DiV0();
+        } else {
+            if (yValueCount == 1) {
+                return \ZExcel\Calculation\Functions::DiV0();
+            }
         }
-
+        
         let bestFitLinear = \ZExcel\Shared\TrendClass::calculate(\ZExcel\Shared\TrendClass::TREND_LINEAR, yValues, xValues);
         
         return bestFitLinear->getStdevOfResiduals();
@@ -3638,13 +3713,17 @@ class Statistical
                 // Apply Newton-Raphson step
                 let result = call_user_func("self::TDiST", x, degrees, 2);
                 let error = result - probability;
+                
                 if (error == 0.0) {
                     let dx = 0;
-                } elseif (error < 0.0) {
-                    let xLo = x;
                 } else {
-                    let xHi = x;
+                    if (error < 0.0) {
+                        let xLo = x;
+                    } else {
+                        let xHi = x;
+                    }
                 }
+                
                 // Avoid division by zero
                 if (result != 0.0) {
                     let dx = error / result;
@@ -3840,19 +3919,24 @@ class Statistical
             if ((is_string(arg)) &&
                 (\ZExcel\Calculation\Functions::isValue(k))) {
                 return \ZExcel\Calculation\Functions::VaLUE();
-            } elseif ((is_string(arg)) &&
-                (!\ZExcel\Calculation\Functions::isMatrixValue(k))) {
             } else {
-                // Is it a numeric value?
-                if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) & (arg != "")))) {
-                    if (is_bool(arg)) {
-                        let arg = (int) arg;
-                    } elseif (is_string(arg)) {
-                        let arg = 0;
+                if ((is_string(arg)) &&
+                    (!\ZExcel\Calculation\Functions::isMatrixValue(k))) {
+                } else {
+                    // Is it a numeric value?
+                    if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) & (arg != "")))) {
+                        if (is_bool(arg)) {
+                            let arg = (int) arg;
+                        } else {
+                            if (is_string(arg)) {
+                                let arg = 0;
+                            }
+                        }
+                        
+                        let summerA = summerA + (arg * arg);
+                        let summerB = summerB + arg;
+                        let aCount = aCount + 1;
                     }
-                    let summerA = summerA + (arg * arg);
-                    let summerB = summerB + arg;
-                    let aCount = aCount + 1;
                 }
             }
         }
@@ -3943,19 +4027,22 @@ class Statistical
             if ((is_string(arg)) &&
                 (\ZExcel\Calculation\Functions::isValue(k))) {
                 return \ZExcel\Calculation\Functions::VaLUE();
-            } elseif ((is_string(arg)) &&
-                (!\ZExcel\Calculation\Functions::isMatrixValue(k))) {
             } else {
-                // Is it a numeric value?
-                if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) & (arg != "")))) {
-                    if (is_bool(arg)) {
-                        let arg = (int) arg;
-                    } elseif (is_string(arg)) {
-                        let arg = 0;
+                if (!is_string(arg) || \ZExcel\Calculation\Functions::isMatrixValue(k)) {
+                    // Is it a numeric value?
+                    if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) & (arg != "")))) {
+                        if (is_bool(arg)) {
+                            let arg = (int) arg;
+                        } else {
+                            if (is_string(arg)) {
+                                let arg = 0;
+                            }
+                        }
+                        
+                        let summerA = summerA + (arg * arg);
+                        let summerB = summerB + arg;
+                        let aCount = aCount + 1;
                     }
-                    let summerA = summerA + (arg * arg);
-                    let summerB = summerB + arg;
-                    let aCount = aCount + 1;
                 }
             }
         }

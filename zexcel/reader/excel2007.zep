@@ -179,8 +179,10 @@ class Excel2007 extends Abstrac implements IReader
                                 let tmpInfo["totalRows"] = row;
                                 let tmpInfo["totalColumns"] = max(tmpInfo["totalColumns"], currCells);
                                 let currCells = 0;
-                            } elseif (xml->name == "c" && xml->nodeType == \XMLReader::ELEMENT) {
-                                let currCells = currCells + 1;
+                            } else {
+                                if (xml->name == "c" && xml->nodeType == \XMLReader::ELEMENT) {
+                                    let currCells = currCells + 1;
+                                }
                             }
                         }
                         
@@ -209,10 +211,12 @@ class Excel2007 extends Abstrac implements IReader
         
         if (value == "0") {
             return false;
-        } elseif (value == "1") {
-            return true;
         } else {
-            return (boolean) c->v;
+            if (value == "1") {
+                return true;
+            } else {
+                return (boolean) c->v;
+            }
         }
         
         return value;
@@ -368,9 +372,11 @@ class Excel2007 extends Abstrac implements IReader
                             if (isset(xmlColour->sysClr)) {
                                 let xmlColourData = xmlColour->sysClr->attributes();
                                 let themeColours[themePos] = xmlColourData["lastClr"];
-                            } elseif (isset(xmlColour->srgbClr)) {
-                                let xmlColourData = xmlColour->srgbClr->attributes();
-                                let themeColours[themePos] = xmlColourData["val"];
+                            } else {
+                                if (isset(xmlColour->srgbClr)) {
+                                    let xmlColourData = xmlColour->srgbClr->attributes();
+                                    let themeColours[themePos] = xmlColourData["val"];
+                                }
                             }
                         }
 
@@ -497,8 +503,10 @@ class Excel2007 extends Abstrac implements IReader
                         for val in iterator(xmlStrings) {
                             if (isset(val->t)) {
                                 let sharedStrings[] = \ZExcel\Shared\Stringg::ControlCharacterOOXML2PHP( (string) val->t );
-                            } elseif (isset(val->r)) {
-                                let sharedStrings[] = this->parseRichText(val);
+                            } else {
+                                if (isset(val->r)) {
+                                    let sharedStrings[] = this->parseRichText(val);
+                                }
                             }
                         }
                     }
@@ -846,10 +854,14 @@ class Excel2007 extends Abstrac implements IReader
                                         if (is_numeric(value) && cellDataType != "s") {
                                             if (value == (int) value) {
                                                 let value = (int) value;
-                                            } elseif (value == (float) value) {
-                                                let value = (float) value;
-                                            } elseif (value == (double)value) {
-                                                let value = (double) value;
+                                            } else {
+                                                if (value == (float) value) {
+                                                    let value = (float) value;
+                                                } else {
+                                                    if (value == (double)value) {
+                                                        let value = (double) value;
+                                                    }
+                                                }
                                             }
                                         }
                                         
@@ -927,21 +939,25 @@ class Excel2007 extends Abstrac implements IReader
         
         if (isset(color["rgb"])) {
             return (string) color["rgb"];
-        } elseif (isset(color["indexed"])) {
-            return \ZExcel\Style\Color::indexedColor(color["indexed"] - 7, background)->getARGB();
-        } elseif (isset(color["theme"])) {
-            if (self::theme !== null) {
-                let returnColour = self::theme->getColourByIndex((int) color["theme"]);
-                
-                if (isset(color["tint"])) {
-                    let tintAdjust = (float) color["tint"];
-                    let returnColour = \ZExcel\Style\Color::changeBrightness(returnColour, tintAdjust);
+        } else {
+            if (isset(color["indexed"])) {
+                return \ZExcel\Style\Color::indexedColor(color["indexed"] - 7, background)->getARGB();
+            } else {
+                if (isset(color["theme"])) {
+                    if (self::theme !== null) {
+                        let returnColour = self::theme->getColourByIndex((int) color["theme"]);
+                        
+                        if (isset(color["tint"])) {
+                            let tintAdjust = (float) color["tint"];
+                            let returnColour = \ZExcel\Style\Color::changeBrightness(returnColour, tintAdjust);
+                        }
+                        
+                        return "FF" . returnColour;
+                    }
                 }
-                
-                return "FF" . returnColour;
             }
         }
-
+        
         if (background) {
             return "FFFFFFFF";
         }
@@ -976,10 +992,12 @@ class Excel2007 extends Abstrac implements IReader
 
             if (isset(style->font->u) && !isset(style->font->u["val"])) {
                 docStyle->getFont()->setUnderline(\ZExcel\Style\Font::UNDERLINE_SINGLE);
-            } elseif (isset(style->font->u) && isset(style->font->u["val"])) {
-                docStyle->getFont()->setUnderline((string)style->font->u["val"]);
+            } else {
+                if (isset(style->font->u) && isset(style->font->u["val"])) {
+                    docStyle->getFont()->setUnderline((string)style->font->u["val"]);
+                }
             }
-
+            
             if (isset(style->font->vertAlign) && isset(style->font->vertAlign["val"])) {
                 let vertAlign = strtolower((string)style->font->vertAlign["val"]);
                 
@@ -1006,19 +1024,21 @@ class Excel2007 extends Abstrac implements IReader
                 gradientFill->registerXPathNamespace("sml", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
                 docStyle->getFill()->getStartColor()->setARGB(self::readColor(self::getArrayItem(gradientFill->xpath("sml:stop[@position=0]"))->color));
                 docStyle->getFill()->getEndColor()->setARGB(self::readColor(self::getArrayItem(gradientFill->xpath("sml:stop[@position=1]"))->color));
-            } elseif (style->fill->patternFill) {
-                let patternType = (string) style->fill->patternFill["patternType"] != "" ? (string)style->fill->patternFill["patternType"] : "solid";
-                
-                docStyle->getFill()->setFillType(patternType);
-                
-                if (style->fill->patternFill->fgColor) {
-                    docStyle->getFill()->getStartColor()->setARGB(self::readColor(style->fill->patternFill->fgColor, true));
-                } else {
-                    docStyle->getFill()->getStartColor()->setARGB("FF000000");
-                }
-                
-                if (style->fill->patternFill->bgColor) {
-                    docStyle->getFill()->getEndColor()->setARGB(self::readColor(style->fill->patternFill->bgColor, true));
+            } else {
+                if (style->fill->patternFill) {
+                    let patternType = (string) style->fill->patternFill["patternType"] != "" ? (string)style->fill->patternFill["patternType"] : "solid";
+                    
+                    docStyle->getFill()->setFillType(patternType);
+                    
+                    if (style->fill->patternFill->fgColor) {
+                        docStyle->getFill()->getStartColor()->setARGB(self::readColor(style->fill->patternFill->fgColor, true));
+                    } else {
+                        docStyle->getFill()->getStartColor()->setARGB("FF000000");
+                    }
+                    
+                    if (style->fill->patternFill->bgColor) {
+                        docStyle->getFill()->getEndColor()->setARGB(self::readColor(style->fill->patternFill->bgColor, true));
+                    }
                 }
             }
         }
@@ -1030,12 +1050,16 @@ class Excel2007 extends Abstrac implements IReader
             
             if (!diagonalUp && !diagonalDown) {
                 docStyle->getBorders()->setDiagonalDirection(\ZExcel\Style\Borders::DIAGONAL_NONE);
-            } elseif (diagonalUp && !diagonalDown) {
-                docStyle->getBorders()->setDiagonalDirection(\ZExcel\Style\Borders::DIAGONAL_UP);
-            } elseif (!diagonalUp && diagonalDown) {
-                docStyle->getBorders()->setDiagonalDirection(\ZExcel\Style\Borders::DIAGONAL_DOWN);
             } else {
-                docStyle->getBorders()->setDiagonalDirection(\ZExcel\Style\Borders::DIAGONAL_BOTH);
+                if (diagonalUp && !diagonalDown) {
+                    docStyle->getBorders()->setDiagonalDirection(\ZExcel\Style\Borders::DIAGONAL_UP);
+                } else {
+                    if (!diagonalUp && diagonalDown) {
+                        docStyle->getBorders()->setDiagonalDirection(\ZExcel\Style\Borders::DIAGONAL_DOWN);
+                    } else {
+                        docStyle->getBorders()->setDiagonalDirection(\ZExcel\Style\Borders::DIAGONAL_BOTH);
+                    }
+                }
             }
             
             self::readBorder(docStyle->getBorders()->getLeft(), style->border->left);
@@ -1054,10 +1078,12 @@ class Excel2007 extends Abstrac implements IReader
             
             if ((int)style->alignment["textRotation"] <= 90) {
                 let textRotation = (int) style->alignment["textRotation"];
-            } elseif ((int)style->alignment["textRotation"] > 90) {
-                let textRotation = 90 - (int)style->alignment["textRotation"];
+            } else {
+                if ((int)style->alignment["textRotation"] > 90) {
+                    let textRotation = 90 - (int)style->alignment["textRotation"];
+                }
             }
-
+            
             docStyle->getAlignment()->setTextRotation(intval(textRotation));
             docStyle->getAlignment()->setWrapText(self::booleann((string) style->alignment["wrapText"]));
             docStyle->getAlignment()->setShrinkToFit(self::booleann((string) style->alignment["shrinkToFit"]));
@@ -1153,8 +1179,10 @@ class Excel2007 extends Abstrac implements IReader
                         
                         if (isset(run->rPr->u) && !isset(run->rPr->u["val"])) {
                             objText->getFont()->setUnderline(\ZExcel\Style\Font::UNDERLINE_SINGLE);
-                        } elseif (isset(run->rPr->u) && isset(run->rPr->u["val"])) {
-                            objText->getFont()->setUnderline((string)run->rPr->u["val"]);
+                        } else {
+                            if (isset(run->rPr->u) && isset(run->rPr->u["val"])) {
+                                objText->getFont()->setUnderline((string)run->rPr->u["val"]);
+                            }
                         }
                         
                         if ((isset(run->rPr->strike["val"]) && self::booleann((string) run->rPr->strike["val"]))

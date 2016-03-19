@@ -27,8 +27,8 @@ class ReferenceHelper
 
     public static function cellSort(var a, var b)
     {
-    	var ac, ar, bc, br;
-    	
+        var ac, ar, bc, br;
+        
         sscanf(a,"%[A-Z]%d", ac, ar);
         sscanf(b,"%[A-Z]%d", bc, br);
 
@@ -41,8 +41,8 @@ class ReferenceHelper
 
     public static function cellReverseSort(var a, var b)
     {
-    	var ac, ar, bc, br;
-    	
+        var ac, ar, bc, br;
+        
         sscanf(a,"%[A-Z]%d", ac, ar);
         sscanf(b,"%[A-Z]%d", bc, br);
 
@@ -55,18 +55,20 @@ class ReferenceHelper
 
     private static function cellAddressInDeleteRange(var cellAddress, var beforeRow, var pNumRows, var beforeColumnIndex, var pNumCols)
     {
-    	var cellColumn, cellRow, cellColumnIndex, tmp;
-    	
-    	let tmp = \ZExcel\Cell::coordinateFromString(cellAddress);
-    	let cellColumn = tmp[0];
-    	let cellRow = tmp[1];
+        var cellColumn, cellRow, cellColumnIndex, tmp;
+        
+        let tmp = \ZExcel\Cell::coordinateFromString(cellAddress);
+        let cellColumn = tmp[0];
+        let cellRow = tmp[1];
         let cellColumnIndex = \ZExcel\Cell::columnIndexFromString(cellColumn);
         
         //    Is cell within the range of rows/columns if we're deleting
         if (pNumRows < 0 && (cellRow >= (beforeRow + pNumRows)) && (cellRow < beforeRow)) {
             return true;
-        } elseif (pNumCols < 0 && (cellColumnIndex >= (beforeColumnIndex + pNumCols)) && (cellColumnIndex < beforeColumnIndex)) {
-            return true;
+        } else {
+            if (pNumCols < 0 && (cellColumnIndex >= (beforeColumnIndex + pNumCols)) && (cellColumnIndex < beforeColumnIndex)) {
+                return true;
+            }
         }
         
         return false;

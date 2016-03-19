@@ -131,10 +131,12 @@ class ludeComposition
             for j in range(0, this->n - 1) {
                 if (i > j) {
                     let l[i][j] = this->lu[i][j];
-                } elseif (i == j) {
-                    let l[i][j] = 1.0;
                 } else {
-                    let l[i][j] = 0.0;
+                    if (i == j) {
+                        let l[i][j] = 1.0;
+                    } else {
+                        let l[i][j] = 0.0;
+                    }
                 }
             }
         }

@@ -4,7 +4,7 @@ use ZExcel\IComparable as ZIComparable;
 
 class Color extends Supervisor implements ZIComparable
 {
-	/* Colors */
+    /* Colors */
     const COLOR_BLACK      = "FF000000";
     const COLOR_WHITE      = "FFFFFFFF";
     const COLOR_RED        = "FFFF0000";
@@ -72,8 +72,8 @@ class Color extends Supervisor implements ZIComparable
     {
         var key;
         
-    	array output = [];
-    	
+        array output = [];
+        
         switch (this->parentPropertyName) {
             case "endColor":
                 let key = "endcolor";
@@ -97,8 +97,8 @@ class Color extends Supervisor implements ZIComparable
         if (is_array(pStyles)) {
             if (this->isSupervisor) {
                 this->getActiveSheet()
-                	->getStyle(this->getSelectedCells())
-                	->applyFromArray(this->getStyleArray(pStyles));
+                    ->getStyle(this->getSelectedCells())
+                    ->applyFromArray(this->getStyleArray(pStyles));
             } else {
                 if (array_key_exists("rgb", pStyles)) {
                     this->setRGB(pStyles["rgb"]);
@@ -133,8 +133,8 @@ class Color extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["argb": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->argb = pValue;
         }
@@ -159,11 +159,11 @@ class Color extends Supervisor implements ZIComparable
         }
         
         if (this->isSupervisor) {
-        	let pValue = "FF" . pValue;
+            let pValue = "FF" . pValue;
             let styleArray = this->getStyleArray(["argb": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->argb = "FF" . pValue;
         }
@@ -221,21 +221,28 @@ class Color extends Supervisor implements ZIComparable
 
         if (red < 0) {
             let red = 0;
-        } elseif (red > 255) {
-            let red = 255;
+        } else {
+            if (red > 255) {
+                let red = 255;
+            }
         }
         
         if (green < 0) {
             let green = 0;
-        } elseif (green > 255) {
-            let green = 255;
+        } else {
+            if (green > 255) {
+                let green = 255;
+            }
         }
+        
         if (blue < 0) {
             let blue = 0;
-        } elseif (blue > 255) {
-            let blue = 255;
+        } else {
+            if (blue > 255) {
+                let blue = 255;
+            }
         }
-
+        
         let rgb = strtoupper(
             str_pad(dechex(red), 2, strval(0), 0) .
             str_pad(dechex(green), 2, strval(0), 0) .

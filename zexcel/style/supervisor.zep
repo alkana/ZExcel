@@ -2,7 +2,7 @@ namespace ZExcel\Style;
 
 abstract class Supervisor
 {
-	/**
+    /**
      * Supervisor?
      *
      * @var boolean
@@ -88,8 +88,8 @@ abstract class Supervisor
      */
     public function __clone()
     {
-    	var vars, key, value;
-    	
+        var vars, key, value;
+        
         let vars = get_object_vars(this);
         
         for key, value in vars {

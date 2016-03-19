@@ -99,12 +99,14 @@ class AutoFilter
 
         if (strpos(pRange,":") !== false) {
             let this->_range = pRange;
-        } elseif(empty(pRange)) {
-            let this->_range = "";
         } else {
-            throw new \ZExcel\Exception("Autofilter must be set on a range of cells.");
+            if (empty(pRange)) {
+                let this->_range = "";
+            } else {
+                throw new \ZExcel\Exception("Autofilter must be set on a range of cells.");
+            }
         }
-
+        
         if (empty(pRange)) {
             //    Discard all column rules
             let this->_columns = [];
@@ -228,19 +230,23 @@ class AutoFilter
         
         if ((is_string(pColumn)) && (!empty(pColumn))) {
             let column = pColumn;
-        } elseif(is_object(pColumn) && (pColumn instanceof \ZExcel\Worksheet\AutoFilter\Column)) {
-            let column = pColumn->getColumnIndex();
         } else {
-            throw new \ZExcel\Exception("Column is not within the autofilter range.");
+            if (is_object(pColumn) && (pColumn instanceof \ZExcel\Worksheet\AutoFilter\Column)) {
+                let column = pColumn->getColumnIndex();
+            } else {
+                throw new \ZExcel\Exception("Column is not within the autofilter range.");
+            }
         }
         
         this->testColumnInRange(column);
 
         if (is_string(pColumn)) {
             let this->_columns[pColumn] = new \ZExcel\Worksheet\AutoFilter\Column(pColumn, this);
-        } elseif(is_object(pColumn) && (pColumn instanceof \ZExcel\Worksheet\AutoFilter\Column)) {
-            pColumn->setParent(this);
-            let this->_columns[column] = pColumn;
+        } else {
+            if (is_object(pColumn) && (pColumn instanceof \ZExcel\Worksheet\AutoFilter\Column)) {
+                pColumn->setParent(this);
+                let this->_columns[column] = pColumn;
+            }
         }
         
         ksort(this->_columns);
@@ -344,14 +350,16 @@ class AutoFilter
                 //    Just the time part
                 let dtVal = date("His",dateValue);
                 let dateSet = dateSet["time"];
-            } elseif(cellValue == floor(cellValue)) {
-                //    Just the date part
-                let dtVal = date("Ymd",dateValue);
-                let dateSet = dateSet["date"];
             } else {
-                //    date and time parts
-                let dtVal = date("YmdHis",dateValue);
-                let dateSet = dateSet["dateTime"];
+                if (cellValue == floor(cellValue)) {
+                    //    Just the date part
+                    let dtVal = date("Ymd",dateValue);
+                    let dateSet = dateSet["date"];
+                } else {
+                    //    date and time parts
+                    let dtVal = date("YmdHis",dateValue);
+                    let dateSet = dateSet["dateTime"];
+                }
             }
             
             for dateValue in dateSet {
@@ -465,19 +473,21 @@ class AutoFilter
                 } else {
                     let this->{key} = clone value;
                 }
-            } elseif ((is_array(value)) && (key == "_olumns")) {
-                //    The columns array of \ZExcel\Worksheet\AutoFilter objects
-                let aTmp = [];
-                
-                for k, v in value {
-                    let aTmp[k] = clone v;
-                    // attach the new cloned Rule to this new cloned Autofilter Cloned object
-                    aTmp[k]->setParent(this);
-                }
-                
-                let this->{key} = aTmp;
             } else {
-                let this->{key} = value;
+                if ((is_array(value)) && (key == "_olumns")) {
+                    //    The columns array of \ZExcel\Worksheet\AutoFilter objects
+                    let aTmp = [];
+                    
+                    for k, v in value {
+                        let aTmp[k] = clone v;
+                        // attach the new cloned Rule to this new cloned Autofilter Cloned object
+                        aTmp[k]->setParent(this);
+                    }
+                    
+                    let this->{key} = aTmp;
+                } else {
+                    let this->{key} = value;
+                }
             }
         }
     }

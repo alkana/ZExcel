@@ -9,8 +9,8 @@ abstract class Abstrac implements IReader
      *
      * @var    boolean
      */
-	protected readDataOnly = false;
-	
+    protected readDataOnly = false;
+    
     /**
      * Read empty cells?
      * Identifies whether the Reader should read data values for cells all cells, or should ignore cells containing
@@ -26,24 +26,24 @@ abstract class Abstrac implements IReader
      *
      * @var    boolean
      */
-	protected includeCharts = false;
-	
+    protected includeCharts = false;
+    
     /**
      * Restrict which sheets should be loaded?
      * This property holds an array of worksheet names to be loaded. If null, then all worksheets will be loaded.
      *
      * @var array of string
      */
-	protected loadSheetsOnly = null;
-	
+    protected loadSheetsOnly = null;
+    
     /**
      * PHPExcel_Reader_IReadFilter instance
      *
      * @var PHPExcel_Reader_IReadFilter
      */
-	protected readFilter = null;
-	
-	protected fileHandle = null;
+    protected readFilter = null;
+    
+    protected fileHandle = null;
 
     /**
      * Read data only?
@@ -52,10 +52,10 @@ abstract class Abstrac implements IReader
      *
      * @return    boolean
      */
-	public function getReadDataOnly() -> boolean
-	{
-		return this->readDataOnly;
-	}
+    public function getReadDataOnly() -> boolean
+    {
+        return this->readDataOnly;
+    }
 
     /**
      * Set read data only
@@ -66,12 +66,12 @@ abstract class Abstrac implements IReader
      *
      * @return    \ZExcel\Reader\IReader
      */
-	public function setReadDataOnly(boolean pValue = false) -> <\ZExcel\Reader\Abstrac>
-	{
-		let this->readDataOnly = pValue;
-		
-		return this;
-	}
+    public function setReadDataOnly(boolean pValue = false) -> <\ZExcel\Reader\Abstrac>
+    {
+        let this->readDataOnly = pValue;
+        
+        return this;
+    }
 
     /**
      * Read empty cells?
@@ -109,10 +109,10 @@ abstract class Abstrac implements IReader
      *
      * @return    boolean
      */
-	public function getIncludeCharts() -> boolean
-	{
-		return this->includeCharts;
-	}
+    public function getIncludeCharts() -> boolean
+    {
+        return this->includeCharts;
+    }
 
     /**
      * Set read charts in workbook
@@ -124,12 +124,12 @@ abstract class Abstrac implements IReader
      *
      * @return    \ZExcel\Reader\IReader
      */
-	public function setIncludeCharts(boolean pValue = false) -> <\ZExcel\Reader\Abstrac>
-	{
-		let this->includeCharts = pValue;
-		
-		return this;
-	}
+    public function setIncludeCharts(boolean pValue = false) -> <\ZExcel\Reader\Abstrac>
+    {
+        let this->includeCharts = pValue;
+        
+        return this;
+    }
 
     /**
      * Get which sheets to load
@@ -138,10 +138,10 @@ abstract class Abstrac implements IReader
      *
      * @return mixed
      */
-	public function getLoadSheetsOnly()
-	{
-		return this->loadSheetsOnly;
-	}
+    public function getLoadSheetsOnly()
+    {
+        return this->loadSheetsOnly;
+    }
 
     /**
      * Set which sheets to load
@@ -152,20 +152,20 @@ abstract class Abstrac implements IReader
      *
      * @return \ZExcel\Reader\IReader
      */
-	public function setLoadSheetsOnly(string value = null) -> <\ZExcel\Reader\Abstrac>
-	{
+    public function setLoadSheetsOnly(string value = null) -> <\ZExcel\Reader\Abstrac>
+    {
         if (value === null) {
             return this->setLoadAllSheets();
         }
         
         if (is_array(value)) {
-        	let this->loadSheetsOnly = value;
+            let this->loadSheetsOnly = value;
         } else {
-         	let this->loadSheetsOnly = [value];
+             let this->loadSheetsOnly = [value];
          }
          
-		return this;
-	}
+        return this;
+    }
 
     /**
      * Set all sheets to load
@@ -173,22 +173,22 @@ abstract class Abstrac implements IReader
      *
      * @return \ZExcel\Reader\IReader
      */
-	public function setLoadAllSheets()
-	{
-		let this->loadSheetsOnly = null;
-		
-		return this;
-	}
+    public function setLoadAllSheets()
+    {
+        let this->loadSheetsOnly = null;
+        
+        return this;
+    }
 
     /**
      * Read filter
      *
      * @return \ZExcel\Reader\IReadFilter
      */
-	public function getReadFilter() -> <\ZExcel\Reader\IReadFilter>
-	{
-		return this->readFilter;
-	}
+    public function getReadFilter() -> <\ZExcel\Reader\IReadFilter>
+    {
+        return this->readFilter;
+    }
 
     /**
      * Set read filter
@@ -196,12 +196,12 @@ abstract class Abstrac implements IReader
      * @param \ZExcel\Reader\IReadFilter pValue
      * @return \ZExcel\Reader\IReader
      */
-	public function setReadFilter(<\ZExcel\Reader\IReadFilter> pValue) -> <\ZExcel\Reader\Abstrac>
-	{
-		let this->readFilter = pValue;
-		
-		return this;
-	}
+    public function setReadFilter(<\ZExcel\Reader\IReadFilter> pValue) -> <\ZExcel\Reader\Abstrac>
+    {
+        let this->readFilter = pValue;
+        
+        return this;
+    }
 
     /**
      * Open file for reading
@@ -210,20 +210,20 @@ abstract class Abstrac implements IReader
      * @throws    \ZExcel\Reader\Exception
      * @return resource
      */
-	protected function _openFile(string pFilename)
-	{
-		// Check if file exists
-		if (!file_exists(pFilename) || !is_readable(pFilename)) {
-			throw new \ZExcel\Reader\Exception("Could not open " . pFilename . " for reading! File does not exist.");
-		}
-		
-		// Open file
-		let this->fileHandle = fopen(pFilename, "r");
-		
-		if (this->fileHandle === false) {
-			throw new \ZExcel\Reader\Exception("Could not open file " . pFilename . " for reading.");
-		}
-	}
+    protected function _openFile(string pFilename)
+    {
+        // Check if file exists
+        if (!file_exists(pFilename) || !is_readable(pFilename)) {
+            throw new \ZExcel\Reader\Exception("Could not open " . pFilename . " for reading! File does not exist.");
+        }
+        
+        // Open file
+        let this->fileHandle = fopen(pFilename, "r");
+        
+        if (this->fileHandle === false) {
+            throw new \ZExcel\Reader\Exception("Could not open file " . pFilename . " for reading.");
+        }
+    }
 
     /**
      * Can the current \ZExcel\Reader\IReader read the file?
@@ -232,19 +232,19 @@ abstract class Abstrac implements IReader
      * @return boolean
      * @throws \ZExcel\Reader\Exception
      */
-	public function canRead(string pFilename) -> boolean
-	{
-		// Check if file exists
-		try {
-			this->_openFile(pFilename);
-		} catch \Exception {
-			return false;
-		}
-		
-		fclose (this->fileHandle);
-		
-		return false;
-	}
+    public function canRead(string pFilename) -> boolean
+    {
+        // Check if file exists
+        try {
+            this->_openFile(pFilename);
+        } catch \Exception {
+            return false;
+        }
+        
+        fclose (this->fileHandle);
+        
+        return false;
+    }
 
     /**
      * Scan theXML for use of <!ENTITY to prevent XXE/XEE attacks
@@ -252,8 +252,8 @@ abstract class Abstrac implements IReader
      * @param     string         xml
      * @throws \ZExcel\Reader\Exception
      */
-	public function securityScan(string xml)
-	{
+    public function securityScan(string xml)
+    {
         string pattern;
         
         let pattern = "/\\0?" . implode("\\0?", str_split("<!DOCTYPE")) . "\\0?/";
@@ -271,8 +271,8 @@ abstract class Abstrac implements IReader
      * @param  string filestream
      * @throws \ZExcel\Reader\Exception
      */
-	public function securityScanFile(string filestream)
-	{
+    public function securityScanFile(string filestream)
+    {
         return this->securityScan(file_get_contents(filestream));
     }
 }

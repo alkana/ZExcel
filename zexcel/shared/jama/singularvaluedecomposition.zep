@@ -299,11 +299,13 @@ class SingularValueDecomposition
                 }
                 if (ks == k) {
                     let kase = 3;
-                } elseif (ks == p - 1) {
-                    let kase = 1;
                 } else {
-                    let kase = 2;
-                    let k = ks;
+                    if (ks == p - 1) {
+                        let kase = 1;
+                    } else {
+                        let kase = 2;
+                        let k = ks;
+                    }
                 }
             }
             

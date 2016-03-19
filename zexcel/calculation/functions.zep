@@ -288,8 +288,10 @@ class Functions
 
         if (value === null) {
             return self::NaME();
-        } elseif ((is_bool(value)) || ((is_string(value)) && (!is_numeric(value)))) {
-            return self::VaLUE();
+        } else {
+            if ((is_bool(value)) || ((is_string(value)) && (!is_numeric(value)))) {
+                return self::VaLUE();
+            }
         }
 
         return (value % 2 == 0);
@@ -307,8 +309,10 @@ class Functions
 
         if (value === null) {
             return self::NaME();
-        } elseif ((is_bool(value)) || ((is_string(value)) && (!is_numeric(value)))) {
-            return self::VaLUE();
+        } else {
+            if ((is_bool(value)) || ((is_string(value)) && (!is_numeric(value)))) {
+                return self::VaLUE();
+            }
         }
 
         return (abs(value) % 2 == 1);
@@ -443,28 +447,38 @@ class Functions
             if (self::isCellValue(a)) {
                 return 16;
             //    Test for Matrix
-            } elseif (self::isMatrixValue(a)) {
-                return 64;
+            } else {
+                if (self::isMatrixValue(a)) {
+                    return 64;
+                }
             }
-        } elseif (empty(value)) {
-            //    Empty Cell
-            return 1;
+        } else {
+            if (empty(value)) {
+                //    Empty Cell
+                return 1;
+            }
         }
         
         let value = self::flattenSingleValue(value);
 
         if ((value === null) || (is_float(value)) || (is_int(value))) {
                 return 1;
-        } elseif (is_bool(value)) {
-                return 4;
-        } elseif (is_array(value)) {
-                return 64;
-        } elseif (is_string(value)) {
-            //    Errors
-            if ((strlen(value) > 0) && (substr(value, 0, 1) == "#")) {
-                return 16;
+        } else {
+            if (is_bool(value)) {
+                    return 4;
+            } else {
+                if (is_array(value)) {
+                        return 64;
+                } else {
+                    if (is_string(value)) {
+                        //    Errors
+                        if ((strlen(value) > 0) && (substr(value, 0, 1) == "#")) {
+                            return 16;
+                        }
+                        return 2;
+                    }
+                }
             }
-            return 2;
         }
         
         return 0;

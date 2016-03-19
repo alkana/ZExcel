@@ -526,6 +526,7 @@ class NumberFormat extends Supervisor implements ZIComparable
             if (integerPart == 0) {
                 let integerPart = "";
             }
+            
             let value = sprintf("%s%s %s/%s", sign, integerPart, adjustedDecimalPart, adjustedDecimalDivisor);
         } else {
             let adjustedDecimalPart = adjustedDecimalPart + ((double) integerPart * adjustedDecimalDivisor);
@@ -554,9 +555,9 @@ class NumberFormat extends Supervisor implements ZIComparable
             
             let result = result1 . "." . result2;
             
-	        if (sign == true) {
-	            let result = "-" . result;
-	        }
+            if (sign == true) {
+                let result = "-" . result;
+            }
             
             return result;
         }
@@ -607,9 +608,6 @@ class NumberFormat extends Supervisor implements ZIComparable
      */
     public static function toFormattedString(var value = "0", var format = \ZExcel\Style\NumberFormat::FORMAT_GENERAL, var callback = null)
     {
-        /*
-         * @FIXME disabled for segmentation fault + zend_mm_heap corrupted (required more checks)
-         *
         var sections, formatColor, color_regex, useThousands, n, m, number_regex, currencyFormat, currencyCode,
             scale, left, dec, right, minWidth, sprintf_pattern, writerInstance, functionn;
         array matches;
@@ -649,10 +647,12 @@ class NumberFormat extends Supervisor implements ZIComparable
             case 3:
                 if (value > 0) {
                     let format = sections[0];
-                } elseif (value < 0) {
-                    let format = sections[1];
                 } else {
-                    let format = sections[2];
+                    if (value < 0) {
+                        let format = sections[1];
+                    } else {
+                        let format = sections[2];
+                    }
                 }
                 
                 let value = abs(value); // Use the absolute value
@@ -660,10 +660,12 @@ class NumberFormat extends Supervisor implements ZIComparable
             case 4:
                 if (value > 0) {
                     let format = sections[0];
-                } elseif (value < 0) {
-                    let format = sections[1];
                 } else {
-                    let format = sections[2];
+                    if (value < 0) {
+                        let format = sections[1];
+                    } else {
+                        let format = sections[2];
+                    }
                 }
                 
                 let value = abs(value); // Use the absolute value
@@ -694,105 +696,109 @@ class NumberFormat extends Supervisor implements ZIComparable
             let sections = self::formatAsDate(value, format);
             let value = sections[0];
             let format = sections[1];
-        } elseif (preg_match("/%$/", format)) {
-            // % number format
-            var sections = self::formatAsPercentage(value, format);
-            let value = sections[0];
-            let format = sections[1];
         } else {
-            if (format === self::FORMAT_CURRENCY_EUR_SIMPLE) {
-                let value = "EUR " . sprintf("%1.2f", value);
+            if (preg_match("/%$/", format)) {
+                // % number format
+                var sections = self::formatAsPercentage(value, format);
+                let value = sections[0];
+                let format = sections[1];
             } else {
-                // Some non-number strings are quoted, so we"ll get rid of the quotes, likewise any positional * symbols
-                let format = str_replace(["\"", "*"], "", format);
-
-                // Find out if we need thousands separator
-                // This is indicated by a comma enclosed by a digit placeholder:
-                //        #,#   or   0,0
-                let useThousands = preg_match("/(#,#|0,0)/", format);
-                
-                if (useThousands) {
-                    let format = preg_replace("/0,0/", "00", format);
-                    let format = preg_replace("/#,#/", "##", format);
-                }
-
-                // Scale thousands, millions,...
-                // This is indicated by a number of commas after a digit placeholder:
-                //        #,   or    0.0,,
-                let scale = 1; // same as no scale
-                let matches = [];
-                
-                if (preg_match("/(#|0)(,+)/", format, matches)) {
-                    let scale = pow(1000, strlen(matches[2]));
-
-                    // strip the commas
-                    let format = preg_replace("/0,+/", strval(0), format);
-                    let format = preg_replace("/#,+/", "#", format);
-                }
-                
-                let m = [];
-                
-                if (preg_match("/#?.*\?\/\?/", format, m)) {
-                    if (value != (int) value) {
-                        let sections = self::formatAsFraction(value, format);
-                        let value  = sections[0];
-                        let format = sections[1];
-                    }
+                if (format === self::FORMAT_CURRENCY_EUR_SIMPLE) {
+                    let value = "EUR " . sprintf("%1.2f", value);
                 } else {
-                    // Handle the number itself
-
-                    // scale number
-                    let value = value / scale;
-
-                    // Strip #
-                    let format = preg_replace("/\\#/", strval(0), format);
-
-                    let n = "/\[[^\]]+\]/";
-                    let m = preg_replace(n, "", format);
-                    let number_regex = "/(0+)(\.?)(0*)/";
+                    // Some non-number strings are quoted, so we"ll get rid of the quotes, likewise any positional * symbols
+                    let format = str_replace(["\"", "*"], "", format);
+    
+                    // Find out if we need thousands separator
+                    // This is indicated by a comma enclosed by a digit placeholder:
+                    //        #,#   or   0,0
+                    let useThousands = preg_match("/(#,#|0,0)/", format);
+                    
+                    if (useThousands) {
+                        let format = preg_replace("/0,0/", "00", format);
+                        let format = preg_replace("/#,#/", "##", format);
+                    }
+    
+                    // Scale thousands, millions,...
+                    // This is indicated by a number of commas after a digit placeholder:
+                    //        #,   or    0.0,,
+                    let scale = 1; // same as no scale
                     let matches = [];
                     
-                    if (preg_match(number_regex, m, matches)) {
-                        let left = matches[1];
-                        let dec = matches[2];
-                        let right = matches[3];
-
-                        // minimun width of formatted number (including dot)
-                        let minWidth = strlen(left) + strlen(dec) + strlen(right);
-                        if (useThousands) {
-                            let value = number_format(
-                                value,
-                                strlen(right),
-                                \ZExcel\Shared\Stringg::getDecimalSeparator(),
-                                \ZExcel\Shared\Stringg::getThousandsSeparator()
-                            );
-                            let value = preg_replace(number_regex, value, format);
-                        } else {
-                            if (preg_match("/[0#]E[+-]0/i", format)) {
-                                //    Scientific format
-                                let value = sprintf("%5.2E", value);
-                            } elseif (preg_match("/0([^\d\.]+)0/", format)) {
-                                let value = self::complexNumberFormatMask(value, format);
-                            } else {
-                                let sprintf_pattern = "%0" . minWidth . "." . strlen(right) . "f";
-                                let value = sprintf(sprintf_pattern, value);
+                    if (preg_match("/(#|0)(,+)/", format, matches)) {
+                        let scale = pow(1000, strlen(matches[2]));
+    
+                        // strip the commas
+                        let format = preg_replace("/0,+/", strval(0), format);
+                        let format = preg_replace("/#,+/", "#", format);
+                    }
+                    
+                    let m = [];
+                    
+                    if (preg_match("/#?.*\?\/\?/", format, m)) {
+                        if (value != (int) value) {
+                            let sections = self::formatAsFraction(value, format);
+                            let value  = sections[0];
+                            let format = sections[1];
+                        }
+                    } else {
+                        // Handle the number itself
+    
+                        // scale number
+                        let value = value / scale;
+    
+                        // Strip #
+                        let format = preg_replace("/\\#/", strval(0), format);
+    
+                        let n = "/\[[^\]]+\]/";
+                        let m = preg_replace(n, "", format);
+                        let number_regex = "/(0+)(\.?)(0*)/";
+                        let matches = [];
+                        
+                        if (preg_match(number_regex, m, matches)) {
+                            let left = matches[1];
+                            let dec = matches[2];
+                            let right = matches[3];
+    
+                            // minimun width of formatted number (including dot)
+                            let minWidth = strlen(left) + strlen(dec) + strlen(right);
+                            if (useThousands) {
+                                let value = number_format(
+                                    value,
+                                    strlen(right),
+                                    \ZExcel\Shared\Stringg::getDecimalSeparator(),
+                                    \ZExcel\Shared\Stringg::getThousandsSeparator()
+                                );
                                 let value = preg_replace(number_regex, value, format);
+                            } else {
+                                if (preg_match("/[0#]E[+-]0/i", format)) {
+                                    //    Scientific format
+                                    let value = sprintf("%5.2E", value);
+                                } else {
+                                    if (preg_match("/0([^\d\.]+)0/", format)) {
+                                        let value = self::complexNumberFormatMask(value, format);
+                                    } else {
+                                        let sprintf_pattern = "%0" . minWidth . "." . strlen(right) . "f";
+                                        let value = sprintf(sprintf_pattern, value);
+                                        let value = preg_replace(number_regex, value, format);
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            
-                if (preg_match("/\[\$(.*)\]/u", format, m)) {
-                    //  Currency or Accounting
-                    let currencyFormat = m[0];
-                    let currencyCode = m[1];
-                    let currencyCode = current(explode("-", currencyCode));
-                    
-                    if (currencyCode == "") {
-                        let currencyCode = \ZExcel\Shared\Stringg::getCurrencyCode();
+                
+                    if (preg_match("/\[\$(.*)\]/u", format, m)) {
+                        //  Currency or Accounting
+                        let currencyFormat = m[0];
+                        let currencyCode = m[1];
+                        let currencyCode = current(explode("-", currencyCode));
+                        
+                        if (currencyCode == "") {
+                            let currencyCode = \ZExcel\Shared\Stringg::getCurrencyCode();
+                        }
+                        
+                        let value = preg_replace("/\[\$([^\]]*)\]/u", currencyCode, value);
                     }
-                    
-                    let value = preg_replace("/\[\$([^\]]*)\]/u", currencyCode, value);
                 }
             }
         }
@@ -806,7 +812,6 @@ class NumberFormat extends Supervisor implements ZIComparable
             let functionn = callback[1];
             let value = writerInstance->{functionn}(value, formatColor);
         }
-        */
         
         return value;
     }

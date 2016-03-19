@@ -2282,8 +2282,8 @@ class Calculation
      */
     public function setLocale(string locale = "en_us")
     {
-    	var language, functionNamesFile, localeFunction, localeFunctions, fName, lfName, tmp, configFile, localeSettings, localeSetting, settingName, settingValue;
-    	
+        var language, functionNamesFile, localeFunction, localeFunctions, fName, lfName, tmp, configFile, localeSettings, localeSetting, settingName, settingValue;
+        
         //    Identify our locale and language
         let language = strtolower(locale);
         let locale = language;
@@ -2322,7 +2322,7 @@ class Calculation
                 let localeFunctions = file(functionNamesFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
                 
                 for localeFunction in localeFunctions {
-                	let localeFunction = explode("##", localeFunction);
+                    let localeFunction = explode("##", localeFunction);
                     let localeFunction = localeFunction[0];    //    Strip out comments
                     
                     if (strpos(localeFunction,"=") !== false) {
@@ -2337,11 +2337,11 @@ class Calculation
                 }
                 //    Default the TRUE and FALSE constants to the locale names of the TRUE() and FALSE() functions
                 if (isset(self::_localeFunctions["TRUE"])) {
-                	let self::_localeBoolean["TRUE"] = self::_localeFunctions["TRUE"];
+                    let self::_localeBoolean["TRUE"] = self::_localeFunctions["TRUE"];
                 }
                 
                 if (isset(self::_localeFunctions["FALSE"])) {
-                	let self::_localeBoolean["FALSE"] = self::_localeFunctions["FALSE"];
+                    let self::_localeBoolean["FALSE"] = self::_localeFunctions["FALSE"];
                 }
 
                 let configFile = "PHPExcel" . DIRECTORY_SEPARATOR . "locale" . DIRECTORY_SEPARATOR . str_replace("_", DIRECTORY_SEPARATOR, locale) . DIRECTORY_SEPARATOR . "config";
@@ -2358,11 +2358,11 @@ class Calculation
                         let localeSetting = localeSetting[0];
                         
                         if (strpos(localeSetting,"=") !== false) {
-                        	let settingName = explode("=", localeSetting);
-                        	
-                        	let settingValue = settingName[1];
-                        	let settingName = strtoupper(trim(settingName[0]));
-                        	
+                            let settingName = explode("=", localeSetting);
+                            
+                            let settingValue = settingName[1];
+                            let settingName = strtoupper(trim(settingName[0]));
+                            
                             switch (settingName) {
                                 case "ARGUMENTSEPARATOR" :
                                     let self::_localeArgumentSeparator = trim(settingValue);
@@ -2449,8 +2449,8 @@ class Calculation
     
     public function _translateFormulaToLocale(var formula)
     {
-    	var localeVar;
-    	
+        var localeVar;
+        
         if (self::functionReplaceFromExcel === null) {
             let self::functionReplaceFromExcel = [];
             
@@ -2481,8 +2481,8 @@ class Calculation
     
     public function _translateFormulaToEnglish(var formula)
     {
-    	var localeVar;
-    	
+        var localeVar;
+        
         if (self::functionReplaceFromLocale === null) {
             let self::functionReplaceFromLocale = [];
             
@@ -2542,10 +2542,12 @@ class Calculation
             //    Return strings wrapped in quotes
             return "\"" . value . "\"";
         //    Convert numeric errors to NaN error
-        } elseif ((is_float(value)) && ((is_nan(value)) || (is_infinite(value)))) {
-            return \ZExcel\Calculation\Functions::NaN();
+        } else {
+            if ((is_float(value)) && ((is_nan(value)) || (is_infinite(value)))) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
-
+        
         return value;
     }
     /**
@@ -2561,9 +2563,12 @@ class Calculation
                 return substr(value,1,-1);
             }
         //    Convert numeric errors to NaN error
-        } elseif((is_float(value)) && ((is_nan(value)) || (is_infinite(value)))) {
-            return \ZExcel\Calculation\Functions::NaN();
+        } else {
+            if((is_float(value)) && ((is_nan(value)) || (is_infinite(value)))) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
+        
         return value;
     }
     /**
@@ -2577,8 +2582,8 @@ class Calculation
      */
     public function calculate(<\ZExcel\Cell> pCell = null)
     {
-    	var e;
-    	
+        var e;
+        
         try {
             return this->calculateCellValue(pCell);
         } catch \ZExcel\Exception, e {
@@ -2653,8 +2658,10 @@ class Calculation
 
         if (result === null) {
             return 0;
-        } elseif((is_float(result)) && ((is_nan(result)) || (is_infinite(result)))) {
-            return \ZExcel\Calculation\Functions::NaN();
+        } else {
+            if((is_float(result)) && ((is_nan(result)) || (is_infinite(result)))) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
         
         return result;
@@ -2673,15 +2680,15 @@ class Calculation
         let formula = trim(formula);
         
         if (strlen(formula) === 0 || (substr(formula, 0, 1) != "=")) {
-        	return [];
+            return [];
         }
         
         let formula = ltrim(substr(formula, 1));
         
         if (strlen(formula) === 0) {
-        	return [];
-		}
-		
+            return [];
+        }
+        
         //    Parse the formula and return the token stack
         return this->_parseFormula(formula);
     }
@@ -2696,8 +2703,8 @@ class Calculation
      */
     public function calculateFormula(formula, cellID = null, <\ZExcel\Cell> pCell = null)
     {
-    	var resetCache, result, e;
-    	
+        var resetCache, result, e;
+        
         let this->formulaError = null;
         
         this->_debugLog->clearLog();
@@ -2773,17 +2780,21 @@ class Calculation
             if (this->cyclicFormulaCount <= 0) {
                 let this->cyclicFormulaCell = "";
                 return this->_raiseFormulaError("Cyclic Reference in Formula");
-            } elseif (this->cyclicFormulaCell === wsCellReference) {
-                let this->cyclicFormulaCounter = this->cyclicFormulaCounter + 1;
-                if (this->cyclicFormulaCounter >= this->cyclicFormulaCount) {
-                    let this->cyclicFormulaCell = "";
-                    return cellValue;
+            } else {
+                if (this->cyclicFormulaCell === wsCellReference) {
+                    let this->cyclicFormulaCounter = this->cyclicFormulaCounter + 1;
+                    if (this->cyclicFormulaCounter >= this->cyclicFormulaCount) {
+                        let this->cyclicFormulaCell = "";
+                        return cellValue;
+                    }
+                } else {
+                    if (this->cyclicFormulaCell == "") {
+                        if (this->cyclicFormulaCounter >= this->cyclicFormulaCount) {
+                            return cellValue;
+                        }
+                        let this->cyclicFormulaCell = wsCellReference;
+                    }
                 }
-            } elseif (this->cyclicFormulaCell == "") {
-                if (this->cyclicFormulaCounter >= this->cyclicFormulaCount) {
-                    return cellValue;
-                }
-                let this->cyclicFormulaCell = wsCellReference;
             }
         }
 
@@ -2887,10 +2898,14 @@ class Calculation
                     }
                 }
                 return "{ " . implode(rpad,returnMatrix) . " }";
-            } elseif(is_string(value) && (trim(value,"\"") == value)) {
-                return "\"" . value . "\"";
-            } elseif(is_bool(value)) {
-                return (value) ? self::_localeBoolean["TRUE"] : self::_localeBoolean["FALSE"];
+            } else {
+                if(is_string(value) && (trim(value,"\"") == value)) {
+                    return "\"" . value . "\"";
+                } else {
+                    if(is_bool(value)) {
+                        return (value) ? self::_localeBoolean["TRUE"] : self::_localeBoolean["FALSE"];
+                    }
+                }
             }
         }
         
@@ -2910,21 +2925,31 @@ class Calculation
 
             if (value === null) {
                 return "a NULL value";
-            } elseif (is_float(value)) {
-                let typeString = "a floating point number";
-            } elseif(is_int(value)) {
-                let typeString = "an integer number";
-            } elseif(is_bool(value)) {
-                let typeString = "a boolean";
-            } elseif(is_array(value)) {
-                let typeString = "a matrix";
             } else {
-                if (value == "") {
-                    return "an empty string";
-                } elseif (value[0] == "#") {
-                    return "a " . value . " error";
+                if (is_float(value)) {
+                    let typeString = "a floating point number";
                 } else {
-                    let typeString = "a string";
+                    if(is_int(value)) {
+                        let typeString = "an integer number";
+                    } else {
+                        if(is_bool(value)) {
+                            let typeString = "a boolean";
+                        } else {
+                            if(is_array(value)) {
+                                let typeString = "a matrix";
+                            } else {
+                                if (value == "") {
+                                    return "an empty string";
+                                } else {
+                                    if (value[0] == "#") {
+                                        return "a " . value . " error";
+                                    } else {
+                                        let typeString = "a string";
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             
@@ -2974,11 +2999,13 @@ class Calculation
                 } else {
                     return this->_raiseFormulaError("Formula Error: Unexpected '}' encountered");
                 }
-            } elseif (openCount > closeCount) {
-                if (closeCount > 0) {
-                    return this->_raiseFormulaError("Formula Error: Mismatched matrix braces '{'");
-                } else {
-                    return this->_raiseFormulaError("Formula Error: Unexpected '{' encountered");
+            } else {
+                if (openCount > closeCount) {
+                    if (closeCount > 0) {
+                        return this->_raiseFormulaError("Formula Error: Mismatched matrix braces '{'");
+                    } else {
+                        return this->_raiseFormulaError("Formula Error: Unexpected '{' encountered");
+                    }
                 }
             }
         }
@@ -3102,14 +3129,18 @@ class Calculation
                     if (isset(self::_controlFunctions[functionName])) {
                         let expectedArgumentCount = self::_controlFunctions[functionName]["argumentCount"];
                         let functionCall = self::_controlFunctions[functionName]["functionCall"];
-                    } elseif (isset(self::_PHPExcelFunctions[functionName])) {
-                        let expectedArgumentCount = self::_PHPExcelFunctions[functionName]["argumentCount"];
-                        let functionCall = self::_PHPExcelFunctions[functionName]["functionCall"];
-                    } else {    // did we somehow push a non-function on the stack? this should never happen
-                        return this->_raiseFormulaError("Formula Error: Internal error, non-function on stack");
+                    } else {
+                        if (isset(self::_PHPExcelFunctions[functionName])) {
+                            let expectedArgumentCount = self::_PHPExcelFunctions[functionName]["argumentCount"];
+                            let functionCall = self::_PHPExcelFunctions[functionName]["functionCall"];
+                        } else {    // did we somehow push a non-function on the stack? this should never happen
+                            return this->_raiseFormulaError("Formula Error: Internal error, non-function on stack");
+                        }
                     }
+                    
                     //    Check the argument count
                     let argumentCountError = false;
+                    
                     if (is_numeric(expectedArgumentCount)) {
                         if (expectedArgumentCount < 0) {
                             if (argumentCount > abs(expectedArgumentCount)) {
@@ -3122,31 +3153,34 @@ class Calculation
                                 let expectedArgumentCountString = expectedArgumentCount;
                             }
                         }
-                    } elseif (expectedArgumentCount != "*") {
-                        let argMatch = [];
-                        let isOperandOrFunction = preg_match("/(\d*)([-+,])(\d*)/", expectedArgumentCount, argMatch);
-                        
-                        switch (argMatch[2]) {
-                            case "+":
-                                if (argumentCount < argMatch[1]) {
-                                    let argumentCountError = true;
-                                    let expectedArgumentCountString = argMatch[1]." or more ";
-                                }
-                                break;
-                            case "-":
-                                if ((argumentCount < argMatch[1]) || (argumentCount > argMatch[3])) {
-                                    let argumentCountError = true;
-                                    let expectedArgumentCountString = "between ".argMatch[1]." and ".argMatch[3];
-                                }
-                                break;
-                            case ",":
-                                if ((argumentCount != argMatch[1]) && (argumentCount != argMatch[3])) {
-                                    let argumentCountError = true;
-                                    let expectedArgumentCountString = "either ".argMatch[1]." or ".argMatch[3];
-                                }
-                                break;
+                    } else {
+                        if (expectedArgumentCount != "*") {
+                            let argMatch = [];
+                            let isOperandOrFunction = preg_match("/(\d*)([-+,])(\d*)/", expectedArgumentCount, argMatch);
+                            
+                            switch (argMatch[2]) {
+                                case "+":
+                                    if (argumentCount < argMatch[1]) {
+                                        let argumentCountError = true;
+                                        let expectedArgumentCountString = argMatch[1]." or more ";
+                                    }
+                                    break;
+                                case "-":
+                                    if ((argumentCount < argMatch[1]) || (argumentCount > argMatch[3])) {
+                                        let argumentCountError = true;
+                                        let expectedArgumentCountString = "between ".argMatch[1]." and ".argMatch[3];
+                                    }
+                                    break;
+                                case ",":
+                                    if ((argumentCount != argMatch[1]) && (argumentCount != argMatch[3])) {
+                                        let argumentCountError = true;
+                                        let expectedArgumentCountString = "either ".argMatch[1]." or ".argMatch[3];
+                                    }
+                                    break;
+                            }
                         }
                     }
+                    
                     if (argumentCountError) {
                         return this->_raiseFormulaError("Formula Error: Wrong number of arguments for " . functionName . "() function: " . argumentCount . " given, ".expectedArgumentCountString." expected");
                     }
@@ -3221,120 +3255,134 @@ class Calculation
                     } else {    // it"s a var w/ implicit multiplication
                         let output[] = ["type": "Value", "value": matches[1], "reference": null];
                     }
-                } elseif (preg_match("/^" . self::CALCULATION_REGEXP_CELLREF . "$/i", val, matches)) {
-                    // Watch for this case-change when modifying to allow cell references in different worksheets...
-                    // Should only be applied to the actual cell column, not the worksheet name
-
-                    // If the last entry on the stack was a : operator, then we have a cell range reference
-                    let testPrevOp = stack->last(1);
-                    if (testPrevOp["value"] == ":") {
-                        // If we have a worksheet reference, then we"re playing with a 3D reference
-                        if (matches[2] == "") {
-                            // Otherwise, we "inherit" the worksheet reference from the start cell reference
-                            // The start of the cell range reference should be the last entry in output
-                            let startCellRef = output[count(output) - 1]["value"];
-                            let startMatches = [];
-                            
-                            preg_match("/^" . self::CALCULATION_REGEXP_CELLREF . "$/i", startCellRef, startMatches);
-                            
-                            if (strlen(startMatches[2]) > 0) {
-                                let val = startMatches[2] . "!" . val;
-                            }
-                        } else {
-                            return this->_raiseFormulaError("3D Range references are not yet supported");
-                        }
-                    }
-
-                    let output[] = ["type": "Cell Reference", "value": val, "reference": val];
-                } else {    // it"s a variable, constant, string, number or boolean
-                    //    If the last entry on the stack was a : operator, then we may have a row or column range reference
-                    let testPrevOp = stack->last(1);
-                    
-                    if (testPrevOp["value"] == ":") {
-                        let startRowColRef = output[count(output) - 1]["value"];
-                        let rangeWS1 = "";
-                        
-                        if (strpos("!", startRowColRef) !== false) {
-                            let startRowColRef = explode("!", startRowColRef);
-                            
-                            let rangeWS1 = startRowColRef[0];
-                            let startRowColRef = startRowColRef[1];
-                        }
-                        
-                        if (rangeWS1 != "") {
-                            let rangeWS1 = rangeWS1 . "!";
-                        }
-                        
-                        let rangeWS2 = rangeWS1;
-                        
-                        if (strpos("!", val) !== false) {
-                            let val = explode("!", val);
-                            
-                            let rangeWS2 = val[0];
-                            let val = val[1];
-                        }
-                        
-                        if (rangeWS2 != "") {
-                            let rangeWS2 = rangeWS2 . "!";
-                        }
-                        
-                        if ((is_integer(startRowColRef)) && (ctype_digit(val)) && (startRowColRef <= 1048576) && (val <= 1048576)) {
-                            //    Row range
-                            let endRowColRef = (pCellParent !== null) ? pCellParent->getHighestColumn() : "XFD";    //    Max 16,384 columns for Excel2007
-                            let output[count(output) - 1]["value"] = rangeWS1."A".startRowColRef;
-                            let val = rangeWS2.endRowColRef.val;
-                        } elseif ((ctype_alpha(startRowColRef)) && (ctype_alpha(val)) && (strlen(startRowColRef) <= 3) && (strlen(val) <= 3)) {
-                            //    Column range
-                            let endRowColRef = (pCellParent !== null) ? pCellParent->getHighestRow() : 1048576;        //    Max 1,048,576 rows for Excel2007
-                            let output[count(output) - 1]["value"] = rangeWS1.strtoupper(startRowColRef)."1";
-                            let val = rangeWS2 . val . endRowColRef;
-                        }
-                    }
-
-                    let localeConstant = false;
-                    let details = array_search(trim(strtoupper(val)), self::_localeBoolean);
-                    
-                    if (opCharacter == "\"") {
-                        //    UnEscape any quotes within the string
-                        let val = self::wrapResult(str_replace("\"\"", "\"", self::_unwrapResult(val)));
-                    } elseif (is_numeric(val)) {
-                        if ((strpos(val, ".") !== false) || (stripos(val, "e") !== false) || (val > PHP_INT_MAX) || (val < -PHP_INT_MAX)) {
-                            let val = (float) val;
-                        } else {
-                            let val = (int) val;
-                        }
-                    } elseif (isset(self::_excelConstants[trim(strtoupper(val))])) {
-                        let excelConstant = trim(strtoupper(val));
-                        let val = self::_excelConstants[excelConstant];
-                    } elseif (details !== false) {
-                        let localeConstant = details;
-                        let val = self::_excelConstants[localeConstant];
-                    }
-                    
-                    let details = ["type": "Value", "value": val, "reference": null];
-                    
-                    if (localeConstant) {
-                        let details["localeValue"] = localeConstant;
-                    }
-                    
-                    let output[] = details;
-                }
-                
-                let index = index + length;
-            } elseif (opCharacter == "") {    // absolute row or column range
-                let index = index + 1;
-            } elseif (opCharacter == ")") {    // miscellaneous error checking
-                if (expectingOperand) {
-                    let output[] = ["type": "NULL Value", "value": self::_excelConstants["NULL"], "reference": null];
-                    let expectingOperand = false;
-                    let expectingOperator = true;
                 } else {
-                    return this->_raiseFormulaError("Formula Error: Unexpected ')'");
+                    if (preg_match("/^" . self::CALCULATION_REGEXP_CELLREF . "$/i", val, matches)) {
+                        // Watch for this case-change when modifying to allow cell references in different worksheets...
+                        // Should only be applied to the actual cell column, not the worksheet name
+    
+                        // If the last entry on the stack was a : operator, then we have a cell range reference
+                        let testPrevOp = stack->last(1);
+                        if (testPrevOp["value"] == ":") {
+                            // If we have a worksheet reference, then we"re playing with a 3D reference
+                            if (matches[2] == "") {
+                                // Otherwise, we "inherit" the worksheet reference from the start cell reference
+                                // The start of the cell range reference should be the last entry in output
+                                let startCellRef = output[count(output) - 1]["value"];
+                                let startMatches = [];
+                                
+                                preg_match("/^" . self::CALCULATION_REGEXP_CELLREF . "$/i", startCellRef, startMatches);
+                                
+                                if (strlen(startMatches[2]) > 0) {
+                                    let val = startMatches[2] . "!" . val;
+                                }
+                            } else {
+                                return this->_raiseFormulaError("3D Range references are not yet supported");
+                            }
+                        }
+    
+                        let output[] = ["type": "Cell Reference", "value": val, "reference": val];
+                    } else {    // it"s a variable, constant, string, number or boolean
+                        //    If the last entry on the stack was a : operator, then we may have a row or column range reference
+                        let testPrevOp = stack->last(1);
+                        
+                        if (testPrevOp["value"] == ":") {
+                            let startRowColRef = output[count(output) - 1]["value"];
+                            let rangeWS1 = "";
+                            
+                            if (strpos("!", startRowColRef) !== false) {
+                                let startRowColRef = explode("!", startRowColRef);
+                                
+                                let rangeWS1 = startRowColRef[0];
+                                let startRowColRef = startRowColRef[1];
+                            }
+                            
+                            if (rangeWS1 != "") {
+                                let rangeWS1 = rangeWS1 . "!";
+                            }
+                            
+                            let rangeWS2 = rangeWS1;
+                            
+                            if (strpos("!", val) !== false) {
+                                let val = explode("!", val);
+                                
+                                let rangeWS2 = val[0];
+                                let val = val[1];
+                            }
+                            
+                            if (rangeWS2 != "") {
+                                let rangeWS2 = rangeWS2 . "!";
+                            }
+                            
+                            if ((is_integer(startRowColRef)) && (ctype_digit(val)) && (startRowColRef <= 1048576) && (val <= 1048576)) {
+                                //    Row range
+                                let endRowColRef = (pCellParent !== null) ? pCellParent->getHighestColumn() : "XFD";    //    Max 16,384 columns for Excel2007
+                                let output[count(output) - 1]["value"] = rangeWS1."A".startRowColRef;
+                                let val = rangeWS2.endRowColRef.val;
+                            } else {
+                                if ((ctype_alpha(startRowColRef)) && (ctype_alpha(val)) && (strlen(startRowColRef) <= 3) && (strlen(val) <= 3)) {
+                                    //    Column range
+                                    let endRowColRef = (pCellParent !== null) ? pCellParent->getHighestRow() : 1048576;        //    Max 1,048,576 rows for Excel2007
+                                    let output[count(output) - 1]["value"] = rangeWS1.strtoupper(startRowColRef)."1";
+                                    let val = rangeWS2 . val . endRowColRef;
+                                }
+                            }
+                        }
+    
+                        let localeConstant = false;
+                        let details = array_search(trim(strtoupper(val)), self::_localeBoolean);
+                        
+                        if (opCharacter == "\"") {
+                            //    UnEscape any quotes within the string
+                            let val = self::wrapResult(str_replace("\"\"", "\"", self::_unwrapResult(val)));
+                        } else {
+                            if (is_numeric(val)) {
+                                if ((strpos(val, ".") !== false) || (stripos(val, "e") !== false) || (val > PHP_INT_MAX) || (val < -PHP_INT_MAX)) {
+                                    let val = (float) val;
+                                } else {
+                                    let val = (int) val;
+                                }
+                            } else {
+                                if (isset(self::_excelConstants[trim(strtoupper(val))])) {
+                                        let excelConstant = trim(strtoupper(val));
+                                        let val = self::_excelConstants[excelConstant];
+                                    } else {
+                                        if (details !== false) {
+                                            let localeConstant = details;
+                                            let val = self::_excelConstants[localeConstant];
+                                        }
+                                    }
+                                let details = ["type": "Value", "value": val, "reference": null];
+                                
+                                if (localeConstant) {
+                                    let details["localeValue"] = localeConstant;
+                                }
+                            }
+                        }
+                        
+                        let output[] = details;
+                    }
                 }
-            } elseif (isset(self::_operators[opCharacter]) && !expectingOperator) {
-                return this->_raiseFormulaError("Formula Error: Unexpected operator 'opCharacter'");
-            } else {    // I don"t even want to know what you did to get here
-                return this->_raiseFormulaError("Formula Error: An unexpected error occured");
+                let index = index + length;
+            } else {
+                if (opCharacter == "") {    // absolute row or column range
+                    let index = index + 1;
+                } else {
+                    if (opCharacter == ")") {    // miscellaneous error checking
+                        if (expectingOperand) {
+                            let output[] = ["type": "NULL Value", "value": self::_excelConstants["NULL"], "reference": null];
+                            let expectingOperand = false;
+                            let expectingOperator = true;
+                        } else {
+                            return this->_raiseFormulaError("Formula Error: Unexpected ')'");
+                        }
+                    } else {
+                        if (isset(self::_operators[opCharacter]) && !expectingOperator) {
+                            return this->_raiseFormulaError("Formula Error: Unexpected operator 'opCharacter'");
+                        } else {    // I don"t even want to know what you did to get here
+                            return this->_raiseFormulaError("Formula Error: An unexpected error occured");
+                        }
+                    }
+                }
             }
             
             //    Test for end of formula string
@@ -3475,8 +3523,8 @@ class Calculation
     
     public function listFunctions()
     {
-    	var returnValue, functionName, functionn;
-    	
+        var returnValue, functionName, functionn;
+        
         // Return value
         let returnValue = [];
         // Loop functions
@@ -3501,8 +3549,8 @@ class Calculation
     
     public function listFunctionNames()
     {
-    	var returnValue, functionName, functionn;
-    	
+        var returnValue, functionName, functionn;
+        
         // Return value
         let returnValue = [];
         

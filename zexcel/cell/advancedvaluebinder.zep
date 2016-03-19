@@ -30,12 +30,14 @@ class AdvancedValueBinder extends DefaultValueBinder implements IValueBinder
                 cell->setValueExplicit(true, \ZExcel\Cell\DataType::TYPE_BOOL);
                 
                 return true;
-            } elseif (value == \ZExcel\Calculation::getFALSE()) {
-                cell->setValueExplicit(false, \ZExcel\Cell\DataType::TYPE_BOOL);
-                
-                return true;
+            } else {
+                if (value == \ZExcel\Calculation::getFALSE()) {
+                    cell->setValueExplicit(false, \ZExcel\Cell\DataType::TYPE_BOOL);
+                    
+                    return true;
+                }
             }
-
+            
             // Check for number in scientific format
             if (preg_match("/^" . \ZExcel\Calculation::CALCULATION_REGEXP_NUMBER . "$/", value)) {
                 cell->setValueExplicit((float) value, \ZExcel\Cell\DataType::TYPE_NUMERIC);
@@ -59,24 +61,26 @@ class AdvancedValueBinder extends DefaultValueBinder implements IValueBinder
                     ->setFormatCode("??/??");
                 
                 return true;
-            } elseif (preg_match("/^([+-]?)([0-9]*) +([0-9]*)\s?\/\s*([0-9]*)$/", value, matches)) {
-                // Convert value to number
-                let value = matches[2] + (matches[3] / matches[4]);
-                
-                if (matches[1] == "-") {
-                    let value = 0 - value;
+            } else {
+                if (preg_match("/^([+-]?)([0-9]*) +([0-9]*)\s?\/\s*([0-9]*)$/", value, matches)) {
+                    // Convert value to number
+                    let value = matches[2] + (matches[3] / matches[4]);
+                    
+                    if (matches[1] == "-") {
+                        let value = 0 - value;
+                    }
+                    
+                    cell->setValueExplicit((float) value, \ZExcel\Cell\DataType::TYPE_NUMERIC);
+                    // Set style
+                    cell->getWorksheet()
+                        ->getStyle(cell->getCoordinate())
+                        ->getNumberFormat()
+                        ->setFormatCode("# ??/??");
+                    
+                    return true;
                 }
-                
-                cell->setValueExplicit((float) value, \ZExcel\Cell\DataType::TYPE_NUMERIC);
-                // Set style
-                cell->getWorksheet()
-                    ->getStyle(cell->getCoordinate())
-                    ->getNumberFormat()
-                    ->setFormatCode("# ??/??");
-                
-                return true;
             }
-
+            
             // Check for percentage
             if (preg_match("/^\-?[0-9]*\.?[0-9]*\s?\%$/", value)) {
                 // Convert value to number
@@ -121,18 +125,20 @@ class AdvancedValueBinder extends DefaultValueBinder implements IValueBinder
                     ->setFormatCode(str_replace("", currencyCode, \ZExcel\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE));
                 
                 return true;
-            } elseif (preg_match("/^\$ *(\d{1,3}(\,\d{3})*|(\d+))(\.\d{2})?$/", value)) {
-                // Convert value to number
-                let value = (float) trim(str_replace(["",","], "", value));
-                
-                cell->setValueExplicit(value, \ZExcel\Cell\DataType::TYPE_NUMERIC);
-                // Set style
-                cell->getWorksheet()
-                    ->getStyle(cell->getCoordinate())
-                    ->getNumberFormat()
-                    ->setFormatCode(\ZExcel\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-                
-                return true;
+            } else {
+                if (preg_match("/^\$ *(\d{1,3}(\,\d{3})*|(\d+))(\.\d{2})?$/", value)) {
+                    // Convert value to number
+                    let value = (float) trim(str_replace(["",","], "", value));
+                    
+                    cell->setValueExplicit(value, \ZExcel\Cell\DataType::TYPE_NUMERIC);
+                    // Set style
+                    cell->getWorksheet()
+                        ->getStyle(cell->getCoordinate())
+                        ->getNumberFormat()
+                        ->setFormatCode(\ZExcel\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    
+                    return true;
+                }
             }
 
             // Check for time without seconds e.g. "9:45", "09:45"

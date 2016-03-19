@@ -150,10 +150,12 @@ class QRDecomposition
             for j in range(0, this->n - 1) {
                 if (i < j) {
                     let r[i][j] = this->qr[i][j];
-                } elseif (i == j) {
-                    let r[i][j] = this->rdiag[i];
                 } else {
-                    let r[i][j] = 0.0;
+                    if (i == j) {
+                        let r[i][j] = this->rdiag[i];
+                    } else {
+                        let r[i][j] = 0.0;
+                    }
                 }
             }
         }

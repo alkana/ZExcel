@@ -122,13 +122,15 @@ class BestFit
         //    Define X Values if necessary
         if (nX == 0) {
             let xValues = range(1, nY);
-        } elseif (nY != nX) {
-            //    Ensure both arrays of points are the same size
-            let this->error = true;
         } else {
-            let this->valueCount = nY;
-            let this->xValues = xValues;
-            let this->yValues = yValues;
+            if (nY != nX) {
+                //    Ensure both arrays of points are the same size
+                let this->error = true;
+            } else {
+                let this->valueCount = nY;
+                let this->xValues = xValues;
+                let this->yValues = yValues;
+            }
         }
     }
 

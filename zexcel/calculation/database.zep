@@ -83,18 +83,22 @@ class Database
             if (testConditionCount > 1) {
                 let testConditions[] = "OR(" . implode(",", testCondition) . ")";
                 let testConditionCount = testConditionCount + 1;
-            } elseif (testConditionCount == 1) {
-                let testConditions[] = testCondition[0];
-                let testConditionCount = testConditionCount + 1;
+            } else {
+                if (testConditionCount == 1) {
+                    let testConditions[] = testCondition[0];
+                    let testConditionCount = testConditionCount + 1;
+                }
             }
         }
 
         if (testConditionsCount > 1) {
             let testConditionSet = "AND(" . implode(",", testConditions) . ")";
-        } elseif (testConditionsCount == 1) {
-            let testConditionSet = testConditions[0];
+        } else {
+            if (testConditionsCount == 1) {
+                let testConditionSet = testConditions[0];
+            }
         }
-
+        
         //    Loop through each row of the database
         for dataRow, dataValues in database {
             //    Substitute actual values from the database row for our [:placeholders]

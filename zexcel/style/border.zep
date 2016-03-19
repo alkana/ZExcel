@@ -4,7 +4,7 @@ use ZExcel\IComparable as ZIComparable;
 
 class Border extends Supervisor implements ZIComparable
 {
-	/* Border style */
+    /* Border style */
     const BORDER_NONE             = "none";
     const BORDER_DASHDOT          = "dashDot";
     const BORDER_DASHDOTDOT       = "dashDotDot";
@@ -87,9 +87,9 @@ class Border extends Supervisor implements ZIComparable
 
     public function getStyleArray(array arry)
     {
-    	var key;
-    	
-    	array output = [];
+        var key;
+        
+        array output = [];
     
         switch (this->parentPropertyName) {
             case "allBorders":
@@ -116,8 +116,8 @@ class Border extends Supervisor implements ZIComparable
         if (is_array(pStyles)) {
             if (this->isSupervisor) {
                 this->getActiveSheet()
-                	->getStyle(this->getSelectedCells())
-                	->applyFromArray(this->getStyleArray(pStyles));
+                    ->getStyle(this->getSelectedCells())
+                    ->applyFromArray(this->getStyleArray(pStyles));
             } else {
                 if (isset(pStyles["style"])) {
                     this->setBorderStyle(pStyles["style"]);
@@ -147,17 +147,21 @@ class Border extends Supervisor implements ZIComparable
         
         if (empty(pValue)) {
             let pValue = \ZExcel\Style\Border::BORDER_NONE;
-        } elseif (is_bool(pValue) && pValue) {
-            let pValue = \ZExcel\Style\Border::BORDER_MEDIUM;
+        } else {
+            if (is_bool(pValue) && pValue) {
+                let pValue = \ZExcel\Style\Border::BORDER_MEDIUM;
+            }
         }
+        
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["style": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->borderStyle = pValue;
         }
+        
         return this;
     }
 
@@ -170,18 +174,18 @@ class Border extends Supervisor implements ZIComparable
     {
         var styleArray, color;
         
-    	let color = pValue;
-    	
+        let color = pValue;
+        
         // make sure parameter is a real color and not a supervisor
         if (pValue->getIsSupervisor()) {
-        	let color = pValue->getSharedComponent();
+            let color = pValue->getSharedComponent();
         }
         
         if (this->isSupervisor) {
             let styleArray = this->getColor()->getStyleArray(["argb": color->getARGB()]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->color = color;
         }

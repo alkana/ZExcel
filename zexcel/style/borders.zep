@@ -4,7 +4,7 @@ use ZExcel\IComparable as ZIComparable;
 
 class Borders extends Supervisor implements ZIComparable
 {
-	/* Diagonal directions */
+    /* Diagonal directions */
     const DIAGONAL_NONE = 0;
     const DIAGONAL_UP   = 1;
     const DIAGONAL_DOWN = 2;
@@ -138,8 +138,8 @@ class Borders extends Supervisor implements ZIComparable
         if (is_array(pStyles)) {
             if (this->isSupervisor) {
                 this->getActiveSheet()
-                	->getStyle(this->getSelectedCells())
-                	->applyFromArray(this->getStyleArray(pStyles));
+                    ->getStyle(this->getSelectedCells())
+                    ->applyFromArray(this->getStyleArray(pStyles));
             } else {
                 if (array_key_exists("left", pStyles)) {
                     this->getLeft()->applyFromArray(pStyles["left"]);
@@ -255,8 +255,8 @@ class Borders extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["diagonaldirection": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->diagonalDirection = pValue;
         }

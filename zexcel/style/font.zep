@@ -4,7 +4,7 @@ use ZExcel\IComparable as ZIComparable;
 
 class Font extends Supervisor implements ZIComparable
 {
-	/* Underline types */
+    /* Underline types */
     const UNDERLINE_NONE             = "none";
     const UNDERLINE_DOUBLE           = "double";
     const UNDERLINE_DOUBLEACCOUNTING = "doubleAccounting";
@@ -169,8 +169,8 @@ class Font extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["name": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->name = pValue;
         }
@@ -198,8 +198,8 @@ class Font extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["size": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->size = pValue;
         }
@@ -227,8 +227,8 @@ class Font extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["bold": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->bold = pValue;
         }
@@ -256,8 +256,8 @@ class Font extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["italic": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->italic = pValue;
         }
@@ -285,8 +285,8 @@ class Font extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["superScript": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->superScript = pValue;
             let this->subScript = !pValue;
@@ -315,8 +315,8 @@ class Font extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["subScript": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->subScript = pValue;
             let this->superScript = !pValue;
@@ -340,15 +340,17 @@ class Font extends Supervisor implements ZIComparable
         
         if (is_bool(pValue)) {
             let pValue = (pValue) ? self::UNDERLINE_SINGLE : self::UNDERLINE_NONE;
-        } elseif (pValue == "") {
-            let pValue = self::UNDERLINE_NONE;
+        } else {
+            if (pValue == "") {
+                let pValue = self::UNDERLINE_NONE;
+            }
         }
         
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["underline": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->underline = pValue;
         }
@@ -376,8 +378,8 @@ class Font extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["strike": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->strikethrough = pValue;
         }
@@ -393,19 +395,19 @@ class Font extends Supervisor implements ZIComparable
     public function setColor(<\ZExcel\Style\Color> pValue = null)
     {
         var color, styleArray;
-    	
-    	let color = pValue;
-    	
+        
+        let color = pValue;
+        
         // make sure parameter is a real color and not a supervisor
         if (pValue->getIsSupervisor()) {
-        	let color = pValue->getSharedComponent();
+            let color = pValue->getSharedComponent();
         }
         
         if (this->isSupervisor) {
             let styleArray = this->getColor()->getStyleArray(["argb": color->getARGB()]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->color = color;
         }

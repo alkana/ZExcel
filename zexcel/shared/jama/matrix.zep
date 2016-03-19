@@ -1355,11 +1355,13 @@ class Matrix
         if (abs(a) > abs(b)) {
             let r = b / a;
             let r = abs(a) * sqrt(1 + r * r);
-        } elseif (b != 0) {
-            let r = a / b;
-            let r = abs(b) * sqrt(1 + r * r);
         } else {
-            let r = 0.0;
+            if (b != 0) {
+                let r = a / b;
+                let r = abs(b) * sqrt(1 + r * r);
+            } else {
+                let r = 0.0;
+            }
         }
         
         return r;
@@ -1374,8 +1376,10 @@ class Matrix
         if (errorNumber != null) {
             if (isset(self::errors[self::jamaLang][errorNumber])) {
                 return self::errors[self::jamaLang][errorNumber];
-            } elseif (isset(self::errors["EN"][errorNumber])) {
-                return self::errors["EN"][errorNumber];
+            } else {
+                if (isset(self::errors["EN"][errorNumber])) {
+                    return self::errors["EN"][errorNumber];
+                }
             }
         }
 

@@ -767,11 +767,15 @@ class Engineering
             if (empty(imaginary) && (empty(realNumber) || (realNumber == "+") || (realNumber == "-"))) {
                 let imaginary = realNumber . "1";
                 let realNumber = strval(0);
-            } elseif (empty(imaginary)) {
-                let imaginary = realNumber;
-                let realNumber = strval(0);
-            } elseif ((imaginary == "+") || (imaginary == "-")) {
-                let imaginary = imaginary . "1";
+            } else {
+                if (empty(imaginary)) {
+                    let imaginary = realNumber;
+                    let realNumber = strval(0);
+                } else {
+                    if ((imaginary == "+") || (imaginary == "-")) {
+                        let imaginary = imaginary . "1";
+                    }
+                }
             }
         }
 
@@ -1187,11 +1191,14 @@ class Engineering
         
         if (strlen(x) > 10) {
             return \ZExcel\Calculation\Functions::NaN();
-        } elseif (strlen(x) == 10) {
-            //    Two"s Complement
-            let x = substr(x, -9);
-            return "-" . (512-bindec(x));
+        } else {
+            if (strlen(x) == 10) {
+                //    Two"s Complement
+                let x = substr(x, -9);
+                return "-" . (512-bindec(x));
+            }
         }
+        
         return bindec(x);
     }
 
@@ -1247,9 +1254,11 @@ class Engineering
         
         if (strlen(x) > 10) {
             return \ZExcel\Calculation\Functions::NaN();
-        } elseif (strlen(x) == 10) {
-            //    Two"s Complement
-            return str_repeat("F", 8).substr(strtoupper(dechex(bindec(substr(x, -9)))), -2);
+        } else {
+            if (strlen(x) == 10) {
+                //    Two"s Complement
+                return str_repeat("F", 8).substr(strtoupper(dechex(bindec(substr(x, -9)))), -2);
+            }
         }
         
         let hexVal = (string) strtoupper(dechex(bindec(x)));
@@ -1310,9 +1319,11 @@ class Engineering
         
         if (strlen(x) > 10) {
             return \ZExcel\Calculation\Functions::NaN();
-        } elseif (strlen(x) == 10) {
-            //    Two"s Complement
-            return str_repeat("7", 7).substr(strtoupper(decoct(bindec(substr(x, -9)))), -3);
+        } else {
+            if (strlen(x) == 10) {
+                //    Two"s Complement
+                return str_repeat("7", 7).substr(strtoupper(decoct(bindec(substr(x, -9)))), -3);
+            }
         }
         
         let octVal = (string) decoct(bindec(x));
@@ -1376,10 +1387,12 @@ class Engineering
         if (strlen(r) == 32) {
             //    Two's Complement
             let r = substr(r, -10);
-        } elseif (strlen(r) > 11) {
-            return \ZExcel\Calculation\Functions::NaN();
+        } else {
+            if (strlen(r) > 11) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
-
+        
         return self::nbrConversionFormat(r, places);
     }
 
@@ -1830,19 +1843,29 @@ class Engineering
             if (realNumber == 0.0) {
                 if ((imaginary) == 0.0) {
                     return strval(0);
-                } elseif ((imaginary) == 1.0) {
-                    return (suffix);
-                } elseif ((imaginary) == -1.0) {
-                    return ("-" . suffix);
+                } else {
+                    if ((imaginary) == 1.0) {
+                        return (suffix);
+                    } else {
+                        if ((imaginary) == -1.0) {
+                            return ("-" . suffix);
+                        }
+                    }
                 }
                 
                 return (strval(imaginary) . suffix);
-            } elseif (imaginary == 0.0) {
-                return (strval(realNumber));
-            } elseif (imaginary == 1.0) {
-                return (strval(realNumber) . "+" . suffix);
-            } elseif (imaginary == -1.0) {
-                return (strval(realNumber) . "-" . suffix);
+            } else {
+                if (imaginary == 0.0) {
+                    return (strval(realNumber));
+                } else {
+                    if (imaginary == 1.0) {
+                        return (strval(realNumber) . "+" . suffix);
+                    } else {
+                        if (imaginary == -1.0) {
+                            return (strval(realNumber) . "-" . suffix);
+                        }
+                    }
+                }
             }
             
             if (imaginary > 0.0) {
@@ -1953,18 +1976,24 @@ class Engineering
         if (parsedComplex["real"] == 0.0) {
             if (parsedComplex["imaginary"] == 0.0) {
                 return 0.0;
-            } elseif (parsedComplex["imaginary"] < 0.0) {
-                return M_PI / -2;
             } else {
-                return M_PI / 2;
+                if (parsedComplex["imaginary"] < 0.0) {
+                    return M_PI / -2;
+                } else {
+                    return M_PI / 2;
+                }
             }
-        } elseif (parsedComplex["real"] > 0.0) {
-            return atan(parsedComplex["imaginary"] / parsedComplex["real"]);
-        } elseif (parsedComplex["imaginary"] < 0.0) {
-            return 0 - (M_PI - atan(abs(parsedComplex["imaginary"]) / abs(parsedComplex["real"])));
         } else {
-            return M_PI - atan(parsedComplex["imaginary"] / abs(parsedComplex["real"]));
-        }
+            if (parsedComplex["real"] > 0.0) {
+                return atan(parsedComplex["imaginary"] / parsedComplex["real"]);
+            } else {
+                if (parsedComplex["imaginary"] < 0.0) {
+                    return 0 - (M_PI - atan(abs(parsedComplex["imaginary"]) / abs(parsedComplex["real"])));
+                } else {
+                    return M_PI - atan(parsedComplex["imaginary"] / abs(parsedComplex["real"]));
+                }
+            }
+       }
     }
 
 
@@ -2154,8 +2183,10 @@ class Engineering
 
         if ((parsedComplex["real"] == 0.0) && (parsedComplex["imaginary"] == 0.0)) {
             return \ZExcel\Calculation\Functions::NaN();
-        } elseif ((parsedComplex["real"] > 0.0) && (parsedComplex["imaginary"] == 0.0)) {
-            return log10(parsedComplex["real"]);
+        } else {
+            if ((parsedComplex["real"] > 0.0) && (parsedComplex["imaginary"] == 0.0)) {
+                return log10(parsedComplex["real"]);
+            }
         }
 
         return call_user_func(["\\ZExcel\\Calculation\\Engineering", "IMPRODUCT"], log10(self::EULER), self::imln(complexNumber));
@@ -2183,8 +2214,10 @@ class Engineering
 
         if ((parsedComplex["real"] == 0.0) && (parsedComplex["imaginary"] == 0.0)) {
             return \ZExcel\Calculation\Functions::NaN();
-        } elseif ((parsedComplex["real"] > 0.0) && (parsedComplex["imaginary"] == 0.0)) {
-            return log(parsedComplex["real"], 2);
+        } else {
+            if ((parsedComplex["real"] > 0.0) && (parsedComplex["imaginary"] == 0.0)) {
+                return log(parsedComplex["real"], 2);
+            }
         }
 
         return call_user_func(["\\ZExcel\\Calculation\\Engineering", "IMPRODUCT"], log(self::EULER, 2), self::imln(complexNumber));
@@ -2256,10 +2289,12 @@ class Engineering
         let theta = self::imargument(complexNumber) * realNumber;
         if (theta == 0) {
             return 1;
-        } elseif (parsedComplex["imaginary"] == 0.0) {
-            return self::CoMPLEX(rPower * cos(theta), rPower * sin(theta), parsedComplex["suffix"]);
         } else {
-            return self::CoMPLEX(rPower * cos(theta), rPower * sin(theta), parsedComplex["suffix"]);
+            if (parsedComplex["imaginary"] == 0.0) {
+                return self::CoMPLEX(rPower * cos(theta), rPower * sin(theta), parsedComplex["suffix"]);
+            } else {
+                return self::CoMPLEX(rPower * cos(theta), rPower * sin(theta), parsedComplex["suffix"]);
+            }
         }
     }
 
@@ -2302,10 +2337,12 @@ class Engineering
 
         if ((double) i > 0.0) {
             return self::cleanComplex(r . "+" . i . parsedComplexDivisor["suffix"]);
-        } elseif (i < 0.0) {
-            return self::cleanComplex(r . i . parsedComplexDivisor["suffix"]);
         } else {
-            return r;
+            if (i < 0.0) {
+                return self::cleanComplex(r . i . parsedComplexDivisor["suffix"]);
+            } else {
+                return r;
+            }
         }
     }
 
@@ -2340,10 +2377,12 @@ class Engineering
 
         if (((parsedComplex1["suffix"] != "") && (parsedComplex2["suffix"] != "")) && (parsedComplex1["suffix"] != parsedComplex2["suffix"])) {
             return \ZEXcel\Calculation\Functions::NaN();
-        } elseif ((parsedComplex1["suffix"] == "") && (parsedComplex2["suffix"] != "")) {
-            let parsedComplex1["suffix"] = parsedComplex2["suffix"];
+        } else {
+            if ((parsedComplex1["suffix"] == "") && (parsedComplex2["suffix"] != "")) {
+                let parsedComplex1["suffix"] = parsedComplex2["suffix"];
+            }
         }
-
+        
         let d1 = parsedComplex1["real"] - parsedComplex2["real"];
         let d2 = parsedComplex1["imaginary"] - parsedComplex2["imaginary"];
 
@@ -2376,10 +2415,12 @@ class Engineering
 
             if (activeSuffix == "") {
                 let activeSuffix = parsedComplex["suffix"];
-            } elseif ((parsedComplex["suffix"] != "") && (activeSuffix != parsedComplex["suffix"])) {
-                return \ZExcel\Calculation\Functions::VaLUE();
+            } else {
+                if ((parsedComplex["suffix"] != "") && (activeSuffix != parsedComplex["suffix"])) {
+                    return \ZExcel\Calculation\Functions::VaLUE();
+                }
             }
-
+            
             let returnValue["real"] = returnValue["real"] + parsedComplex["real"];
             let returnValue["imaginary"] = returnValue["imaginary"] + parsedComplex["imaginary"];
         }
@@ -2419,8 +2460,10 @@ class Engineering
             
             if ((parsedComplex["suffix"] != "") && (activeSuffix == "")) {
                 let activeSuffix = parsedComplex["suffix"];
-            } elseif ((parsedComplex["suffix"] != "") && (activeSuffix != parsedComplex["suffix"])) {
-                return \ZExcel\Calculation\Functions::NaN();
+            } else {
+                if ((parsedComplex["suffix"] != "") && (activeSuffix != parsedComplex["suffix"])) {
+                    return \ZExcel\Calculation\Functions::NaN();
+                }
             }
             
             let returnValue["real"] = (workValue["real"] * parsedComplex["real"]) - (workValue["imaginary"] * parsedComplex["imaginary"]);
@@ -2768,33 +2811,43 @@ class Engineering
         if ((fromUOM == toUOM) && (fromMultiplier == toMultiplier)) {
             // We"ve already factored fromMultiplier into the value, so we need to reverse it again
             return value / fromMultiplier;
-        } elseif (unitGroup1 == "Temperature") {
-            if ((fromUOM == "F") || (fromUOM == "fah")) {
-                if ((toUOM == "F") || (toUOM == "fah")) {
-                    return value;
-                } else {
-                    let value = ((value - 32) / 1.8);
-                    if ((toUOM == "K") || (toUOM == "kel")) {
-                        let value = value + 273.15;
-                    }
-                    return value;
-                }
-            } elseif (((fromUOM == "K") || (fromUOM == "kel")) && ((toUOM == "K") || (toUOM == "kel"))) {
+        } else {
+            if (unitGroup1 == "Temperature") {
+                if ((fromUOM == "F") || (fromUOM == "fah")) {
+                    if ((toUOM == "F") || (toUOM == "fah")) {
                         return value;
-            } elseif (((fromUOM == "C") || (fromUOM == "cel")) && ((toUOM == "C") || (toUOM == "cel"))) {
-                    return value;
-            }
-            if ((toUOM == "F") || (toUOM == "fah")) {
-                if ((fromUOM == "K") || (fromUOM == "kel")) {
-                    let value = value - 273.15;
+                    } else {
+                        let value = ((value - 32) / 1.8);
+                        if ((toUOM == "K") || (toUOM == "kel")) {
+                            let value = value + 273.15;
+                        }
+                        return value;
+                    }
+                } else {
+                    if (((fromUOM == "K") || (fromUOM == "kel")) && ((toUOM == "K") || (toUOM == "kel"))) {
+                                return value;
+                    } else {
+                        if (((fromUOM == "C") || (fromUOM == "cel")) && ((toUOM == "C") || (toUOM == "cel"))) {
+                                return value;
+                        }
+                    }
                 }
-                return (value * 1.8) + 32;
+                
+                if ((toUOM == "F") || (toUOM == "fah")) {
+                    if ((fromUOM == "K") || (fromUOM == "kel")) {
+                        let value = value - 273.15;
+                    }
+                    return (value * 1.8) + 32;
+                }
+                
+                if ((toUOM == "C") || (toUOM == "cel")) {
+                    return value - 273.15;
+                }
+                
+                return value + 273.15;
             }
-            if ((toUOM == "C") || (toUOM == "cel")) {
-                return value - 273.15;
-            }
-            return value + 273.15;
         }
+        
         return (value * self::unitConversions[unitGroup1][fromUOM][toUOM]) / toMultiplier;
     }
 }

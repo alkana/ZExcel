@@ -139,8 +139,10 @@ class LookupRef
         
         if (is_null(cellAddress) || cellAddress === "") {
             return 1;
-        } elseif (!is_array(cellAddress)) {
-            return \ZExcel\Calculation\Functions::VaLUE();
+        } else {
+            if (!is_array(cellAddress)) {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
         }
 
         reset(cellAddress);
@@ -239,8 +241,10 @@ class LookupRef
         
         if (is_null(cellAddress) || cellAddress === "") {
             return 1;
-        } elseif (!is_array(cellAddress)) {
-            return \ZExcel\Calculation\Functions::VaLUE();
+        } else {
+            if (!is_array(cellAddress)) {
+                return \ZExcel\Calculation\Functions::VaLUE();
+            }
         }
 
         reset(cellAddress);
@@ -592,9 +596,11 @@ class LookupRef
         if (match_type == 1) {
             asort(lookup_array);
             let keySet = array_keys(lookup_array);
-        } elseif (match_type == -1) {
-            arsort(lookup_array);
-            let keySet = array_keys(lookup_array);
+        } else {
+            if (match_type == -1) {
+                arsort(lookup_array);
+                let keySet = array_keys(lookup_array);
+            }
         }
 
         // **
@@ -604,25 +610,29 @@ class LookupRef
             if ((match_type == 0) && (lookupArrayValue == lookup_value)) {
                 //    exact match
                 return (i + 1);
-            } elseif ((match_type == -1) && (lookupArrayValue <= lookup_value)) {
-                let i = array_search(i, keySet);
-                // if match_type is -1 <=> find the smallest value that is greater than or equal to lookup_value
-                if (i < 1) {
-                    // 1st cell was already smaller than the lookup_value
-                    break;
+            } else {
+                if ((match_type == -1) && (lookupArrayValue <= lookup_value)) {
+                    let i = array_search(i, keySet);
+                    // if match_type is -1 <=> find the smallest value that is greater than or equal to lookup_value
+                    if (i < 1) {
+                        // 1st cell was already smaller than the lookup_value
+                        break;
+                    } else {
+                        // the previous cell was the match
+                        return keySet[i - 1] + 1;
+                    }
                 } else {
-                    // the previous cell was the match
-                    return keySet[i - 1] + 1;
-                }
-            } elseif ((match_type == 1) && (lookupArrayValue >= lookup_value)) {
-                let i = array_search(i, keySet);
-                // if match_type is 1 <=> find the largest value that is less than or equal to lookup_value
-                if (i < 1) {
-                    // 1st cell was already bigger than the lookup_value
-                    break;
-                } else {
-                    // the previous cell was the match
-                    return keySet[i - 1] + 1;
+                    if ((match_type == 1) && (lookupArrayValue >= lookup_value)) {
+                        let i = array_search(i, keySet);
+                        // if match_type is 1 <=> find the largest value that is less than or equal to lookup_value
+                        if (i < 1) {
+                            // 1st cell was already bigger than the lookup_value
+                            break;
+                        } else {
+                            // the previous cell was the match
+                            return keySet[i - 1] + 1;
+                        }
+                    }
                 }
             }
         }
@@ -663,29 +673,31 @@ class LookupRef
 
         if (columnNum > count(columnKeys)) {
             return \ZExcel\Calculation\Functions::VaLUE();
-        } elseif (columnNum == 0) {
-            
-            if (rowNum == 0) {
-                return arrayValues;
-            }
-            
-            let rowNum = rowNum - 1;
-            let rowNum = rowKeys[rowNum];
-            let returnArray = [];
-            
-            for arrayColumn in arrayValues {
-                if (is_array(arrayColumn)) {
-                    if (isset(arrayColumn[rowNum])) {
-                        let returnArray[] = arrayColumn[rowNum];
+        } else {
+            if (columnNum == 0) {
+                
+                if (rowNum == 0) {
+                    return arrayValues;
+                }
+                
+                let rowNum = rowNum - 1;
+                let rowNum = rowKeys[rowNum];
+                let returnArray = [];
+                
+                for arrayColumn in arrayValues {
+                    if (is_array(arrayColumn)) {
+                        if (isset(arrayColumn[rowNum])) {
+                            let returnArray[] = arrayColumn[rowNum];
+                        } else {
+                            return arrayValues[rowNum];
+                        }
                     } else {
                         return arrayValues[rowNum];
                     }
-                } else {
-                    return arrayValues[rowNum];
                 }
+                
+                return returnArray;
             }
-            
-            return returnArray;
         }
         
         let columnNum = columnNum - 1;
@@ -693,8 +705,10 @@ class LookupRef
         
         if (rowNum > count(rowKeys)) {
             return \ZExcel\Calculation\Functions::VaLUE();
-        } elseif (rowNum == 0) {
-            return arrayValues[columnNum];
+        } else {
+            if (rowNum == 0) {
+                return arrayValues[columnNum];
+            }
         }
         
         let rowNum = rowNum - 1;

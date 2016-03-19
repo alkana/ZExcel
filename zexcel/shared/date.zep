@@ -184,15 +184,17 @@ class Date
                 dateValue->format("i"),
                 dateValue->format("s")
             );
-        } elseif (is_numeric(dateValue)) {
-            let retValue = self::FormattedPHPToExcel(
-                date("Y",dateValue),
-                date("m",dateValue),
-                date("d",dateValue),
-                date("H",dateValue),
-                date("i",dateValue),
-                date("s",dateValue)
-            );
+        } else {
+            if (is_numeric(dateValue)) {
+                let retValue = self::FormattedPHPToExcel(
+                    date("Y",dateValue),
+                    date("m",dateValue),
+                    date("d",dateValue),
+                    date("H",dateValue),
+                    date("i",dateValue),
+                    date("s",dateValue)
+                );
+            }
         }
         
         date_default_timezone_set(saveTimeZone);

@@ -2,7 +2,7 @@ namespace ZExcel;
 
 class Style extends Style\Supervisor implements IComparable
 {
-	/**
+    /**
      * Font
      *
      * @var \ZExcel\Style_Font
@@ -110,8 +110,8 @@ class Style extends Style\Supervisor implements IComparable
      */
     public function getSharedComponent()
     {
-    	var activeSheet, selectedCell, xfIndex = 0;
-    	
+        var activeSheet, selectedCell, xfIndex = 0;
+        
         let activeSheet = this->getActiveSheet();
         let selectedCell = this->getActiveCell(); // e.g. "A1"
 
@@ -353,10 +353,12 @@ class Style extends Style\Supervisor implements IComparable
                 // Selection type, inspect
                 if (preg_match("/^[A-Z]+1:[A-Z]+1048576$/", pRange)) {
                     let selectionType = "COLUMN";
-                } elseif (preg_match("/^A[0-9]+:XFD[0-9]+$/", pRange)) {
-                    let selectionType = "ROW";
                 } else {
-                    let selectionType = "CELL";
+                    if (preg_match("/^A[0-9]+:XFD[0-9]+$/", pRange)) {
+                        let selectionType = "ROW";
+                    } else {
+                        let selectionType = "CELL";
+                    }
                 }
 
                 // First loop through columns, rows, or cells to find out which styles are affected by this operation
@@ -591,8 +593,8 @@ class Style extends Style\Supervisor implements IComparable
      */
     public function setQuotePrefix(var pValue)
     {
-    	array styleArray = [];
-    	
+        array styleArray = [];
+        
         if (pValue == "") {
             let pValue = false;
         }
@@ -614,7 +616,7 @@ class Style extends Style\Supervisor implements IComparable
      */
     public function getHashCode()
     {
-    	var conditional;
+        var conditional;
         string hashConditionals = "";
         
         for conditional in this->conditionalStyles {

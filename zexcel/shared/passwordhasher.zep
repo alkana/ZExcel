@@ -13,8 +13,8 @@ class PasswordHasher
      * @return     string                Hashed password
      */
     public static function hashPassword(pPassword = "") {
-    	var password, charPos, chars, chr, value, rotated_bits;
-    	
+        var password, charPos, chars, chr, value, rotated_bits;
+        
         let password    = 0x0000;
         let charPos    = 1;       // char position
 
@@ -22,7 +22,7 @@ class PasswordHasher
         let chars = preg_split("//", pPassword, -1, PREG_SPLIT_NO_EMPTY);
         for chr in chars {
             let value        = ord(chr) << charPos;    // shifted ASCII value
-        	let charPos      = charPos + 1;
+            let charPos      = charPos + 1;
             let rotated_bits = value >> 15;                // rotated bits beyond bit 15
             let value        = value & 0x7fff;                    // first 15 bits
             let password     = password ^ (value | rotated_bits);

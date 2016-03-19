@@ -26,16 +26,18 @@ class Excel5
             let columnDimension = columnDimensions[col];
             let width = columnDimension->getWidth();
             let pixelWidth = \ZExcel\Shared\Drawing::cellDimensionToPixels(width, font);
-        } elseif (sheet->getDefaultColumnDimension()->getWidth() != -1) {
-            // then we have default column dimension with explicit width
-            let defaultColumnDimension = sheet->getDefaultColumnDimension();
-            let width = defaultColumnDimension->getWidth();
-            let pixelWidth = \ZExcel\Shared\Drawing::cellDimensionToPixels(width, font);
         } else {
-            // we don"t even have any default column dimension. Width depends on default font
-            let pixelWidth = \ZExcel\Shared\Font::getDefaultColumnWidthByFont(font, true);
+            if (sheet->getDefaultColumnDimension()->getWidth() != -1) {
+                // then we have default column dimension with explicit width
+                let defaultColumnDimension = sheet->getDefaultColumnDimension();
+                let width = defaultColumnDimension->getWidth();
+                let pixelWidth = \ZExcel\Shared\Drawing::cellDimensionToPixels(width, font);
+            } else {
+                // we don"t even have any default column dimension. Width depends on default font
+                let pixelWidth = \ZExcel\Shared\Font::getDefaultColumnWidthByFont(font, true);
+            }
         }
-
+        
         // now find the effective column width in pixels
         if (isset(columnDimensions[col]) && !columnDimensions[col]->getVisible()) {
             let effectivePixelWidth = 0;
@@ -70,17 +72,19 @@ class Excel5
             let rowDimension = rowDimensions[row];
             let rowHeight = rowDimension->getRowHeight();
             let pixelRowHeight = (int) ceil(4 * rowHeight / 3); // here we assume Arial 10
-        } elseif (sheet->getDefaultRowDimension()->getRowHeight() != -1) {
-            // then we have a default row dimension with explicit height
-            let defaultRowDimension = sheet->getDefaultRowDimension();
-            let rowHeight = defaultRowDimension->getRowHeight();
-            let pixelRowHeight = \ZExcel\Shared\Drawing::pointsToPixels(rowHeight);
         } else {
-            // we don"t even have any default row dimension. Height depends on default font
-            let pointRowHeight = \ZExcel\Shared\Font::getDefaultRowHeightByFont(font);
-            let pixelRowHeight = \ZExcel\Shared\Font::fontSizeToPixels(pointRowHeight);
+            if (sheet->getDefaultRowDimension()->getRowHeight() != -1) {
+                // then we have a default row dimension with explicit height
+                let defaultRowDimension = sheet->getDefaultRowDimension();
+                let rowHeight = defaultRowDimension->getRowHeight();
+                let pixelRowHeight = \ZExcel\Shared\Drawing::pointsToPixels(rowHeight);
+            } else {
+                // we don"t even have any default row dimension. Height depends on default font
+                let pointRowHeight = \ZExcel\Shared\Font::getDefaultRowHeightByFont(font);
+                let pixelRowHeight = \ZExcel\Shared\Font::fontSizeToPixels(pointRowHeight);
+            }
         }
-
+        
         // now find the effective row height in pixels
         if (isset(rowDimensions[row]) && !rowDimensions[row]->getVisible()) {
             let effectivePixelRowHeight = 0;

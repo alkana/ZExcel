@@ -38,13 +38,15 @@ class HashTable
      */
     public function addFromSource(pSource = null)
     {
-    	var item;
-    	
+        var item;
+        
         // Check if an array was passed
         if (pSource == null) {
             return null;
-        } elseif (!is_array(pSource)) {
-            throw new \ZExcel\Exception("Invalid array parameter passed.");
+        } else {
+            if (!is_array(pSource)) {
+                throw new \ZExcel\Exception("Invalid array parameter passed.");
+            }
         }
 
         for item in pSource {
@@ -60,8 +62,8 @@ class HashTable
      */
     public function add(<\ZExcel\IComparable> pSource = null)
     {
-    	var hash;
-    	
+        var hash;
+        
         let hash = pSource->getHashCode();
         
         if (!isset(this->_items[hash])) {
@@ -78,8 +80,8 @@ class HashTable
      */
     public function remove(<\ZExcel\IComparable> pSource = null)
     {
-    	var hash, deleteKey, key, value;
-    	
+        var hash, deleteKey, key, value;
+        
         let hash = pSource->getHashCode();
         
         if (isset(this->_items[hash])) {
@@ -179,8 +181,8 @@ class HashTable
      */
     public function __clone()
     {
-    	var vars, key, value;
-    	
+        var vars, key, value;
+        
         let vars = get_object_vars(this);
         
         for key, value in vars {

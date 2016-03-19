@@ -58,11 +58,13 @@ class TrendClass
         //    Define X Values if necessary
         if (nX == 0) {
             let xValues = range(1, nY);
-        } elseif (nY != nX) {
-            //    Ensure both arrays of points are the same size
-            trigger_error("trend(): Number of elements in coordinate arrays do not match.", E_USER_ERROR);
+        } else {
+            if (nY != nX) {
+                //    Ensure both arrays of points are the same size
+                trigger_error("trend(): Number of elements in coordinate arrays do not match.", E_USER_ERROR);
+            }
         }
-
+        
         let key = md5(trendType . constt . serialize(yValues) . serialize(xValues));
         
         //    Determine which trend method has been requested

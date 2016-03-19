@@ -17,19 +17,31 @@ class TextData
         
         if (ord(c0) >= 0 && ord(c0) <= 127) {
             return ord(c0);
-        } elseif (ord(c0) >= 192 && ord(c0) <= 223) {
-            return (ord(c0) - 192) * 64 + (ord(c1) - 128);
-        } elseif (ord(c0) >= 224 && ord(c0) <= 239) {
-            return (ord(c0) - 224) * 4096 + (ord(c1) - 128) * 64 + (ord(c2) - 128);
-        } elseif (ord(c0) >= 240 && ord(c0) <= 247) {
-            return (ord(c0) - 240) * 262144 + (ord(c1) - 128) * 4096 + (ord(c2) - 128) * 64 + (ord(c3) - 128);
-        } elseif (ord(c0) >= 248 && ord(c0) <= 251) {
-            return (ord(c0) - 248) * 16777216 + (ord(c1) - 128) * 262144 + (ord(c2) - 128) * 4096 + (ord(c3) - 128) * 64 + (ord(c4) - 128);
-        } elseif (ord(c0) >= 252 && ord(c0) <= 253) {
-            return (ord(c0) - 252) * 1073741824 + (ord(c1) - 128) * 16777216 + (ord(c2) - 128) * 262144 + (ord(c3) - 128) * 4096 + (ord(c4) - 128) * 64 + (ord(c5) - 128);
-        } elseif (ord(c0) >= 254 && ord(c0) <= 255) {
-            // error
-            return \ZExcel\Calculation\Functions::VaLUE();
+        } else {
+            if (ord(c0) >= 192 && ord(c0) <= 223) {
+                return (ord(c0) - 192) * 64 + (ord(c1) - 128);
+            } else {
+                if (ord(c0) >= 224 && ord(c0) <= 239) {
+                    return (ord(c0) - 224) * 4096 + (ord(c1) - 128) * 64 + (ord(c2) - 128);
+                } else {
+                    if (ord(c0) >= 240 && ord(c0) <= 247) {
+                        return (ord(c0) - 240) * 262144 + (ord(c1) - 128) * 4096 + (ord(c2) - 128) * 64 + (ord(c3) - 128);
+                    } else {
+                        if (ord(c0) >= 248 && ord(c0) <= 251) {
+                            return (ord(c0) - 248) * 16777216 + (ord(c1) - 128) * 262144 + (ord(c2) - 128) * 4096 + (ord(c3) - 128) * 64 + (ord(c4) - 128);
+                        } else {
+                            if (ord(c0) >= 252 && ord(c0) <= 253) {
+                                return (ord(c0) - 252) * 1073741824 + (ord(c1) - 128) * 16777216 + (ord(c2) - 128) * 262144 + (ord(c3) - 128) * 4096 + (ord(c4) - 128) * 64 + (ord(c5) - 128);
+                            } else {
+                                if (ord(c0) >= 254 && ord(c0) <= 255) {
+                                    // error
+                                    return \ZExcel\Calculation\Functions::VaLUE();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         
         return 0;
@@ -126,10 +138,12 @@ class TextData
         if (is_bool(characters)) {
             if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_OPENOFFICE) {
                 let characters = (int) characters;
-            } elseif (characters === true) {
-                let characters = \ZExcel\Calculation::getTRUE();
             } else {
-                let characters = \ZExcel\Calculation::getFALSE();
+                if (characters === true) {
+                    let characters = \ZExcel\Calculation::getTRUE();
+                } else {
+                    let characters = \ZExcel\Calculation::getFALSE();
+                }
             }
         }
 
@@ -168,10 +182,12 @@ class TextData
             if (is_bool(arg)) {
                 if (\ZExcel\Calculation\Functions::getCompatibilityMode() == \ZExcel\Calculation\Functions::COMPATIBILITY_OPENOFFICE) {
                     let arg = (int) arg;
-                } elseif (arg) {
-                    let arg = \ZExcel\Calculation::getTRUE();
                 } else {
-                    let arg = \ZExcel\Calculation::getFALSE();
+                    if (arg) {
+                        let arg = \ZExcel\Calculation::getTRUE();
+                    } else {
+                        let arg = \ZExcel\Calculation::getFALSE();
+                    }
                 }
             }
             let returnValue = returnValue . (string) arg;

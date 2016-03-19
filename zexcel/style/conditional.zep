@@ -4,7 +4,7 @@ use ZExcel\IComparable as ZIComparable;
 
 class Conditional implements ZIComparable
 {
-	/* Condition types */
+    /* Condition types */
     const CONDITION_NONE         = "none";
     const CONDITION_CELLIS       = "cellIs";
     const CONDITION_CONTAINSTEXT = "containsText";
@@ -169,8 +169,8 @@ class Conditional implements ZIComparable
 
     public function __clone()
     {
-    	var vars, key, value;
-    	
+        var vars, key, value;
+        
         let vars = get_object_vars(this);
         
         for key, value in vars {

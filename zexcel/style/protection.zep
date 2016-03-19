@@ -4,7 +4,7 @@ use ZExcel\IComparable as ZIComparable;
 
 class Protection extends Supervisor implements ZIComparable
 {
-	/** Protection styles */
+    /** Protection styles */
     const PROTECTION_INHERIT      = "inherit";
     const PROTECTION_PROTECTED    = "protected";
     const PROTECTION_UNPROTECTED  = "unprotected";
@@ -129,8 +129,8 @@ class Protection extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["locked": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->locked = pValue;
         }
@@ -163,8 +163,8 @@ class Protection extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["hidden": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->hidden = pValue;
         }

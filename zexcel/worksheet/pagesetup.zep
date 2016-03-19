@@ -558,11 +558,16 @@ class PageSetup
     
         if (strpos(value,"!") !== false) {
             throw new \ZExcel\Exception("Cell coordinate must not specify a worksheet.");
-        } elseif (strpos(value,":") === false) {
-            throw new \ZExcel\Exception("Cell coordinate must be a range of cells.");
-        } elseif (strpos(value,"$") !== false) {
-            throw new \ZExcel\Exception("Cell coordinate must not be absolute.");
+        } else {
+            if (strpos(value,":") === false) {
+                throw new \ZExcel\Exception("Cell coordinate must be a range of cells.");
+            } else {
+                if (strpos(value,"$") !== false) {
+                    throw new \ZExcel\Exception("Cell coordinate must not be absolute.");
+                }
+            }
         }
+        
         let value = strtoupper(value);
 
         if (method == self::SETPRINTRANGE_OVERWRITE) {
@@ -582,26 +587,28 @@ class PageSetup
                 
                 let this->_printArea = implode(",", printAreas);
             }
-        } elseif(method == self::SETPRINTRANGE_INSERT) {
-            if (index == 0) {
-                let this->_printArea = this->_printArea . ((this->_printArea == "") ? value : "," . value);
-            } else {
-                let printAreas = explode(",", this->_printArea);
-                if(index < 0) {
-                    let index = abs(index) - 1;
-                }
-                if (index > count(printAreas)) {
-                    throw new \ZExcel\Exception("Invalid index for setting print range.");
-                }
-                let printAreas = array_merge(
-                    array_slice(printAreas, 0, index),
-                    [value],
-                    array_slice(printAreas, index)
-                );
-                let this->_printArea = implode(",", printAreas);
-            }
         } else {
-            throw new \ZExcel\Exception("Invalid method for setting print range.");
+            if(method == self::SETPRINTRANGE_INSERT) {
+                if (index == 0) {
+                    let this->_printArea = this->_printArea . ((this->_printArea == "") ? value : "," . value);
+                } else {
+                    let printAreas = explode(",", this->_printArea);
+                    if(index < 0) {
+                        let index = abs(index) - 1;
+                    }
+                    if (index > count(printAreas)) {
+                        throw new \ZExcel\Exception("Invalid index for setting print range.");
+                    }
+                    let printAreas = array_merge(
+                        array_slice(printAreas, 0, index),
+                        [value],
+                        array_slice(printAreas, index)
+                    );
+                    let this->_printArea = implode(",", printAreas);
+                }
+            } else {
+                throw new \ZExcel\Exception("Invalid method for setting print range.");
+            }
         }
 
         return this;

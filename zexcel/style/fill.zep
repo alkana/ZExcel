@@ -4,7 +4,7 @@ use ZExcel\IComparable as ZIComparable;
 
 class Fill extends Supervisor implements ZIComparable
 {
-	/* Fill types */
+    /* Fill types */
     const FILL_NONE                    = "none";
     const FILL_SOLID                   = "solid";
     const FILL_GRADIENT_LINEAR         = "linear";
@@ -89,8 +89,8 @@ class Fill extends Supervisor implements ZIComparable
         if (is_array(pStyles)) {
             if (this->isSupervisor) {
                 this->getActiveSheet()
-                	->getStyle(this->getSelectedCells())
-                	->applyFromArray(this->getStyleArray(pStyles));
+                    ->getStyle(this->getSelectedCells())
+                    ->applyFromArray(this->getStyleArray(pStyles));
             } else {
                 if (array_key_exists("type", pStyles)) {
                     this->setFillType(pStyles["type"]);
@@ -154,8 +154,8 @@ class Fill extends Supervisor implements ZIComparable
         if (this->isSupervisor) {
             let styleArray = this->getStyleArray(["rotation": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->rotation = pValue;
         }
@@ -170,20 +170,20 @@ class Fill extends Supervisor implements ZIComparable
 
     public function setStartColor(<\ZExcel\Style\Color> pValue = null)
     {
-    	var color, styleArray;
-    	
-    	let color = pValue;
-    	
+        var color, styleArray;
+        
+        let color = pValue;
+        
         // make sure parameter is a real color and not a supervisor
         if (pValue->getIsSupervisor()) {
-        	let color = pValue->getSharedComponent();
+            let color = pValue->getSharedComponent();
         }
         
         if (this->isSupervisor) {
             let styleArray = this->getStartColor()->getStyleArray(["argb": color->getARGB()]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->startColor = color;
         }
@@ -199,19 +199,19 @@ class Fill extends Supervisor implements ZIComparable
     public function setEndColor(<\ZExcel\Style\Color> pValue = null)
     {
         var color, styleArray;
-    	
-    	let color = pValue;
-    	
+        
+        let color = pValue;
+        
         // make sure parameter is a real color and not a supervisor
         if (pValue->getIsSupervisor()) {
-        	let color = pValue->getSharedComponent();
+            let color = pValue->getSharedComponent();
         }
         
         if (this->isSupervisor) {
             let styleArray = this->getEndColor()->getStyleArray(["argb": color->getARGB()]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->endColor = color;
         }

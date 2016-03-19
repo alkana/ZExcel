@@ -73,19 +73,25 @@ class Logical
             // Is it a boolean value?
             if (is_bool(arg)) {
                 let returnValue = returnValue && arg;
-            } elseif ((is_numeric(arg)) && (!is_string(arg))) {
-                let returnValue = returnValue && (arg != 0);
-            } elseif (is_string(arg)) {
-                let arg = strtoupper(arg);
-                if ((arg == "TRUE") || (arg == \ZExcel\Calculation::getTRUE())) {
-                    let arg = true;
-                } elseif ((arg == "FALSE") || (arg == \ZExcel\Calculation::getFALSE())) {
-                    let arg = false;
+            } else {
+                if ((is_numeric(arg)) && (!is_string(arg))) {
+                    let returnValue = returnValue && (arg != 0);
                 } else {
-                    return \ZExcel\Calculation\Functions::value();
+                    if (is_string(arg)) {
+                        let arg = strtoupper(arg);
+                        if ((arg == "TRUE") || (arg == \ZExcel\Calculation::getTRUE())) {
+                            let arg = true;
+                        } else {
+                            if ((arg == "FALSE") || (arg == \ZExcel\Calculation::getFALSE())) {
+                                let arg = false;
+                            } else {
+                                return \ZExcel\Calculation\Functions::value();
+                            }
+                        }
+                        
+                        let returnValue = returnValue && (arg != 0);
+                    }
                 }
-                
-                let returnValue = returnValue && (arg != 0);
             }
         }
 
@@ -133,18 +139,25 @@ class Logical
             // Is it a boolean value?
             if (is_bool(arg)) {
                 let returnValue = returnValue || arg;
-            } elseif ((is_numeric(arg)) && (!is_string(arg))) {
-                let returnValue = returnValue || (arg != 0);
-            } elseif (is_string(arg)) {
-                let arg = strtoupper(arg);
-                if ((arg == "TRUE") || (arg == \ZExcel\Calculation::getTRUE())) {
-                    let arg = true;
-                } elseif ((arg == "FALSE") || (arg == \ZExcel\Calculation::getFALSE())) {
-                    let arg = false;
+            } else {
+                if ((is_numeric(arg)) && (!is_string(arg))) {
+                    let returnValue = returnValue || (arg != 0);
                 } else {
-                    return \ZExcel\Calculation\Functions::value();
+                    if (is_string(arg)) {
+                        let arg = strtoupper(arg);
+                        if ((arg == "TRUE") || (arg == \ZExcel\Calculation::getTRUE())) {
+                            let arg = true;
+                        } else {
+                            if ((arg == "FALSE") || (arg == \ZExcel\Calculation::getFALSE())) {
+                                let arg = false;
+                            } else {
+                                return \ZExcel\Calculation\Functions::value();
+                            }
+                        }
+                        
+                        let returnValue = returnValue || (arg != 0);
+                    }
                 }
-                let returnValue = returnValue || (arg != 0);
             }
         }
 
@@ -180,14 +193,18 @@ class Logical
     public static function not(var logical = false)
     {
         let logical = \ZExcel\Calculation\Functions::flattenSingleValue(logical);
+        
         if (is_string(logical)) {
             let logical = strtoupper(logical);
+            
             if ((logical == "TRUE") || (logical == \ZExcel\Calculation::getTRUE())) {
                 return false;
-            } elseif ((logical == "FALSE") || (logical == \ZExcel\Calculation::getFALSE())) {
-                return true;
             } else {
-                return \ZExcel\Calculation\Functions::value();
+                if ((logical == "FALSE") || (logical == \ZExcel\Calculation::getFALSE())) {
+                    return true;
+                } else {
+                    return \ZExcel\Calculation\Functions::value();
+                }
             }
         }
 

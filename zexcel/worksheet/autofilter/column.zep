@@ -366,19 +366,21 @@ class Column
                 } else {
                     let this->{key} = clone value;
                 }
-            } elseif ((is_array(value)) && (key == "_ruleset")) {
-                //    The columns array of \ZExcel\Worksheet\AutoFilter objects
-                let aTmp = [];
-                
-                for k, v in value {
-                    let aTmp[k] = clone v;
-                    // attach the new cloned Rule to this new cloned Autofilter Cloned object
-                    aTmp[k]->setParent(this);
-                }
-                
-                let this->{key} = aTmp;
             } else {
-                let this->{key} = value;
+                if ((is_array(value)) && (key == "_ruleset")) {
+                    //    The columns array of \ZExcel\Worksheet\AutoFilter objects
+                    let aTmp = [];
+                    
+                    for k, v in value {
+                        let aTmp[k] = clone v;
+                        // attach the new cloned Rule to this new cloned Autofilter Cloned object
+                        aTmp[k]->setParent(this);
+                    }
+                    
+                    let this->{key} = aTmp;
+                } else {
+                    let this->{key} = value;
+                }
             }
         }
     }

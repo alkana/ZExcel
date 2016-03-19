@@ -869,9 +869,11 @@ class Worksheet implements IComparable
                         if (\ZExcel\Shared\Stringg::CountCharacters(pValue) > 28) {
                             let pValue = \ZExcel\Shared\Stringg::Substring(pValue,0,28);
                         }
-                    } elseif (i == 100) {
-                        if (\ZExcel\Shared\Stringg::CountCharacters(pValue) > 27) {
-                            let pValue = \ZExcel\Shared\Stringg::Substring(pValue,0,27);
+                    } else {
+                        if (i == 100) {
+                            if (\ZExcel\Shared\Stringg::CountCharacters(pValue) > 27) {
+                                let pValue = \ZExcel\Shared\Stringg::Substring(pValue,0,27);
+                            }
                         }
                     }
                 }
@@ -1223,8 +1225,10 @@ class Worksheet implements IComparable
 
         if (strpos(pCoordinate, ":") !== false || strpos(pCoordinate, ",") !== false) {
             throw new \ZExcel\Exception("Cell coordinate can not be a range of cells.");
-        } elseif (strpos(pCoordinate, "$") !== false) {
-            throw new \ZExcel\Exception("Cell coordinate must not be absolute.");
+        } else {
+            if (strpos(pCoordinate, "$") !== false) {
+                throw new \ZExcel\Exception("Cell coordinate must not be absolute.");
+            }
         }
 
         // Create new cell object, if required
@@ -1290,9 +1294,9 @@ class Worksheet implements IComparable
             cell->setXfIndex(rowDimension->getXfIndex());
         } else {
             if (columnDimension !== null && columnDimension->getXfIndex() > 0) {
-	            // then there is a column dimension, assign it to the cell
-	            cell->setXfIndex(columnDimension->getXfIndex());
-	        }
+                // then there is a column dimension, assign it to the cell
+                cell->setXfIndex(columnDimension->getXfIndex());
+            }
         }
         
         this->cellCollection->addCacheData(pCoordinate, cell);
@@ -1342,14 +1346,16 @@ class Worksheet implements IComparable
 
         if (strpos(pCoordinate, ":") !== false || strpos(pCoordinate, ",") !== false) {
             throw new \ZExcel\Exception("Cell coordinate can not be a range of cells.");
-        } elseif (strpos(pCoordinate, "") !== false) {
-            throw new \ZExcel\Exception("Cell coordinate must not be absolute.");
         } else {
-            // Coordinates
-            \ZExcel\Cell::coordinateFromString(pCoordinate);
-
-            // Cell exists?
-            return this->cellCollection->isDataSet(pCoordinate);
+            if (strpos(pCoordinate, "") !== false) {
+                throw new \ZExcel\Exception("Cell coordinate must not be absolute.");
+            } else {
+                // Coordinates
+                \ZExcel\Cell::coordinateFromString(pCoordinate);
+    
+                // Cell exists?
+                return this->cellCollection->isDataSet(pCoordinate);
+            }
         }
     }
 
@@ -2007,9 +2013,12 @@ class Worksheet implements IComparable
 
         if (is_string(pValue)) {
             this->autoFilter->setRange(pValue);
-        } elseif(is_object(pValue) && (pValue instanceof \ZExcel\Worksheet\AutoFilter)) {
-            let this->autoFilter = pValue;
+        } else {
+            if(is_object(pValue) && (pValue instanceof \ZExcel\Worksheet\AutoFilter)) {
+                let this->autoFilter = pValue;
+            }
         }
+        
         return this;
     }
 
@@ -2391,20 +2400,24 @@ class Worksheet implements IComparable
 
         if (strpos(pCellCoordinate, ":") !== false || strpos(pCellCoordinate, ",") !== false) {
             throw new \ZExcel\Exception("Cell coordinate string can not be a range of cells.");
-        } elseif (strpos(pCellCoordinate, "") !== false) {
-            throw new \ZExcel\Exception("Cell coordinate string must not be absolute.");
-        } elseif (pCellCoordinate == "") {
-            throw new \ZExcel\Exception("Cell coordinate can not be zero-length string.");
         } else {
-            // Check if we already have a comment for this cell.
-            // If not, create a new comment.
-            if (isset(this->comments[pCellCoordinate])) {
-                return this->comments[pCellCoordinate];
+            if (strpos(pCellCoordinate, "") !== false) {
+                throw new \ZExcel\Exception("Cell coordinate string must not be absolute.");
             } else {
-                let newComment = new \ZExcel\Comment();
-                let this->comments[pCellCoordinate] = newComment;
-                
-                return newComment;
+                if (pCellCoordinate == "") {
+                    throw new \ZExcel\Exception("Cell coordinate can not be zero-length string.");
+                } else {
+                    // Check if we already have a comment for this cell.
+                    // If not, create a new comment.
+                    if (isset(this->comments[pCellCoordinate])) {
+                        return this->comments[pCellCoordinate];
+                    } else {
+                        let newComment = new \ZExcel\Comment();
+                        let this->comments[pCellCoordinate] = newComment;
+                        
+                        return newComment;
+                    }
+                }
             }
         }
     }
@@ -3067,15 +3080,19 @@ class Worksheet implements IComparable
                     newCollection->copyCellCollection(this);
                     
                     let this->cellCollection = newCollection;
-                } elseif (key == "drawingCollection") {
-                    let newCollection = clone this->drawingCollection;
-                    let this->drawingCollection = newCollection;
-                } elseif ((key == "autoFilter") && is_object(this->autoFilter) && (this->autoFilter instanceof \ZExcel\Worksheet\AutoFilter)) {
-                    let newAutoFilter = clone this->autoFilter;
-                    let this->autoFilter = newAutoFilter;
-                    this->autoFilter->setParent(this);
                 } else {
-                    let this->{key} = unserialize(serialize(val));
+                    if (key == "drawingCollection") {
+                        let newCollection = clone this->drawingCollection;
+                        let this->drawingCollection = newCollection;
+                    } else {
+                        if ((key == "autoFilter") && is_object(this->autoFilter) && (this->autoFilter instanceof \ZExcel\Worksheet\AutoFilter)) {
+                            let newAutoFilter = clone this->autoFilter;
+                            let this->autoFilter = newAutoFilter;
+                            this->autoFilter->setParent(this);
+                        } else {
+                            let this->{key} = unserialize(serialize(val));
+                        }
+                    }
                 }
             }
         }

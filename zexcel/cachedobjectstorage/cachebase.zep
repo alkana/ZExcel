@@ -159,10 +159,14 @@ abstract class CacheBase
         var coord, column, row;
         array sortKeys = [];
         
+        let row = "";
+        let column = "";
+        
         for coord in this->getCellList() {
             sscanf(coord, "%[A-Z]%d", column, row);
             let sortKeys[sprintf("%09d%3s", row, column)] = coord;
         }
+
         ksort(sortKeys);
 
         return array_values(sortKeys);

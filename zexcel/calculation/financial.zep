@@ -309,14 +309,19 @@ class Financial
         //    Between 5 and 6 years        2
         //    More than 6 years            2.5
         let fUsePer = 1.0 / rate;
+        
         if (fUsePer < 3.0) {
             let amortiseCoeff = 1.0;
-        } elseif (fUsePer < 5.0) {
-            let amortiseCoeff = 1.5;
-        } elseif (fUsePer <= 6.0) {
-            let amortiseCoeff = 2.0;
         } else {
-            let amortiseCoeff = 2.5;
+            if (fUsePer < 5.0) {
+                let amortiseCoeff = 1.5;
+            } else {
+                if (fUsePer <= 6.0) {
+                    let amortiseCoeff = 2.0;
+                } else {
+                    let amortiseCoeff = 2.5;
+                }
+            }
         }
 
         let rate = (double) rate * amortiseCoeff;
@@ -400,12 +405,16 @@ class Financial
 
         if (period == 0) {
             return f0Rate;
-        } elseif (period <= nNumOfFullPeriods) {
-            return fOneRate;
-        } elseif (period == (nNumOfFullPeriods + 1)) {
-            return (fCostDelta - fOneRate * nNumOfFullPeriods - f0Rate);
         } else {
-            return 0.0;
+            if (period <= nNumOfFullPeriods) {
+                return fOneRate;
+            } else {
+                if (period == (nNumOfFullPeriods + 1)) {
+                    return (fCostDelta - fOneRate * nNumOfFullPeriods - f0Rate);
+                } else {
+                    return 0.0;
+                }
+            }
         }
     }
 
@@ -983,10 +992,12 @@ class Financial
             for per in range(1, period) {
                 if (per == 1) {
                     let depreciation = cost * (double)fixedDepreciationRate * month / 12;
-                } elseif (per == (life + 1)) {
-                    let depreciation = (cost - previousDepreciation) * fixedDepreciationRate * (12 - month) / 12;
                 } else {
-                    let depreciation = (cost - previousDepreciation) * fixedDepreciationRate;
+                    if (per == (life + 1)) {
+                        let depreciation = (cost - previousDepreciation) * fixedDepreciationRate * (12 - month) / 12;
+                    } else {
+                        let depreciation = (cost - previousDepreciation) * fixedDepreciationRate;
+                    }
                 }
                 
                 let previousDepreciation = previousDepreciation + depreciation;
@@ -2337,12 +2348,14 @@ class Financial
         for i in range(0, self::FINANCIAL_MAX_ITERATIONS - 1) {
             if ((f1 * f2) < 0.0) {
                 break;
-            } elseif (abs(f1) < abs(f2)) {
-                let x1 = x1 + (1.6 * (x1 - (double) x2));
-                let f1 = self::xnpv(x1, values, dates);
             } else {
-                let x2 = x2 + (1.6 * (x2 - (double) x1));
-                let f2 = self::xnpv(x2, values, dates);
+                if (abs(f1) < abs(f2)) {
+                    let x1 = x1 + (1.6 * (x1 - (double) x2));
+                    let f1 = self::xnpv(x1, values, dates);
+                } else {
+                    let x2 = x2 + (1.6 * (x2 - (double) x1));
+                    let f2 = self::xnpv(x2, values, dates);
+                }
             }
         }
         

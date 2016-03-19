@@ -694,10 +694,12 @@ class Html
             if (attributeName == "color") {
                 if (preg_match("/rgb\s*\(/", attributeValue)) {
                     let this->attributeName = this->rgbToColour(attributeValue);
-                } elseif(strpos(trim(attributeValue), "#") === 0) {
-                    let this->attributeName = ltrim(attributeValue, "#");
                 } else {
-                    let this->attributeName = this->colourNameLookup(attributeValue);
+                    if(strpos(trim(attributeValue), "#") === 0) {
+                        let this->attributeName = ltrim(attributeValue, "#");
+                    } else {
+                        let this->attributeName = this->colourNameLookup(attributeValue);
+                    }
                 }
             } else {
                 let this->attributeName = attributeValue;
@@ -824,8 +826,10 @@ class Html
         for child in element->childNodes {
             if (child instanceof \DOMText) {
                 this->parseTextNode(child);
-            } elseif (child instanceof \DOMElement) {
-                this->parseElementNode(child);
+            } else {
+                if (child instanceof \DOMElement) {
+                    this->parseElementNode(child);
+                }
             }
         }
     }

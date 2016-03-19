@@ -556,237 +556,241 @@ class EigenvalueDecomposition
                 let n = n - 1;
                 let iter = 0;
             // Two roots found
-            } elseif (l == n - 1) {
-                let w = (double) (this->h[n][n - 1] * this->h[n - 1][n]);
-                let p = (double) (this->h[n - 1][n - 1] - this->h[n][n]) / 2.0;
-                let q = p * p + w;
-                let z = 0.0 + sqrt(abs(q));
-                let this->h[n][n] = (double) this->h[n][n] + exshift;
-                let this->h[n - 1][n - 1] = (double) this->h[n - 1][n - 1] + exshift;
-                let x = 0.0 + this->h[n][n];
-                // Real pair
-                if (q >= 0) {
-                    if (p >= 0) {
-                        let z = p + z;
-                    } else {
-                        let z = p - z;
-                    }
-                    
-                    let this->d[n - 1] = x + z;
-                    let this->d[n] = this->d[n - 1];
-                    
-                    if (z != 0.0) {
-                        let this->d[n] = x - w / z;
-                    }
-                    
-                    let this->e[n - 1] = 0.0;
-                    let this->e[n] = 0.0;
-                    let x = 0.0 + this->h[n][n - 1];
-                    let s = (double) abs(x) + (double) abs(z);
-                    let p = x / s;
-                    let q = z / s;
-                    let r = 0.0 + sqrt(p * p + q * q);
-                    let p = p / r;
-                    let q = q / r;
-                    
-                    // Row modification
-                    for j in range(n - 1, nn - 1) {
-                        let z = 0.0 + this->h[n - 1][j];
-                        let this->h[n - 1][j] = q * z + p * (double) this->h[n][j];
-                        let this->h[n][j] = q * (double) this->h[n][j] - p * z;
-                    }
-                    
-                    // Column modification
-                    for i in range(0, n) {
-                        let z = 0.0 + this->h[i][n - 1];
-                        let this->h[i][n - 1] = q * z + (p * (double) this->h[i][n]);
-                        let this->h[i][n] = (q * (double) this->h[i][n]) - p * z;
-                    }
-                    
-                    // Accumulate transformations
-                    for i in range(low, high) {
-                        let z = 0.0 + this->v[i][n - 1];
-                        let this->v[i][n - 1] = q * z + (p * (double) this->v[i][n]);
-                        let this->v[i][n] = (q * (double) this->v[i][n]) - p * z;
-                    }
-                // Complex pair
-                } else {
-                    let this->d[n - 1] = x + p;
-                    let this->d[n] = x + p;
-                    let this->e[n - 1] = floatval(z);
-                    let this->e[n] = floatval(-z);
-                }
-                
-                let n = n - 2;
-                let iter = 0;
-            // No convergence yet
             } else {
-                // Form shift
-                let x = 0.0 + this->h[n][n];
-                let y = 0.0;
-                let w = 0.0;
-                
-                if (l < n) {
-                    let y = 0.0 + this->h[n - 1][n - 1];
-                    let w = 0.0 + (this->h[n][n - 1] * this->h[n - 1][n]);
-                }
-                
-                // Wilkinson's original ad hoc shift
-                if (iter == 10) {
-                    let exshift = exshift + x;
-                    
-                    for i in range(low, n) {
-                        let this->h[i][i] = (double) this->h[i][i] - x;
-                    }
-                    
-                    let s = 0.0 + abs(this->h[n][n - 1]) + abs(this->h[n - 1][n - 2]);
-                    let x = 0.75 * s;
-                    let y = x;
-                    let w = -0.4375 * s * s;
-                }
-                
-                // MATLAB's new ad hoc shift
-                if (iter == 30) {
-                    let s = (y - x) / 2.0;
-                    let s = s * s + w;
-                    
-                    if (s > 0) {
-                        let s = 0.0 + sqrt(s);
-                        
-                        if (y < x) {
-                            let s = -s;
+                if (l == n - 1) {
+                    let w = (double) (this->h[n][n - 1] * this->h[n - 1][n]);
+                    let p = (double) (this->h[n - 1][n - 1] - this->h[n][n]) / 2.0;
+                    let q = p * p + w;
+                    let z = 0.0 + sqrt(abs(q));
+                    let this->h[n][n] = (double) this->h[n][n] + exshift;
+                    let this->h[n - 1][n - 1] = (double) this->h[n - 1][n - 1] + exshift;
+                    let x = 0.0 + this->h[n][n];
+                    // Real pair
+                    if (q >= 0) {
+                        if (p >= 0) {
+                            let z = p + z;
+                        } else {
+                            let z = p - z;
                         }
                         
-                        let s = x - w / ((y - x) / 2.0 + s);
+                        let this->d[n - 1] = x + z;
+                        let this->d[n] = this->d[n - 1];
                         
-                        for i in range(low, n) {
-                            let this->h[i][i] = (double) this->h[i][i] - s;
+                        if (z != 0.0) {
+                            let this->d[n] = x - w / z;
                         }
                         
-                        let exshift = exshift + s;
-                        let x = 0.964;
-                        let y = 0.964;
-                        let w = 0.964;
-                    }
-                }
-                
-                // Could check iteration count here.
-                let iter = iter + 1;
-                // Look for two consecutive small sub-diagonal elements
-                let m = n - 2;
-                
-                while (m >= l) {
-                    let z = 0.0 + this->h[m][m];
-                    let r = x - z;
-                    let s = y - z;
-                    let p = ((r * s - w) / this->h[m+1][m]) + this->h[m][m+1];
-                    let q = (double) this->h[m+1][m+1] - z - r - s;
-                    let r = 0.0 + this->h[m+2][m+1];
-                    let s = 0.0 + abs(p) + abs(q) + abs(r);
-                    let p = p / s;
-                    let q = q / s;
-                    let r = r / s;
-                    
-                    if (m == l) {
-                        break;
-                    }
-                    
-                    if (abs(this->h[m][m - 1]) * (abs(q) + abs(r)) < eps * (abs(p) * (abs(this->h[m - 1][m - 1]) + abs(z) + abs(this->h[m+1][m+1])))) {
-                        break;
-                    }
-                    
-                    let m = m - 1;
-                }
-                
-                for i in range(m + 2, n) {
-                    let this->h[i][i - 2] = 0.0;
-                    
-                    if (i > m+2) {
-                        let this->h[i][i - 3] = 0.0;
-                    }
-                }
-                
-                // Double QR step involving rows l:n and columns m:n
-                for k in range(m, n - 1) {
-                    let notlast = (k != n - 1);
-                    
-                    if (k != m) {
-                        let p = 0.0 + this->h[k][k - 1];
-                        let q = 0.0 + this->h[k+1][k - 1];
-                        let r = (notlast ? this->h[k+2][k - 1] : 0.0);
-                        let x = abs(p) + abs(q) + abs(r);
-                        if (x != 0.0) {
-                            let p = p / x;
-                            let q = q / x;
-                            let r = r / x;
-                        }
-                    }
-                    
-                    if (x == 0.0) {
-                        break;
-                    }
-                    
-                    let s = sqrt(p * p + q * q + r * r);
-                    
-                    if (p < 0) {
-                        let s = -s;
-                    }
-                    
-                    if (s != 0) {
-                        if (k != m) {
-                            let this->h[k][k - 1] = -s * x;
-                        } elseif (l != m) {
-                            let this->h[k][k - 1] = -this->h[k][k - 1];
-                        }
-                        
-                        let p = p + s;
-                        let x = p / s;
-                        let y = q / s;
-                        let z = r / s;
-                        let q = q / p;
-                        let r = r / p;
+                        let this->e[n - 1] = 0.0;
+                        let this->e[n] = 0.0;
+                        let x = 0.0 + this->h[n][n - 1];
+                        let s = (double) abs(x) + (double) abs(z);
+                        let p = x / s;
+                        let q = z / s;
+                        let r = 0.0 + sqrt(p * p + q * q);
+                        let p = p / r;
+                        let q = q / r;
                         
                         // Row modification
-                        for j in range(k, nn - 1) {
-                            let p = this->h[k][j] + q * this->h[k+1][j];
-                            
-                            if (notlast) {
-                                let p = p + r * this->h[k+2][j];
-                                let this->h[k+2][j] = this->h[k+2][j] - p * z;
-                            }
-                            
-                            let this->h[k][j] = this->h[k][j] - p * x;
-                            let this->h[k+1][j] = this->h[k+1][j] - p * y;
+                        for j in range(n - 1, nn - 1) {
+                            let z = 0.0 + this->h[n - 1][j];
+                            let this->h[n - 1][j] = q * z + p * (double) this->h[n][j];
+                            let this->h[n][j] = q * (double) this->h[n][j] - p * z;
                         }
                         
                         // Column modification
-                        for i in range(0, min(n, k + 3)) {
-                            let p = x * this->h[i][k] + y * this->h[i][k+1];
-                            
-                            if (notlast) {
-                                let p = p + z * this->h[i][k+2];
-                                let this->h[i][k+2] = this->h[i][k+2] - p * r;
-                            }
-                            
-                            let this->h[i][k] = (double) this->h[i][k] - p;
-                            let this->h[i][k+1] = (double) this->h[i][k+1] - p * q;
+                        for i in range(0, n) {
+                            let z = 0.0 + this->h[i][n - 1];
+                            let this->h[i][n - 1] = q * z + (p * (double) this->h[i][n]);
+                            let this->h[i][n] = (q * (double) this->h[i][n]) - p * z;
                         }
                         
                         // Accumulate transformations
                         for i in range(low, high) {
-                            let p = x * (double) this->v[i][k] + y * (double) this->v[i][k+1];
+                            let z = 0.0 + this->v[i][n - 1];
+                            let this->v[i][n - 1] = q * z + (p * (double) this->v[i][n]);
+                            let this->v[i][n] = (q * (double) this->v[i][n]) - p * z;
+                        }
+                    // Complex pair
+                    } else {
+                        let this->d[n - 1] = x + p;
+                        let this->d[n] = x + p;
+                        let this->e[n - 1] = floatval(z);
+                        let this->e[n] = floatval(-z);
+                    }
+                    
+                    let n = n - 2;
+                    let iter = 0;
+                // No convergence yet
+                } else {
+                    // Form shift
+                    let x = 0.0 + this->h[n][n];
+                    let y = 0.0;
+                    let w = 0.0;
+                    
+                    if (l < n) {
+                        let y = 0.0 + this->h[n - 1][n - 1];
+                        let w = 0.0 + (this->h[n][n - 1] * this->h[n - 1][n]);
+                    }
+                    
+                    // Wilkinson's original ad hoc shift
+                    if (iter == 10) {
+                        let exshift = exshift + x;
+                        
+                        for i in range(low, n) {
+                            let this->h[i][i] = (double) this->h[i][i] - x;
+                        }
+                        
+                        let s = 0.0 + abs(this->h[n][n - 1]) + abs(this->h[n - 1][n - 2]);
+                        let x = 0.75 * s;
+                        let y = x;
+                        let w = -0.4375 * s * s;
+                    }
+                    
+                    // MATLAB's new ad hoc shift
+                    if (iter == 30) {
+                        let s = (y - x) / 2.0;
+                        let s = s * s + w;
+                        
+                        if (s > 0) {
+                            let s = 0.0 + sqrt(s);
                             
-                            if (notlast) {
-                                let p = p + z * (double) this->v[i][k+2];
-                                let this->v[i][k+2] = (double) this->v[i][k+2] - p * r;
+                            if (y < x) {
+                                let s = -s;
                             }
                             
-                            let this->v[i][k] = (double) this->v[i][k] - p;
-                            let this->v[i][k+1] = (double) this->v[i][k+1] - p * q;
+                            let s = x - w / ((y - x) / 2.0 + s);
+                            
+                            for i in range(low, n) {
+                                let this->h[i][i] = (double) this->h[i][i] - s;
+                            }
+                            
+                            let exshift = exshift + s;
+                            let x = 0.964;
+                            let y = 0.964;
+                            let w = 0.964;
                         }
-                    }  // (s != 0)
-                }  // k loop
-            }  // check convergence
+                    }
+                    
+                    // Could check iteration count here.
+                    let iter = iter + 1;
+                    // Look for two consecutive small sub-diagonal elements
+                    let m = n - 2;
+                    
+                    while (m >= l) {
+                        let z = 0.0 + this->h[m][m];
+                        let r = x - z;
+                        let s = y - z;
+                        let p = ((r * s - w) / this->h[m+1][m]) + this->h[m][m+1];
+                        let q = (double) this->h[m+1][m+1] - z - r - s;
+                        let r = 0.0 + this->h[m+2][m+1];
+                        let s = 0.0 + abs(p) + abs(q) + abs(r);
+                        let p = p / s;
+                        let q = q / s;
+                        let r = r / s;
+                        
+                        if (m == l) {
+                            break;
+                        }
+                        
+                        if (abs(this->h[m][m - 1]) * (abs(q) + abs(r)) < eps * (abs(p) * (abs(this->h[m - 1][m - 1]) + abs(z) + abs(this->h[m+1][m+1])))) {
+                            break;
+                        }
+                        
+                        let m = m - 1;
+                    }
+                    
+                    for i in range(m + 2, n) {
+                        let this->h[i][i - 2] = 0.0;
+                        
+                        if (i > m+2) {
+                            let this->h[i][i - 3] = 0.0;
+                        }
+                    }
+                    
+                    // Double QR step involving rows l:n and columns m:n
+                    for k in range(m, n - 1) {
+                        let notlast = (k != n - 1);
+                        
+                        if (k != m) {
+                            let p = 0.0 + this->h[k][k - 1];
+                            let q = 0.0 + this->h[k+1][k - 1];
+                            let r = (notlast ? this->h[k+2][k - 1] : 0.0);
+                            let x = abs(p) + abs(q) + abs(r);
+                            if (x != 0.0) {
+                                let p = p / x;
+                                let q = q / x;
+                                let r = r / x;
+                            }
+                        }
+                        
+                        if (x == 0.0) {
+                            break;
+                        }
+                        
+                        let s = sqrt(p * p + q * q + r * r);
+                        
+                        if (p < 0) {
+                            let s = -s;
+                        }
+                        
+                        if (s != 0) {
+                            if (k != m) {
+                                let this->h[k][k - 1] = -s * x;
+                            } else {
+                                if (l != m) {
+                                    let this->h[k][k - 1] = -this->h[k][k - 1];
+                                }
+                            }
+                            
+                            let p = p + s;
+                            let x = p / s;
+                            let y = q / s;
+                            let z = r / s;
+                            let q = q / p;
+                            let r = r / p;
+                            
+                            // Row modification
+                            for j in range(k, nn - 1) {
+                                let p = this->h[k][j] + q * this->h[k+1][j];
+                                
+                                if (notlast) {
+                                    let p = p + r * this->h[k+2][j];
+                                    let this->h[k+2][j] = this->h[k+2][j] - p * z;
+                                }
+                                
+                                let this->h[k][j] = this->h[k][j] - p * x;
+                                let this->h[k+1][j] = this->h[k+1][j] - p * y;
+                            }
+                            
+                            // Column modification
+                            for i in range(0, min(n, k + 3)) {
+                                let p = x * this->h[i][k] + y * this->h[i][k+1];
+                                
+                                if (notlast) {
+                                    let p = p + z * this->h[i][k+2];
+                                    let this->h[i][k+2] = this->h[i][k+2] - p * r;
+                                }
+                                
+                                let this->h[i][k] = (double) this->h[i][k] - p;
+                                let this->h[i][k+1] = (double) this->h[i][k+1] - p * q;
+                            }
+                            
+                            // Accumulate transformations
+                            for i in range(low, high) {
+                                let p = x * (double) this->v[i][k] + y * (double) this->v[i][k+1];
+                                
+                                if (notlast) {
+                                    let p = p + z * (double) this->v[i][k+2];
+                                    let this->v[i][k+2] = (double) this->v[i][k+2] - p * r;
+                                }
+                                
+                                let this->v[i][k] = (double) this->v[i][k] - p;
+                                let this->v[i][k+1] = (double) this->v[i][k+1] - p * q;
+                            }
+                        }  // (s != 0)
+                    }  // k loop
+                }  // check convergence
+            }
         }  // while (n >= low)
 
         // Backsubstitute to find vectors of upper triangular form
@@ -849,86 +853,88 @@ class EigenvalueDecomposition
                     }
                 }
             // Complex vector
-            } elseif (q < 0) {
-                let l = n - 1;
-                
-                // Last vector component imaginary so matrix is triangular
-                if (abs(this->h[n][n - 1]) > abs(this->h[n - 1][n])) {
-                    let this->h[n - 1][n - 1] = q / (double) this->h[n][n - 1];
-                    let this->h[n - 1][n] = -((double) this->h[n][n] - p) / (double) this->h[n][n - 1];
-                } else {
-                    this->cdiv(0.0, -this->h[n - 1][n], (double) this->h[n - 1][n - 1] - p, q);
+            } else {
+                if (q < 0) {
+                    let l = n - 1;
                     
-                    let this->h[n - 1][n - 1] = this->cdivr;
-                    let this->h[n - 1][n]   = this->cdivi;
-                }
-                
-                let this->h[n][n - 1] = 0.0;
-                let this->h[n][n] = 1.0;
-                
-                for i in reverse range(0, n - 2) {
-                    // double ra,sa,vr,vi;
-                    let ra = 0.0;
-                    let sa = 0.0;
-                    
-                    for j in range(l, n) {
-                        let ra = ra + (double) this->h[i][j] * (double) this->h[j][n - 1];
-                        let sa = sa + (double) this->h[i][j] * (double) this->h[j][n];
+                    // Last vector component imaginary so matrix is triangular
+                    if (abs(this->h[n][n - 1]) > abs(this->h[n - 1][n])) {
+                        let this->h[n - 1][n - 1] = q / (double) this->h[n][n - 1];
+                        let this->h[n - 1][n] = -((double) this->h[n][n] - p) / (double) this->h[n][n - 1];
+                    } else {
+                        this->cdiv(0.0, -this->h[n - 1][n], (double) this->h[n - 1][n - 1] - p, q);
+                        
+                        let this->h[n - 1][n - 1] = this->cdivr;
+                        let this->h[n - 1][n]   = this->cdivi;
                     }
                     
-                    let w = (double) this->h[i][i] - p;
+                    let this->h[n][n - 1] = 0.0;
+                    let this->h[n][n] = 1.0;
                     
-                    if (this->e[i] < 0.0) {
-                        let z = w;
-                        let r = ra;
-                        let s = sa;
-                    } else {
-                        let l = i;
+                    for i in reverse range(0, n - 2) {
+                        // double ra,sa,vr,vi;
+                        let ra = 0.0;
+                        let sa = 0.0;
                         
-                        if (this->e[i] == 0) {
-                            this->cdiv(-ra, -sa, w, q);
-                            
-                            let this->h[i][n - 1] = this->cdivr;
-                            let this->h[i][n]   = this->cdivi;
+                        for j in range(l, n) {
+                            let ra = ra + (double) this->h[i][j] * (double) this->h[j][n - 1];
+                            let sa = sa + (double) this->h[i][j] * (double) this->h[j][n];
+                        }
+                        
+                        let w = (double) this->h[i][i] - p;
+                        
+                        if (this->e[i] < 0.0) {
+                            let z = w;
+                            let r = ra;
+                            let s = sa;
                         } else {
-                            // Solve complex equations
-                            let x = 0.0 + this->h[i][i+1];
-                            let y = 0.0 + this->h[i+1][i];
-                            let vr = ((double) this->d[i] - p) * ((double) this->d[i] - p) + (double) this->e[i] * (double) this->e[i] - q * q;
-                            let vi = ((double) this->d[i] - p) * 2.0 * q;
+                            let l = i;
                             
-                            if (vr == 0.0 & vi == 0.0) {
-                                let vr = eps * norm * (abs(w) + abs(q) + abs(x) + abs(y) + abs(z));
-                            }
-                            
-                            this->cdiv(x * r - z * ra + q * sa, x * s - z * sa - q * ra, vr, vi);
-                            
-                            let this->h[i][n - 1] = this->cdivr;
-                            let this->h[i][n]   = this->cdivi;
-                            
-                            if (abs(x) > (abs(z) + abs(q))) {
-                                let this->h[i+1][n - 1] = (-ra - w * (double) this->h[i][n - 1] + q * (double) this->h[i][n]) / x;
-                                let this->h[i+1][n] = (-sa - w * (double) this->h[i][n] - q * (double) this->h[i][n - 1]) / x;
-                            } else {
-                                this->cdiv(-r - y * (double) this->h[i][n - 1], -s - y * (double) this->h[i][n], z, q);
+                            if (this->e[i] == 0) {
+                                this->cdiv(-ra, -sa, w, q);
                                 
-                                let this->h[i+1][n - 1] = this->cdivr;
-                                let this->h[i+1][n]   = this->cdivi;
+                                let this->h[i][n - 1] = this->cdivr;
+                                let this->h[i][n]   = this->cdivi;
+                            } else {
+                                // Solve complex equations
+                                let x = 0.0 + this->h[i][i+1];
+                                let y = 0.0 + this->h[i+1][i];
+                                let vr = ((double) this->d[i] - p) * ((double) this->d[i] - p) + (double) this->e[i] * (double) this->e[i] - q * q;
+                                let vi = ((double) this->d[i] - p) * 2.0 * q;
+                                
+                                if (vr == 0.0 & vi == 0.0) {
+                                    let vr = eps * norm * (abs(w) + abs(q) + abs(x) + abs(y) + abs(z));
+                                }
+                                
+                                this->cdiv(x * r - z * ra + q * sa, x * s - z * sa - q * ra, vr, vi);
+                                
+                                let this->h[i][n - 1] = this->cdivr;
+                                let this->h[i][n]   = this->cdivi;
+                                
+                                if (abs(x) > (abs(z) + abs(q))) {
+                                    let this->h[i+1][n - 1] = (-ra - w * (double) this->h[i][n - 1] + q * (double) this->h[i][n]) / x;
+                                    let this->h[i+1][n] = (-sa - w * (double) this->h[i][n] - q * (double) this->h[i][n - 1]) / x;
+                                } else {
+                                    this->cdiv(-r - y * (double) this->h[i][n - 1], -s - y * (double) this->h[i][n], z, q);
+                                    
+                                    let this->h[i+1][n - 1] = this->cdivr;
+                                    let this->h[i+1][n]   = this->cdivi;
+                                }
                             }
-                        }
-                        
-                        // Overflow control
-                        let t = 0.0 + max(abs(this->h[i][n - 1]),abs(this->h[i][n]));
-                        
-                        if ((eps * t) * t > 1) {
-                            for j in range(i, n) {
-                                let this->h[j][n - 1] = (double) this->h[j][n - 1] / t;
-                                let this->h[j][n]   = (double) this->h[j][n] / t;
+                            
+                            // Overflow control
+                            let t = 0.0 + max(abs(this->h[i][n - 1]),abs(this->h[i][n]));
+                            
+                            if ((eps * t) * t > 1) {
+                                for j in range(i, n) {
+                                    let this->h[j][n - 1] = (double) this->h[j][n - 1] / t;
+                                    let this->h[j][n]   = (double) this->h[j][n] / t;
+                                }
                             }
-                        }
-                    } // end else
-                } // end for
-            } // end else for complex case
+                        } // end else
+                    } // end for
+                } // end else for complex case
+            }
         } // end for
 
         // Vectors of isolated roots

@@ -30,12 +30,16 @@ class DateTime
     {
         if (startDay == 31) {
             let startDay = startDay - 1;
-        } elseif (methodUS && (startMonth == 2 && (startDay == 29 || (startDay == 28 && !self::isLeapYear(startYear))))) {
-            let startDay = 30;
+        } else {
+            if (methodUS && (startMonth == 2 && (startDay == 29 || (startDay == 28 && !self::isLeapYear(startYear))))) {
+                let startDay = 30;
+            }
         }
+        
         if (endDay == 31) {
             if (methodUS && startDay != 30) {
                 let endDay = 1;
+                
                 if (endMonth == 12) {
                     let endYear = endYear + 1;
                     let endMonth = 1;
@@ -112,16 +116,20 @@ class DateTime
         let oYear = (int) PHPDateObject->format("Y");
 
         let adjustmentMonthsString = adjustmentMonths;
+        
         if (adjustmentMonths > 0) {
             let adjustmentMonthsString = "+" . adjustmentMonthsString;
         }
+        
         if (adjustmentMonths != 0) {
             PHPDateObject->modify(adjustmentMonthsString." months");
         }
+        
         let nMonth = (int) PHPDateObject->format("m");
         let nYear = (int) PHPDateObject->format("Y");
 
         let monthDiff = (nMonth - oMonth) + ((nYear - oYear) * 12);
+        
         if (monthDiff != adjustmentMonths) {
             let adjustDays = (int) PHPDateObject->format("d");
             let adjustDaysString = "-".adjustDays." days";
@@ -295,20 +303,24 @@ class DateTime
         let year = (year !== null) ? \ZExcel\Shared\Stringg::testStringAsNumeric(year) : 0;
         let month = (month !== null) ? \ZExcel\Shared\Stringg::testStringAsNumeric(month) : 0;
         let day = (day !== null) ? \ZExcel\Shared\Stringg::testStringAsNumeric(day) : 0;
+        
         if ((!is_numeric(year)) ||
             (!is_numeric(month)) ||
             (!is_numeric(day))) {
             return \ZExcel\Calculation\Functions::value();
         }
+        
         let year  = (int) year;
         let month = (int) month;
         let day   = (int) day;
 
         let baseYear = \ZExcel\Shared\Date::getExcelCalendar();
+        
         // Validate parameters
         if (year < (baseYear - 1900)) {
             return \ZExcel\Calculation\Functions::NaN();
         }
+        
         if (((baseYear - 1900) != 0) && (year < baseYear) && (year >= 1900)) {
             return \ZExcel\Calculation\Functions::NaN();
         }
@@ -322,10 +334,12 @@ class DateTime
             let month = month - 1;
             let year = year + ceil(month / 12) - 1;
             let month = 13 - abs(month % 12);
-        } elseif (month > 12) {
-            //    Handle year/month adjustment if month > 12
-            let year = year + floor(month / 12);
-            let month = (month % 12);
+        } else {
+            if (month > 12) {
+                //    Handle year/month adjustment if month > 12
+                let year = year + floor(month / 12);
+                let month = (month % 12);
+            }
         }
 
         // Re-validate the year parameter after adjustments
@@ -384,9 +398,11 @@ class DateTime
         if (hour == "") {
             let hour = 0;
         }
+        
         if (minute == "") {
             let minute = 0;
         }
+        
         if (second == "") {
             let second = 0;
         }
@@ -406,25 +422,32 @@ class DateTime
             if (second == 60) {
                 let second = 0;
             }
-        } elseif (second >= 60) {
-            let minute = minute + floor(second / 60);
-            let second = second % 60;
+        } else {
+            if (second >= 60) {
+                let minute = minute + floor(second / 60);
+                let second = second % 60;
+            }
         }
+        
         if (minute < 0) {
             let hour = hour + floor(minute / 60);
             let minute = 60 - abs(minute % 60);
             if (minute == 60) {
                 let minute = 0;
             }
-        } elseif (minute >= 60) {
-            let hour = hour + floor(minute / 60);
-            let minute = minute % 60;
+        } else {
+            if (minute >= 60) {
+                let hour = hour + floor(minute / 60);
+                let minute = minute % 60;
+            }
         }
 
         if (hour > 23) {
             let hour = hour % 24;
-        } elseif (hour < 0) {
-            return \ZExcel\Calculation\Functions::NaN();
+        } else {
+            if (hour < 0) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
 
         // Execute function
@@ -449,9 +472,11 @@ class DateTime
                     if (hour == 24) {
                         let hour = 0;
                     }
-                } elseif (hour >= 24) {
-                    let dayAdjust = floor(hour / 24);
-                    let hour = hour % 24;
+                } else {
+                    if (hour >= 24) {
+                        let dayAdjust = floor(hour / 24);
+                        let hour = hour % 24;
+                    }
                 }
                 
                 let phpDateObject = new \DateTime("1900-01-01 ".hour.":".minute.":".second);
@@ -521,12 +546,14 @@ class DateTime
         if ((count(t1) == 1) && (strpos(t, ":") != false)) {
             //    We've been fed a time value without any date
             return 0.0;
-        } elseif (count(t1) == 2) {
-            //    We only have two parts of the date: either day/month or month/year
-            if (yearFound) {
-                array_unshift(t1, 1);
-            } else {
-                array_push(t1, date("Y"));
+        } else {
+            if (count(t1) == 2) {
+                //    We only have two parts of the date: either day/month or month/year
+                if (yearFound) {
+                    array_unshift(t1, 1);
+                } else {
+                    array_push(t1, date("Y"));
+                }
             }
         }
 
@@ -726,8 +753,10 @@ class DateTime
                 //    We"re only interested in full months
                 if (endMonths < startMonths) {
                     let retVal = retVal - 1;
-                } elseif ((endMonths == startMonths) && (endDays < startDays)) {
-                    let retVal = retVal - 1;
+                } else {
+                    if ((endMonths == startMonths) && (endDays < startDays)) {
+                        let retVal = retVal - 1;
+                    }
                 }
                 break;
             case "MD":
@@ -915,23 +944,29 @@ class DateTime
                                 if (startMonth < 3 && self::isLeapYear(year)) {
                                     let leapDays = leapDays + 1;
                                 }
-                            } elseif (year == endYear) {
-                                let endMonth = self::MoNTHOFYEAR(endDate);
-                                let endDay = self::DaYOFMONTH(endDate);
-                                
-                                if ((endMonth * 100 + endDay) >= 229 && self::isLeapYear(year)) {
-                                    let leapDays = leapDays + 1;
+                            } else {
+                                if (year == endYear) {
+                                    let endMonth = self::MoNTHOFYEAR(endDate);
+                                    let endDay = self::DaYOFMONTH(endDate);
+                                    
+                                    if ((endMonth * 100 + endDay) >= 229 && self::isLeapYear(year)) {
+                                        let leapDays = leapDays + 1;
+                                    }
+                                } else {
+                                    if (self::isLeapYear(year)) {
+                                        let leapDays = leapDays + 1;
+                                    }
                                 }
-                            } elseif (self::isLeapYear(year)) {
-                                let leapDays = leapDays + 1;
                             }
                         }
                         
                         if (years == 2) {
                             if ((leapDays == 0) && (self::isLeapYear(startYear)) && (days > 365)) {
                                 let leapDays = 1;
-                            } elseif (days < 366) {
-                                let years = 1;
+                            } else {
+                                if (days < 366) {
+                                    let years = 1;
+                                }
                             }
                         }
 
@@ -1217,10 +1252,14 @@ class DateTime
             
             if (is_string(dateValue)) {
                 return \ZExcel\Calculation\Functions::VaLUE();
-            } elseif (dateValue == 0.0) {
-                return 0;
-            } elseif (dateValue < 0.0) {
-                return \ZExcel\Calculation\Functions::NaN();
+            } else {
+                if (dateValue == 0.0) {
+                    return 0;
+                } else {
+                    if (dateValue < 0.0) {
+                        return \ZExcel\Calculation\Functions::NaN();
+                    }
+                }
             }
         }
 
@@ -1257,8 +1296,10 @@ class DateTime
 
         if (!is_numeric(style)) {
             return \ZExcel\Calculation\Functions::VaLUE();
-        } elseif ((style < 1) || (style > 3)) {
-            return \ZExcel\Calculation\Functions::NaN();
+        } else {
+            if ((style < 1) || (style > 3)) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
         
         let style = floor(style);
@@ -1270,8 +1311,10 @@ class DateTime
     
             if (is_string(dateValue)) {
                 return \ZExcel\Calculation\Functions::VaLUE();
-            } elseif (dateValue < 0.0) {
-                return \ZExcel\Calculation\Functions::NaN();
+            } else {
+                if (dateValue < 0.0) {
+                    return \ZExcel\Calculation\Functions::NaN();
+                }
             }
         }
         
@@ -1341,8 +1384,10 @@ class DateTime
 
         if (!is_numeric(method)) {
             return \ZExcel\Calculation\Functions::VaLUE();
-        } elseif ((method < 1) || (method > 2)) {
-            return \ZExcel\Calculation\Functions::NaN();
+        } else {
+            if ((method < 1) || (method > 2)) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
         
         let method = floor(method);
@@ -1354,8 +1399,10 @@ class DateTime
     
             if (is_string(dateValue)) {
                 return \ZExcel\Calculation\Functions::VaLUE();
-            } elseif (dateValue < 0.0) {
-                return \ZExcel\Calculation\Functions::NaN();
+            } else {
+                if (dateValue < 0.0) {
+                    return \ZExcel\Calculation\Functions::NaN();
+                }
             }
         }
         
@@ -1399,8 +1446,10 @@ class DateTime
             
             if (is_string(dateValue)) {
                 return \ZExcel\Calculation\Functions::VaLUE();
-            } elseif (dateValue < 0.0) {
-                return \ZExcel\Calculation\Functions::NaN();
+            } else {
+                if (dateValue < 0.0) {
+                    return \ZExcel\Calculation\Functions::NaN();
+                }
             }
         }
         
@@ -1435,8 +1484,10 @@ class DateTime
             
             if (is_string(dateValue)) {
                 return \ZExcel\Calculation\Functions::VaLUE();
-            } elseif (dateValue < 0.0) {
-                return \ZExcel\Calculation\Functions::NaN();
+            } else {
+                if (dateValue < 0.0) {
+                    return \ZExcel\Calculation\Functions::NaN();
+                }
             }
         }
 
@@ -1483,8 +1534,10 @@ class DateTime
         // Execute function
         if (timeValue >= 1) {
             let timeValue = fmod(timeValue, 1);
-        } elseif (timeValue < 0.0) {
-            return \ZExcel\Calculation\Functions::NaN();
+        } else {
+            if (timeValue < 0.0) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
         
         let timeValue = \ZExcel\Shared\Date::ExcelToPHP(timeValue);
@@ -1530,8 +1583,10 @@ class DateTime
         // Execute function
         if (timeValue >= 1) {
             let timeValue = fmod(timeValue, 1);
-        } elseif (timeValue < 0.0) {
-            return \ZExcel\Calculation\Functions::NaN();
+        } else {
+            if (timeValue < 0.0) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
         
         let timeValue = \ZExcel\Shared\Date::ExcelToPHP(timeValue);
@@ -1573,11 +1628,14 @@ class DateTime
                 return \ZExcel\Calculation\Functions::VaLUE();
             }
         }
+        
         // Execute function
         if (timeValue >= 1) {
             let timeValue = fmod(timeValue, 1);
-        } elseif (timeValue < 0.0) {
-            return \ZExcel\Calculation\Functions::NaN();
+        } else {
+            if (timeValue < 0.0) {
+                return \ZExcel\Calculation\Functions::NaN();
+            }
         }
         
         let timeValue = \ZExcel\Shared\Date::ExcelToPHP(timeValue);

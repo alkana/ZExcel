@@ -112,10 +112,12 @@ class MathTrig
         if ((is_numeric(number)) && (is_numeric(significance))) {
             if ((number == 0.0 ) || (significance == 0.0)) {
                 return 0.0;
-            } elseif (self::SiGN(number) == self::SiGN(significance)) {
-                return ceil(number / significance) * significance;
             } else {
-                return \ZExcel\Calculation\Functions::NaN();
+                if (self::SiGN(number) == self::SiGN(significance)) {
+                    return ceil(number / significance) * significance;
+                } else {
+                    return \ZExcel\Calculation\Functions::NaN();
+                }
             }
         }
         return \ZExcel\Calculation\Functions::VaLUE();
@@ -145,8 +147,10 @@ class MathTrig
         if ((is_numeric(numObjs)) && (is_numeric(numInSet))) {
             if (numObjs < numInSet) {
                 return \ZExcel\Calculation\Functions::NaN();
-            } elseif (numInSet < 0) {
-                return \ZExcel\Calculation\Functions::NaN();
+            } else {
+                if (numInSet < 0) {
+                    return \ZExcel\Calculation\Functions::NaN();
+                }
             }
             
             return round(self::FaCT(numObjs) / self::FaCT(numObjs - numInSet)) / self::FaCT(numInSet);
@@ -180,8 +184,10 @@ class MathTrig
 
         if (is_null(number)) {
             return 0;
-        } elseif (is_bool(number)) {
-            let number = (int) number;
+        } else {
+            if (is_bool(number)) {
+                let number = (int) number;
+            }
         }
 
         if (is_numeric(number)) {
@@ -307,12 +313,16 @@ class MathTrig
         if ((is_numeric(number)) && (is_numeric(significance))) {
             if (significance == 0.0) {
                 return \ZExcel\Calculation\Functions::DiV0();
-            } elseif (number == 0.0) {
-                return 0.0;
-            } elseif (self::SiGN(number) == self::SiGN(significance)) {
-                return floor(number / significance) * significance;
             } else {
-                return \ZExcel\Calculation\Functions::NaN();
+                if (number == 0.0) {
+                    return 0.0;
+                } else {
+                    if (self::SiGN(number) == self::SiGN(significance)) {
+                        return floor(number / significance) * significance;
+                    } else {
+                        return \ZExcel\Calculation\Functions::NaN();
+                    }
+                }
             }
         }
 
@@ -345,11 +355,16 @@ class MathTrig
         for value in \ZExcel\Calculation\Functions::flattenArray(func_get_args()) {
             if (!is_numeric(value)) {
                 return \ZExcel\Calculation\Functions::VaLUE();
-            } elseif (value == 0) {
-                continue;
-            } elseif (value < 0) {
-                return \ZExcel\Calculation\Functions::NaN();
+            } else {
+                if (value == 0) {
+                    continue;
+                } else {
+                    if (value < 0) {
+                        return \ZExcel\Calculation\Functions::NaN();
+                    }
+                }
             }
+            
             let myFactors = self::factors(value);
             let myCountedFactors = array_count_values(myFactors);
             let allValuesFactors[] = myCountedFactors;
@@ -371,39 +386,41 @@ class MathTrig
         
         if (mergedArrayValues == 0) {
             return returnValue;
-        } elseif (mergedArrayValues > 1) {
-            for mergedKey, mergedValue in mergedArray {
-                for highestPowerTest in allValuesFactors {
-                    for testKey, testValue in highestPowerTest {
-                        if ((testKey == mergedKey) && (testValue < mergedValue)) {
-                            let mergedArray[mergedKey] = testValue;
-                            let mergedValue = testValue;
+        } else {
+            if (mergedArrayValues > 1) {
+                for mergedKey, mergedValue in mergedArray {
+                    for highestPowerTest in allValuesFactors {
+                        for testKey, testValue in highestPowerTest {
+                            if ((testKey == mergedKey) && (testValue < mergedValue)) {
+                                let mergedArray[mergedKey] = testValue;
+                                let mergedValue = testValue;
+                            }
                         }
                     }
                 }
-            }
-
-            let returnValue = 1;
-            
-            for key, value in mergedArray {
-                let returnValue = returnValue * pow(key, value);
-            }
-            
-            return returnValue;
-        } else {
-            let keys = array_keys(mergedArray);
-            let key = keys[0];
-            let value = mergedArray[key];
-            
-            for testValue in allValuesFactors {
-                for mergedKey, mergedValue in testValue {
-                    if ((mergedKey == key) && (mergedValue < value)) {
-                        let value = mergedValue;
+    
+                let returnValue = 1;
+                
+                for key, value in mergedArray {
+                    let returnValue = returnValue * pow(key, value);
+                }
+                
+                return returnValue;
+            } else {
+                let keys = array_keys(mergedArray);
+                let key = keys[0];
+                let value = mergedArray[key];
+                
+                for testValue in allValuesFactors {
+                    for mergedKey, mergedValue in testValue {
+                        if ((mergedKey == key) && (mergedValue < value)) {
+                            let value = mergedValue;
+                        }
                     }
                 }
+                
+                return pow(key, value);
             }
-            
-            return pow(key, value);
         }
     }
 
@@ -427,9 +444,12 @@ class MathTrig
 
         if (is_null(number)) {
             return 0;
-        } elseif (is_bool(number)) {
-            return (int) number;
+        } else {
+            if (is_bool(number)) {
+                return (int) number;
+            }
         }
+        
         if (is_numeric(number)) {
             return (int) floor(number);
         }
@@ -467,8 +487,10 @@ class MathTrig
             
             if (value == 0) {
                 return 0;
-            } elseif (value < 0) {
-                return \ZExcel\Calculation\Functions::NaN();
+            } else {
+                if (value < 0) {
+                    return \ZExcel\Calculation\Functions::NaN();
+                }
             }
             
             let myFactors = self::factors(floor(value));
@@ -738,12 +760,16 @@ class MathTrig
 
         if (b == 0.0) {
             return \ZExcel\Calculation\Functions::DiV0();
-        } elseif ((a < 0.0) && (b > 0.0)) {
-            return b - fmod(abs(a), b);
-        } elseif ((a > 0.0) && (b < 0.0)) {
-            return b + fmod(a, abs(b));
+        } else {
+            if ((a < 0.0) && (b > 0.0)) {
+                return b - fmod(abs(a), b);
+            } else {
+                if ((a > 0.0) && (b < 0.0)) {
+                    return b + fmod(a, abs(b));
+                }
+            }
         }
-
+        
         return fmod(a, b);
     }
 
@@ -832,22 +858,27 @@ class MathTrig
 
         if (is_null(number)) {
             return 1;
-        } elseif (is_bool(number)) {
-            return 1;
-        } elseif (is_numeric(number)) {
-            let significance = self::SiGN(number);
-            if (significance == 0) {
+        } else {
+            if (is_bool(number)) {
                 return 1;
+            } else {
+                if (is_numeric(number)) {
+                    let significance = self::SiGN(number);
+                    if (significance == 0) {
+                        return 1;
+                    }
+        
+                    let result = self::CeILING(number, significance);
+                    
+                    if (result == self::eVEN(result)) {
+                        let result = result + significance;
+                    }
+        
+                    return (int) result;
+                }
             }
-
-            let result = self::CeILING(number, significance);
-            
-            if (result == self::eVEN(result)) {
-                let result = result + significance;
-            }
-
-            return (int) result;
         }
+        
         return \ZExcel\Calculation\Functions::VaLUE();
     }
 
@@ -871,8 +902,10 @@ class MathTrig
         // Validate parameters
         if (x == 0.0 && y == 0.0) {
             return \ZExcel\Calculation\Functions::NaN();
-        } elseif (x == 0.0 && y < 0.0) {
-            return \ZExcel\Calculation\Functions::DiV0();
+        } else {
+            if (x == 0.0 && y < 0.0) {
+                return \ZExcel\Calculation\Functions::DiV0();
+            }
         }
 
         // Return

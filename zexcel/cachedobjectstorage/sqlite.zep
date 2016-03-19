@@ -80,11 +80,13 @@ class SQLite extends CacheBase implements ICache
         
         if (cellResultSet === false) {
             throw new \ZExcel\Exception(sqlite_error_string(this->DBHandle->lastError()));
-        } elseif (cellResultSet->numRows() == 0) {
-            //    Return null if requested entry doesn"t exist in cache
-            return null;
+        } else {
+            if (cellResultSet->numRows() == 0) {
+                //    Return null if requested entry doesn"t exist in cache
+                return null;
+            }
         }
-
+        
         //    Set current entry to the requested entry
         let this->currentObjectID = pCoord;
 
@@ -115,12 +117,16 @@ class SQLite extends CacheBase implements ICache
         //    Check if the requested entry exists in the cache
         let query = "SELECT id FROM kvp_" . this->TableName . " WHERE id='" . pCoord . "'";
         let cellResultSet = this->DBHandle->query(query, SQLITE_ASSOC);
+        
         if (cellResultSet === false) {
             throw new \ZExcel\Exception(sqlite_error_string(this->DBHandle->lastError()));
-        } elseif (cellResultSet->numRows() == 0) {
-            //    Return null if requested entry doesn"t exist in cache
-            return false;
+        } else {
+            if (cellResultSet->numRows() == 0) {
+                //    Return null if requested entry doesn"t exist in cache
+                return false;
+            }
         }
+        
         return true;
     }
 

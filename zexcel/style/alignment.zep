@@ -4,7 +4,7 @@ use ZExcel\IComparable as ZIComparable;
 
 class Alignment extends Supervisor implements ZIComparable
 {
-	/* Horizontal alignment styles */
+    /* Horizontal alignment styles */
     const HORIZONTAL_GENERAL           = "general";
     const HORIZONTAL_LEFT              = "left";
     const HORIZONTAL_RIGHT             = "right";
@@ -102,7 +102,7 @@ class Alignment extends Supervisor implements ZIComparable
         if (is_array(pStyles)) {
             if (this->isSupervisor == true) {
                 this->getActiveSheet()
-                	->getStyle(this->getSelectedCells())
+                    ->getStyle(this->getSelectedCells())
                     ->applyFromArray(this->getStyleArray(pStyles));
             } else {
                 if (isset(pStyles["horizontal"])) {
@@ -154,8 +154,8 @@ class Alignment extends Supervisor implements ZIComparable
         if (this->isSupervisor == true) {
             let styleArray = this->getStyleArray(["horizontal": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->horizontal = pValue;
         }
@@ -182,8 +182,8 @@ class Alignment extends Supervisor implements ZIComparable
         if (this->isSupervisor == true) {
             let styleArray = this->getStyleArray(["vertical": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->vertical = pValue;
         }
@@ -213,8 +213,8 @@ class Alignment extends Supervisor implements ZIComparable
             if (this->isSupervisor == true) {
                 let styleArray = this->getStyleArray(["rotation": pValue]);
                 this->getActiveSheet()
-                	->getStyle(this->getSelectedCells())
-                	->applyFromArray(styleArray);
+                    ->getStyle(this->getSelectedCells())
+                    ->applyFromArray(styleArray);
             } else {
                 let this->textRotation = pValue;
             }
@@ -244,8 +244,8 @@ class Alignment extends Supervisor implements ZIComparable
         if (this->isSupervisor == true) {
             let styleArray = this->getStyleArray(["wrap": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->wrapText = pValue;
         }
@@ -272,8 +272,8 @@ class Alignment extends Supervisor implements ZIComparable
         if (this->isSupervisor == true) {
             let styleArray = this->getStyleArray(["shrinkToFit": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->shrinkToFit = pValue;
         }
@@ -304,8 +304,8 @@ class Alignment extends Supervisor implements ZIComparable
         if (this->isSupervisor == true) {
             let styleArray = this->getStyleArray(["indent": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->indent = pValue;
         }
@@ -332,8 +332,8 @@ class Alignment extends Supervisor implements ZIComparable
         if (this->isSupervisor == true) {
             let styleArray = this->getStyleArray(["readorder": pValue]);
             this->getActiveSheet()
-            	->getStyle(this->getSelectedCells())
-            	->applyFromArray(styleArray);
+                ->getStyle(this->getSelectedCells())
+                ->applyFromArray(styleArray);
         } else {
             let this->readorder = pValue;
         }

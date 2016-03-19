@@ -92,8 +92,10 @@ class ColumnCellIterator extends CellIterator implements \Iterator
     {
         if ((row < this->startRow) || (row > this->endRow)) {
             throw new \ZExcel\Exception("Row " . row . " is out of range (" . this->startRow . " - " . this->endRow . ")");
-        } elseif (this->onlyExistingCells && !(this->subject->cellExistsByColumnAndRow(this->columnIndex, row))) {
-            throw new \ZExcel\Exception("In \"IterateOnlyExistingCells\" mode and Cell does not exist");
+        } else {
+            if (this->onlyExistingCells && !(this->subject->cellExistsByColumnAndRow(this->columnIndex, row))) {
+                throw new \ZExcel\Exception("In \"IterateOnlyExistingCells\" mode and Cell does not exist");
+            }
         }
         
         let this->position = row;

@@ -121,16 +121,20 @@ class PowerBestFit extends \ZExcel\Shared\Trend\BestFit
         for k, value in xValues {
             if (value < 0.0) {
                 let xValues[k] = 0 - log(abs(value));
-            } elseif (value > 0.0) {
-                let xValues[k] = log(value);
+            } else {
+                if (value > 0.0) {
+                    let xValues[k] = log(value);
+                }
             }
         }
 
         for k, value in yValues {
             if (value < 0.0) {
                 let yValues[k] = 0 - log(abs(value));
-            } elseif (value > 0.0) {
-                let yValues[k] = log(value);
+            } else {
+                if (value > 0.0) {
+                    let yValues[k] = log(value);
+                }
             }
         }
 

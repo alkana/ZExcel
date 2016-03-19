@@ -528,8 +528,8 @@ class ZExcel
      */
     public function removeSheetByIndex(int pIndex = 0)
     {
-    	var numSheets;
-    	
+        var numSheets;
+        
         let numSheets = count(this->workSheetCollection);
 
         if (pIndex > numSheets - 1) {
@@ -971,8 +971,8 @@ class ZExcel
      */
     public function removeCellXfByIndex(pIndex = 0)
     {
-    	var worksheet, cellID, cell, xfIndex;
-    	
+        var worksheet, cellID, cell, xfIndex;
+        
         if (pIndex > count(this->cellXfCollection) - 1) {
             throw new \ZExcel\Exception("CellXf index is out of bounds.");
         } else {
@@ -988,9 +988,11 @@ class ZExcel
                     if (xfIndex > pIndex ) {
                         // decrease xf index by 1
                         cell->setXfIndex(xfIndex - 1);
-                    } elseif (xfIndex == pIndex) {
-                        // set to default xf index 0
-                        cell->setXfIndex(0);
+                    } else {
+                        if (xfIndex == pIndex) {
+                            // set to default xf index 0
+                            cell->setXfIndex(0);
+                        }
                     }
                 }
             }
@@ -1054,7 +1056,7 @@ class ZExcel
      */
     public function addCellStyleXf(<Style> pStyle)
     {
-    	let this->cellStyleXfCollection[] = pStyle;
+        let this->cellStyleXfCollection[] = pStyle;
         pStyle->setIndex(count(this->cellStyleXfCollection) - 1);
     }
 
