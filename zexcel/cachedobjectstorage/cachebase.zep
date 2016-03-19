@@ -186,6 +186,9 @@ abstract class CacheBase
         let col = ["A": "1A"];
         let row = [1];
         
+        let c = "";
+        let r = "";
+        
         for coord in this->getCellList() {
             sscanf(coord, "%[A-Z]%d", c, r);
             let row[r] = r;
@@ -223,6 +226,9 @@ abstract class CacheBase
     {
         var column, row;
         
+        let row = "";
+        let column = "";
+        
         sscanf(this->currentObjectID, "%[A-Z]%d", column, row);
         
         return column;
@@ -236,6 +242,9 @@ abstract class CacheBase
     public function getCurrentRow()
     {
         var column, row;
+        
+        let row = "";
+        let column = "";
         
         sscanf(this->currentObjectID, "%[A-Z]%d", column, row);
         
@@ -260,6 +269,9 @@ abstract class CacheBase
         }
 
         let columnList = [1];
+        
+        let c = "";
+        let r = "";
         
         for coord in this->getCellList() {
             sscanf(coord, "%[A-Z]%d", c, r);
@@ -289,6 +301,9 @@ abstract class CacheBase
         }
 
         let rowList = [0];
+        
+        let c = "";
+        let r = "";
         
         for coord in this->getCellList() {
             sscanf(coord, "%[A-Z]%d", c, r);
@@ -352,8 +367,12 @@ abstract class CacheBase
     {
         var coord, c, r;
         
+        let c = "";
+        let r = "";
+        
         for coord in this->getCellList() {
             sscanf(coord, "%[A-Z]%d", c, r);
+            
             if (r == row) {
                 this->deleteCacheData(coord);
             }
@@ -369,6 +388,9 @@ abstract class CacheBase
     public function removeColumn(column)
     {
         var coord, c, r;
+        
+        let c = "";
+        let r = "";
         
         for coord in this->getCellList() {
             sscanf(coord, "%[A-Z]%d", c, r);

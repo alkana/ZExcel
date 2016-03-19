@@ -173,6 +173,7 @@ class CachedObjectStorageFactory
         var instance, cacheMethodIsAvailable, functionn;
         
         let cacheMethodIsAvailable = true;
+        
         if (self::cacheStorageMethod === null) {
             let cacheMethodIsAvailable = self::initialize();
         }

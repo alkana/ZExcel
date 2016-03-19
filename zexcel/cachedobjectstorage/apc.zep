@@ -233,7 +233,7 @@ class Apc extends CacheBase implements ICache
      * @param  \ZExcel\Worksheet  parent     The worksheet for this cell collection
      * @param  array of mixed      arguments  Additional initialisation arguments
      */
-    public function __construct(<\ZExcel\Worksheet> parent, arguments)
+    public function __construct(<\ZExcel\Worksheet> parent, array arguments = [])
     {
         var cacheTime, baseUnique;
         

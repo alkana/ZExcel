@@ -311,14 +311,17 @@ class SQLite3 extends CacheBase implements ICache
         string _DBName;
         
         parent::__construct(parent);
+        
         if (is_null(this->DBHandle)) {
             let this->TableName = str_replace(".", "_", this->getUniqueID());
             let _DBName = ":memory:";
 
-            let this->DBHandle = new SQLite3(_DBName);
+            let this->DBHandle = new \SQLite3(_DBName);
+            
             if (this->DBHandle === false) {
                 throw new \ZExcel\Exception(this->DBHandle->lastErrorMsg());
             }
+            
             if (!this->DBHandle->exec("CREATE TABLE kvp_".this->TableName." (id VARCHAR(12) PRIMARY KEY, value BLOB)")) {
                 throw new \ZExcel\Exception(this->DBHandle->lastErrorMsg());
             }

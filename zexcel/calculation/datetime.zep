@@ -176,7 +176,7 @@ class DateTime
                 let retValue = (int) time();
                 break;
             case \ZExcel\Calculation\Functions::RETURNDATE_PHP_OBJECT:
-                let retValue = new DateTime();
+                let retValue = new \DateTime();
                 break;
         }
         

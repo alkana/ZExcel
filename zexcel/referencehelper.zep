@@ -29,8 +29,13 @@ class ReferenceHelper
     {
         var ac, ar, bc, br;
         
-        sscanf(a,"%[A-Z]%d", ac, ar);
-        sscanf(b,"%[A-Z]%d", bc, br);
+        let ac = "";
+        let ar = "";
+        let bc = "";
+        let br = "";
+        
+        sscanf(a, "%[A-Z]%d", ac, ar);
+        sscanf(b, "%[A-Z]%d", bc, br);
 
         if (ar == br) {
             return strcasecmp(strlen(ac) . ac, strlen(bc) . bc);
@@ -42,6 +47,11 @@ class ReferenceHelper
     public static function cellReverseSort(var a, var b)
     {
         var ac, ar, bc, br;
+        
+        let ac = "";
+        let ar = "";
+        let bc = "";
+        let br = "";
         
         sscanf(a,"%[A-Z]%d", ac, ar);
         sscanf(b,"%[A-Z]%d", bc, br);
