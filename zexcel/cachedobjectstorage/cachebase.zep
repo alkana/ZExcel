@@ -67,11 +67,12 @@ abstract class CacheBase
      * @param    string        pCoord        Coordinate address of the cell to check
      * @return    boolean
      */
-    public function isDataSet(pCoord) -> boolean
+    public function isDataSet(string pCoord) -> boolean
     {
         if (pCoord === this->currentObjectID) {
             return true;
         }
+        
         //    Check if the requested entry exists in the cache
         return isset(this->cellCache[pCoord]);
     }
@@ -83,7 +84,7 @@ abstract class CacheBase
      * @param    string        toAddress        Destination address of the cell to move
      * @return    boolean
      */
-    public function moveCell(fromAddress, toAddress)
+    public function moveCell(string fromAddress, string toAddress)
     {
         if (fromAddress === this->currentObjectID) {
             let this->currentObjectID = toAddress;
@@ -122,7 +123,7 @@ abstract class CacheBase
      * @param    string            pCoord        Coordinate address of the cell to delete
      * @throws    \ZExcel\Exception
      */
-    public function deleteCacheData(pCoord)
+    public function deleteCacheData(string pCoord)
     {
         if (pCoord === this->currentObjectID && !is_null(this->currentObject)) {
             this->currentObject->detach();
@@ -244,7 +245,7 @@ abstract class CacheBase
      *                                     or the highest column of any row if no row number is passed
      * @return  string     Highest column name
      */
-    public function getHighestColumn(row = null)
+    public function getHighestColumn(string row = null)
     {
         var colRow, coord, c, r;
         array columnList;
@@ -273,7 +274,7 @@ abstract class CacheBase
      *                                     or the highest row of any column if no column letter is passed
      * @return  int        Highest row number
      */
-    public function getHighestRow(column = null)
+    public function getHighestRow(string column = null)
     {
         var colRow, coord, c, r;
         array rowList;

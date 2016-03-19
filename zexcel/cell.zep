@@ -10,28 +10,28 @@ class Cell
      */
     const DEFAULT_RANGE = "A1:A1";
     
-    protected static _columnLookup = [
+    protected static columnLookup = [
         "A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7, "H": 8, "I": 9, "J": 10, "K": 11, "L": 12, "M": 13,
         "N": 14, "O": 15, "P": 16, "Q": 17, "R": 18, "S": 19, "T": 20, "U": 21, "V": 22, "W": 23, "X": 24, "Y": 25, "Z": 26,
         "a": 1, "b": 2, "c": 3, "d": 4, "e": 5, "f": 6, "g": 7, "h": 8, "i": 9, "j": 10, "k": 11, "l": 12, "m": 13,
         "n": 14, "o": 15, "p": 16, "q": 17, "r": 18, "s": 19, "t": 20, "u": 21, "v": 22, "w": 23, "x": 24, "y": 25, "z": 26
     ];
     
-    protected static _indexCache = [];
+    protected static indexCache = [];
 
     /**
      *    Value binder to use
      *
      *    @var    \ZExcel\Cell\IValueBinder
      */
-    private static _valueBinder;
+    private static valueBinder;
     
     /**
      *    Value of the cell
      *
      *    @var    mixed
      */
-    private _value;
+    private value;
 
     /**
      *    Calculated value of the cell (used for caching)
@@ -43,34 +43,34 @@ class Cell
      *
      *    @var mixed
      */
-    private _calculatedValue;
+    private calculatedValue;
 
     /**
      *    Type of the cell data
      *
      *    @var    string
      */
-    private _dataType;
+    private dataType;
 
     /**
      *    Parent worksheet
      *
      *    @var    \ZExcel\CachedObjectStorage_CacheBase
      */
-    private _parent;
+    private parent;
 
     /**
      *    Index to cellXf
      *
      *    @var    int
      */
-    private _xfIndex = 0;
+    private xfIndex = 0;
 
     /**
      *    Attributes of the formula
      *
      */
-    private _formulaAttributes;
+    private formulaAttributes;
 
 
     /**
@@ -80,19 +80,19 @@ class Cell
      **/
     public function notifyCacheController()
     {
-        this->_parent->updateCacheData(this);
+        this->parent->updateCacheData(this);
 
         return this;
     }
 
     public function detach()
     {
-        let this->_parent = null;
+        let this->parent = null;
     }
 
     public function attach(<\ZExcel\CachedObjectStorage\CacheBase> parent)
     {
-        let this->_parent = parent;
+        let this->parent = parent;
     }
 
 
@@ -104,21 +104,26 @@ class Cell
      *    @param    \ZExcel\Worksheet    pSheet
      *    @throws    \ZExcel\Exception
      */
-    public function __construct(pValue = null, pDataType = null, <\ZExcel\Worksheet> pSheet = null)
+    public function __construct(var pValue = null, var pDataType = null, <\ZExcel\Worksheet> pSheet = null)
     {
         // Initialise cell value
-        let this->_value = pValue;
+        let this->value = pValue;
 
         // Set worksheet cache
-        let this->_parent = pSheet->getCellCacheController();
+        let this->parent = pSheet->getCellCacheController();
 
         // Set datatype?
         if (pDataType !== null) {
             if (pDataType == \ZExcel\Cell\DataType::TYPE_STRING2) {
                 let pDataType = \ZExcel\Cell\DataType::TYPE_STRING;
             }
-            let this->_dataType = pDataType;
-        } elseif (!self::getValueBinder()->bindValue(this, pValue)) {
+            
+            let this->dataType = pDataType;
+            
+            return;
+        }
+
+        if (!self::getValueBinder()->bindValue(this, pValue)) {
             throw new \ZExcel\Exception("Value could not be bound to cell.");
         }
     }
@@ -130,7 +135,7 @@ class Cell
      */
     public function getColumn()
     {
-        return this->_parent->getCurrentColumn();
+        return this->parent->getCurrentColumn();
     }
 
     /**
@@ -140,7 +145,7 @@ class Cell
      */
     public function getRow()
     {
-        return this->_parent->getCurrentRow();
+        return this->parent->getCurrentRow();
     }
 
     /**
@@ -150,7 +155,7 @@ class Cell
      */
     public function getCoordinate()
     {
-        return this->_parent->getCurrentAddress();
+        return this->parent->getCurrentAddress();
     }
 
     /**
@@ -160,7 +165,7 @@ class Cell
      */
     public function getValue()
     {
-        return this->_value;
+        return this->value;
     }
 
     /**
@@ -207,7 +212,7 @@ class Cell
         // set the value according to data type
         switch (pDataType) {
             case \ZExcel\Cell\DataType::TYPE_NULL:
-                let this->_value = pValue;
+                let this->value = pValue;
                 break;
             case \ZExcel\Cell\DataType::TYPE_STRING2:
                 let pDataType = \ZExcel\Cell\DataType::TYPE_STRING;
@@ -215,26 +220,26 @@ class Cell
                 // Synonym for string
             case \ZExcel\Cell\DataType::TYPE_INLINE:
                 // Rich text
-                let this->_value = \ZExcel\Cell\DataType::checkString(pValue);
+                let this->value = \ZExcel\Cell\DataType::checkString(pValue);
                 break;
             case \ZExcel\Cell\DataType::TYPE_NUMERIC:
-                let this->_value = (float) pValue;
+                let this->value = (float) pValue;
                 break;
             case \ZExcel\Cell\DataType::TYPE_FORMULA:
-                let this->_value = (string) pValue;
+                let this->value = (string) pValue;
                 break;
             case \ZExcel\Cell\DataType::TYPE_BOOL:
-                let this->_value = (boolean) pValue;
+                let this->value = (boolean) pValue;
                 break;
             case \ZExcel\Cell\DataType::TYPE_ERROR:
-                let this->_value = \ZExcel\Cell\DataType::checkErrorCode(pValue);
+                let this->value = \ZExcel\Cell\DataType::checkErrorCode(pValue);
                 break;
             default:
                 throw new \ZExcel\Exception("Invalid datatype: " . pDataType);
         }
 
         // set the datatype
-        let this->_dataType = pDataType;
+        let this->dataType = pDataType;
 
         return this->notifyCacheController();
     }
@@ -252,11 +257,12 @@ class Cell
     {
         var result, ex;
         
-        if (this->_dataType == \ZExcel\Cell\DataType::TYPE_FORMULA) {
+        if (this->dataType == \ZExcel\Cell\DataType::TYPE_FORMULA) {
             try {
                 let result = \ZExcel\Calculation::getInstance(
                     this->getWorksheet()->getParent()
                 )->calculateCellValue(this, resetLog);
+                
                 //    We don't yet handle array returns
                 if (is_array(result)) {
                     while (is_array(result)) {
@@ -264,25 +270,27 @@ class Cell
                     }
                 }
             } catch ZExcel\Exception, ex {
-                if ((ex->getMessage() === "Unable to access External Workbook") && (this->_calculatedValue !== null)) {
-                    return this->_calculatedValue; // Fallback for calculations referencing external files.
+                if ((ex->getMessage() === "Unable to access External Workbook") && (this->calculatedValue !== null)) {
+                    return this->calculatedValue; // Fallback for calculations referencing external files.
                 }
+                
                 let result = "#N/A";
+                
                 throw new \ZExcel\Calculation\Exception(
                     this->getWorksheet()->getTitle()."!".this->getCoordinate()." -> ".ex->getMessage()
                 );
             }
 
             if (result === "#Not Yet Implemented") {
-                return this->_calculatedValue; // Fallback if calculation engine does not support the formula.
+                return this->calculatedValue; // Fallback if calculation engine does not support the formula.
             }
 
             return result;
-        } elseif (is_object(this->_value) && this->_value instanceof \ZExcel\RichText) {
-            return this->_value->getPlainText();
+        } elseif (is_object(this->value) && this->value instanceof \ZExcel\RichText) {
+            return this->value->getPlainText();
         }
 
-        return this->_value;
+        return this->value;
     }
 
     /**
@@ -294,7 +302,7 @@ class Cell
     public function setCalculatedValue(pValue = null)
     {
         if (pValue !== null) {
-            let this->_calculatedValue = (is_numeric(pValue)) ? (float) pValue : pValue;
+            let this->calculatedValue = (is_numeric(pValue)) ? (float) pValue : pValue;
         }
 
         return this->notifyCacheController();
@@ -312,7 +320,7 @@ class Cell
      */
     public function getOldCalculatedValue()
     {
-        return this->_calculatedValue;
+        return this->calculatedValue;
     }
 
     /**
@@ -322,7 +330,7 @@ class Cell
      */
     public function getDataType()
     {
-        return this->_dataType;
+        return this->dataType;
     }
 
     /**
@@ -336,7 +344,8 @@ class Cell
         if (pDataType == \ZExcel\Cell\DataType::TYPE_STRING2) {
             let pDataType = \ZExcel\Cell\DataType::TYPE_STRING;
         }
-        let this->_dataType = pDataType;
+        
+        let this->dataType = pDataType;
 
         return this->notifyCacheController();
     }
@@ -348,7 +357,7 @@ class Cell
      */
     public function isFormula()
     {
-        return this->_dataType == \ZExcel\Cell\DataType::TYPE_FORMULA;
+        return this->dataType == \ZExcel\Cell\DataType::TYPE_FORMULA;
     }
 
     /**
@@ -359,7 +368,7 @@ class Cell
      */
     public function hasDataValidation()
     {
-        if (!isset(this->_parent)) {
+        if (!isset(this->parent)) {
             throw new \ZExcel\Exception("Cannot check for data validation when cell is not bound to a worksheet");
         }
 
@@ -374,7 +383,7 @@ class Cell
      */
     public function getDataValidation()
     {
-        if (!isset(this->_parent)) {
+        if (!isset(this->parent)) {
             throw new \ZExcel\Exception("Cannot get data validation for cell that is not bound to a worksheet");
         }
 
@@ -390,7 +399,7 @@ class Cell
      */
     public function setDataValidation(<\ZExcel\Cell\DataValidation> pDataValidation = null)
     {
-        if (!isset(this->_parent)) {
+        if (!isset(this->parent)) {
             throw new \ZExcel\Exception("Cannot set data validation for cell that is not bound to a worksheet");
         }
 
@@ -407,7 +416,7 @@ class Cell
      */
     public function hasHyperlink()
     {
-        if (!isset(this->_parent)) {
+        if (!isset(this->parent)) {
             throw new \ZExcel\Exception("Cannot check for hyperlink when cell is not bound to a worksheet");
         }
 
@@ -422,7 +431,7 @@ class Cell
      */
     public function getHyperlink()
     {
-        if (!isset(this->_parent)) {
+        if (!isset(this->parent)) {
             throw new \ZExcel\Exception("Cannot get hyperlink for cell that is not bound to a worksheet");
         }
 
@@ -438,7 +447,7 @@ class Cell
      */
     public function setHyperlink(<\ZExcel\Cell\Hyperlink> pHyperlink = null)
     {
-        if (!isset(this->_parent)) {
+        if (!isset(this->parent)) {
             throw new \ZExcel\Exception("Cannot set hyperlink for cell that is not bound to a worksheet");
         }
 
@@ -454,7 +463,7 @@ class Cell
      */
     public function getParent()
     {
-        return this->_parent;
+        return this->parent;
     }
 
     /**
@@ -464,7 +473,7 @@ class Cell
      */
     public function getWorksheet()
     {
-        return this->_parent->getParent();
+        return this->parent->getParent();
     }
 
     /**
@@ -535,7 +544,7 @@ class Cell
      */
     public function rebindParent(<\ZExcel\Worksheet> parent)
     {
-        let this->_parent = parent->getCellCacheController();
+        let this->parent = parent->getCellCacheController();
 
         return this->notifyCacheController();
     }
@@ -820,8 +829,8 @@ class Cell
     {
         var len;
         
-        if (isset(self::_indexCache[pString])) {
-            return self::_indexCache[pString];
+        if (isset(self::indexCache[pString])) {
+            return self::indexCache[pString];
         }
 
         //    We also use the language construct isset() rather than the more costly strlen() function to match the length of pString
@@ -830,14 +839,14 @@ class Cell
         
         if (len > 0) {
             if (len < 2) {
-                let self::_indexCache[pString] = self::_columnLookup[pString];
-                return self::_indexCache[pString];
+                let self::indexCache[pString] = self::columnLookup[pString];
+                return self::indexCache[pString];
             } elseif (len < 3) {
-                let self::_indexCache[pString] = self::_columnLookup[substr(pString, 0, 1)] * 26 + self::_columnLookup[substr(pString, 1, 1)];
-                return self::_indexCache[pString];
+                let self::indexCache[pString] = self::columnLookup[substr(pString, 0, 1)] * 26 + self::columnLookup[substr(pString, 1, 1)];
+                return self::indexCache[pString];
             } elseif (len < 4) {
-                let self::_indexCache[pString] = self::_columnLookup[substr(pString, 0, 1)] * 676 + self::_columnLookup[substr(pString, 1, 1)] * 26 + self::_columnLookup[substr(pString, 2, 1)];
-                return self::_indexCache[pString];
+                let self::indexCache[pString] = self::columnLookup[substr(pString, 0, 1)] * 676 + self::columnLookup[substr(pString, 1, 1)] * 26 + self::columnLookup[substr(pString, 2, 1)];
+                return self::indexCache[pString];
             }
         }
         
@@ -852,18 +861,18 @@ class Cell
      */
     public static function stringFromColumnIndex(var pColumnIndex = 0)
     {
-        if (!isset(self::_indexCache[pColumnIndex])) {
+        if (!isset(self::indexCache[pColumnIndex])) {
             // Determine column string
             if (pColumnIndex < 26) {
-                let self::_indexCache[pColumnIndex] = chr(65 + pColumnIndex);
+                let self::indexCache[pColumnIndex] = chr(65 + pColumnIndex);
             } elseif (pColumnIndex < 702) {
-                let self::_indexCache[pColumnIndex] = chr(64 + (pColumnIndex / 26)) . chr(65 + pColumnIndex % 26);
+                let self::indexCache[pColumnIndex] = chr(64 + (pColumnIndex / 26)) . chr(65 + pColumnIndex % 26);
             } else {
-                let self::_indexCache[pColumnIndex] = chr(64 + ((pColumnIndex - 26) / 676)) . chr(65 + (((pColumnIndex - 26) % 676) / 26)) . chr(65 + pColumnIndex % 26);
+                let self::indexCache[pColumnIndex] = chr(64 + ((pColumnIndex - 26) / 676)) . chr(65 + (((pColumnIndex - 26) % 676) / 26)) . chr(65 + pColumnIndex % 26);
             }
         }
         
-        return self::_indexCache[pColumnIndex];
+        return self::indexCache[pColumnIndex];
     }
 
     /**
@@ -974,11 +983,11 @@ class Cell
      */
     public static function getValueBinder()
     {
-        if (self::_valueBinder === null) {
-            let self::_valueBinder = new \ZExcel\Cell\DefaultValueBinder();
+        if (self::valueBinder === null) {
+            let self::valueBinder = new \ZExcel\Cell\DefaultValueBinder();
         }
 
-        return self::_valueBinder;
+        return self::valueBinder;
     }
 
     /**
@@ -993,7 +1002,7 @@ class Cell
             throw new \ZExcel\Exception("A \ZExcel\Cell\IValueBinder is required for PHPExcel to function correctly.");
         }
 
-        let self::_valueBinder = binder;
+        let self::valueBinder = binder;
     }
 
     /**
@@ -1020,7 +1029,7 @@ class Cell
      */
     public function getXfIndex()
     {
-        return this->_xfIndex;
+        return this->xfIndex;
     }
 
     /**
@@ -1031,7 +1040,7 @@ class Cell
      */
     public function setXfIndex(pValue = 0)
     {
-        let this->_xfIndex = pValue;
+        let this->xfIndex = pValue;
 
         return this->notifyCacheController();
     }
@@ -1041,7 +1050,7 @@ class Cell
      */
     public function setFormulaAttributes(pAttributes)
     {
-        let this->_formulaAttributes = pAttributes;
+        let this->formulaAttributes = pAttributes;
         
         return this;
     }
@@ -1051,7 +1060,7 @@ class Cell
      */
     public function getFormulaAttributes()
     {
-        return this->_formulaAttributes;
+        return this->formulaAttributes;
     }
 
     /**

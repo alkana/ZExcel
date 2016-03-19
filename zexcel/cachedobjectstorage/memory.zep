@@ -19,8 +19,12 @@ class Memory extends CacheBase implements ICache
      * @return    \ZExcel\Cell
      * @throws    \ZExcel\Exception
      */
-    public function addCacheData(pCoord, <\ZExcel\Cell> cell)
+    public function addCacheData(string pCoord, <\ZExcel\Cell> cell)
     {
+        if (strlen(pCoord) === 0) {
+            throw new \Exception("Cache Key must be a string");
+        }
+        
         let this->cellCache[pCoord] = cell;
 
         //    Set current entry to the new/updated entry
@@ -37,7 +41,7 @@ class Memory extends CacheBase implements ICache
      * @throws     \ZExcel\Exception
      * @return     \ZExcel\Cell     Cell that was found, or null if not found
      */
-    public function getCacheData(pCoord)
+    public function getCacheData(string pCoord)
     {
         //    Check if the entry that has been requested actually exists
         if (!isset(this->cellCache[pCoord])) {

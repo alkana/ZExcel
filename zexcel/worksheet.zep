@@ -1267,10 +1267,7 @@ class Worksheet implements IComparable
     {
         var cell, aCoordinates, rowDimension, columnDimension;
         
-        let cell = this->cellCollection->addCacheData(
-            pCoordinate,
-            new \ZExcel\Cell(null, \ZExcel\Cell\DataType::TYPE_NULL, this)
-        );
+        let cell = new \ZExcel\Cell(null, \ZExcel\Cell\DataType::TYPE_NULL, this);
         
         let this->cellCollectionIsSorted = false;
 
@@ -1291,10 +1288,14 @@ class Worksheet implements IComparable
         if (rowDimension !== null && rowDimension->getXfIndex() > 0) {
             // then there is a row dimension with explicit style, assign it to the cell
             cell->setXfIndex(rowDimension->getXfIndex());
-        } elseif (columnDimension !== null && columnDimension->getXfIndex() > 0) {
-            // then there is a column dimension, assign it to the cell
-            cell->setXfIndex(columnDimension->getXfIndex());
+        } else {
+            if (columnDimension !== null && columnDimension->getXfIndex() > 0) {
+	            // then there is a column dimension, assign it to the cell
+	            cell->setXfIndex(columnDimension->getXfIndex());
+	        }
         }
+        
+        this->cellCollection->addCacheData(pCoordinate, cell);
 
         return cell;
     }
