@@ -9,91 +9,91 @@ class BaseDrawing implements ZIComparable
      *
      * @var int
      */
-    private static _imageCounter = 0;
+    private static imageCounter = 0;
 
     /**
      * Image index
      *
      * @var int
      */
-    private _imageIndex = 0;
+    private imageIndex = 0;
 
     /**
      * Name
      *
      * @var string
      */
-    protected _name;
+    protected name;
 
     /**
      * Description
      *
      * @var string
      */
-    protected _description;
+    protected description;
 
     /**
      * Worksheet
      *
      * @var \ZExcel\Worksheet
      */
-    protected _worksheet;
+    protected worksheet;
 
     /**
      * Coordinates
      *
      * @var string
      */
-    protected _coordinates;
+    protected coordinates;
 
     /**
      * Offset X
      *
      * @var int
      */
-    protected _offsetX;
+    protected offsetX;
 
     /**
      * Offset Y
      *
      * @var int
      */
-    protected _offsetY;
+    protected offsetY;
 
     /**
      * Width
      *
      * @var int
      */
-    protected _width;
+    protected width;
 
     /**
      * Height
      *
      * @var int
      */
-    protected _height;
+    protected height;
 
     /**
      * Proportional resize
      *
      * @var boolean
      */
-    protected _resizeProportional;
+    protected resizeProportional;
 
     /**
      * Rotation
      *
      * @var int
      */
-    protected _rotation;
+    protected rotation;
 
     /**
      * Shadow
      *
      * @var \ZExcel\Worksheet\Drawing\Shadow
      */
-    protected _shadow;
+    protected shadow;
 
     /**
      * Create a new \ZExcel\Worksheet\BaseDrawing
@@ -101,21 +101,21 @@ class BaseDrawing implements ZIComparable
     public function __construct()
     {
         // Initialise values
-        let this->_name               = "";
-        let this->_description        = "";
-        let this->_worksheet          = null;
-        let this->_coordinates        = "A1";
-        let this->_offsetX            = 0;
-        let this->_offsetY            = 0;
-        let this->_width              = 0;
-        let this->_height             = 0;
-        let this->_resizeProportional = true;
-        let this->_rotation           = 0;
-        let this->_shadow             = new \ZExcel\Worksheet\Drawing\Shadow();
+        let this->name               = "";
+        let this->description        = "";
+        let this->worksheet          = null;
+        let this->coordinates        = "A1";
+        let this->offsetX            = 0;
+        let this->offsetY            = 0;
+        let this->width              = 0;
+        let this->height             = 0;
+        let this->resizeProportional = true;
+        let this->rotation           = 0;
+        let this->shadow             = new \ZExcel\Worksheet\Drawing\Shadow();
 
         // Set image index
-        let self::_imageCounter = self::_imageCounter + 1;
-        let this->_imageIndex   = self::_imageCounter;
+        let self::imageCounter = self::imageCounter + 1;
+        let this->imageIndex   = self::imageCounter;
     }
 
     /**
@@ -125,7 +125,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getImageIndex()
     {
-        return this->_imageIndex;
+        return this->imageIndex;
     }
 
     /**
@@ -135,7 +135,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getName()
     {
-        return this->_name;
+        return this->name;
     }
 
     /**
@@ -146,7 +146,7 @@ class BaseDrawing implements ZIComparable
      */
     public function setName(var pValue = "") -> <\ZExcel\Worksheet\BaseDrawing>
     {
-        let this->_name = pValue;
+        let this->name = pValue;
         
         return this;
     }
@@ -158,7 +158,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getDescription()
     {
-        return this->_description;
+        return this->description;
     }
 
     /**
@@ -169,7 +169,7 @@ class BaseDrawing implements ZIComparable
      */
     public function setDescription(var pValue = "") -> <\ZExcel\Worksheet\BaseDrawing>
     {
-        let this->_description = pValue;
+        let this->description = pValue;
         
         return this;
     }
@@ -181,7 +181,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getWorksheet()
     {
-        return this->_worksheet;
+        return this->worksheet;
     }
 
     /**
@@ -196,21 +196,21 @@ class BaseDrawing implements ZIComparable
     {
         var iteratorr;
         
-        if (is_null(this->_worksheet)) {
+        if (is_null(this->worksheet)) {
             // Add drawing to \ZExcel\Worksheet
-            let this->_worksheet = pValue;
+            let this->worksheet = pValue;
             
-            this->_worksheet->getCell(this->_coordinates);
-            this->_worksheet->getDrawingCollection()->append(this);
+            this->worksheet->getCell(this->coordinates);
+            this->worksheet->getDrawingCollection()->append(this);
         } else {
             if (pOverrideOld) {
                 // Remove drawing from old \ZExcel\Worksheet
-                let iteratorr = this->_worksheet->getDrawingCollection()->getIterator();
+                let iteratorr = this->worksheet->getDrawingCollection()->getIterator();
 
                 while (iteratorr->valid()) {
                     if (iteratorr->current()->getHashCode() == this->getHashCode()) {
-                        this->_worksheet->getDrawingCollection()->offsetUnset( iteratorr->key() );
-                        let this->_worksheet = null;
+                        this->worksheet->getDrawingCollection()->offsetUnset( iteratorr->key() );
+                        let this->worksheet = null;
                         break;
                     }
                 }
@@ -232,7 +232,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getCoordinates()
     {
-        return this->_coordinates;
+        return this->coordinates;
     }
 
     /**
@@ -243,7 +243,7 @@ class BaseDrawing implements ZIComparable
      */
     public function setCoordinates(var pValue = "A1") -> <\ZExcel\Worksheet\BaseDrawing>
     {
-        let this->_coordinates = pValue;
+        let this->coordinates = pValue;
         
         return this;
     }
@@ -255,7 +255,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getOffsetX()
     {
-        return this->_offsetX;
+        return this->offsetX;
     }
 
     /**
@@ -266,7 +266,7 @@ class BaseDrawing implements ZIComparable
      */
     public function setOffsetX(var pValue = 0) -> <\ZExcel\Worksheet\BaseDrawing>
     {
-        let this->_offsetX = pValue;
+        let this->offsetX = pValue;
         
         return this;
     }
@@ -278,7 +278,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getOffsetY()
     {
-        return this->_offsetY;
+        return this->offsetY;
     }
 
     /**
@@ -289,7 +289,7 @@ class BaseDrawing implements ZIComparable
      */
     public function setOffsetY(var pValue = 0) -> <\ZExcel\Worksheet\BaseDrawing>
     {
-        let this->_offsetY = pValue;
+        let this->offsetY = pValue;
         
         return this;
     }
@@ -301,7 +301,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getWidth()
     {
-        return this->_width;
+        return this->width;
     }
 
     /**
@@ -315,18 +315,18 @@ class BaseDrawing implements ZIComparable
         var ratio;
         
         // Resize proportional?
-        if (this->_resizeProportional && pValue != 0) {
-            if (this->_width != 0) {
-                let ratio = this->_height / this->_width;
+        if (this->resizeProportional && pValue != 0) {
+            if (this->width != 0) {
+                let ratio = this->height / this->width;
             } else {
-                let ratio = this->_height;
+                let ratio = this->height;
             }
             
-            let this->_height = round(ratio * pValue);
+            let this->height = round(ratio * pValue);
         }
 
         // Set width
-        let this->_width = pValue;
+        let this->width = pValue;
 
         return this;
     }
@@ -338,7 +338,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getHeight()
     {
-        return this->_height;
+        return this->height;
     }
 
     /**
@@ -352,18 +352,18 @@ class BaseDrawing implements ZIComparable
         var ratio;
         
         // Resize proportional?
-        if (this->_resizeProportional && pValue != 0) {
-            if (this->_height != 0) {
-                let ratio = this->_width / this->_height;
+        if (this->resizeProportional && pValue != 0) {
+            if (this->height != 0) {
+                let ratio = this->width / this->height;
             } else {
-                let ratio = this->_width;
+                let ratio = this->width;
             }
             
-            let this->_width = round(ratio * pValue);
+            let this->width = round(ratio * pValue);
         }
 
         // Set height
-        let this->_height = pValue;
+        let this->height = pValue;
 
         return this;
     }
@@ -385,29 +385,29 @@ class BaseDrawing implements ZIComparable
     {
         var xratio, yratio;
         
-        if (this->_width != 0) {
-            let xratio = width / this->_width;
+        if (this->width != 0) {
+            let xratio = width / this->width;
          } else {
              let xratio = width;
          }
          
-         if (this->_height != 0) {
-             let yratio = height / this->_height;
+         if (this->height != 0) {
+             let yratio = height / this->height;
          } else {
              let yratio = height;
          }
         
-        if (this->_resizeProportional && !(width == 0 || height == 0)) {
-            if ((xratio * this->_height) < height) {
-                let this->_height = ceil(xratio * this->_height);
-                let this->_width  = width;
+        if (this->resizeProportional && !(width == 0 || height == 0)) {
+            if ((xratio * this->height) < height) {
+                let this->height = ceil(xratio * this->height);
+                let this->width  = width;
             } else {
-                let this->_width    = ceil(yratio * this->_width);
-                let this->_height    = height;
+                let this->width  = ceil(yratio * this->width);
+                let this->height = height;
             }
         } else {
-            let this->_width = width;
-            let this->_height = height;
+            let this->width = width;
+            let this->height = height;
         }
 
         return this;
@@ -420,7 +420,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getResizeProportional()
     {
-        return this->_resizeProportional;
+        return this->resizeProportional;
     }
 
     /**
@@ -431,7 +431,7 @@ class BaseDrawing implements ZIComparable
      */
     public function setResizeProportional(pValue = true) -> <\ZExcel\Worksheet\BaseDrawing>
     {
-        let this->_resizeProportional = pValue;
+        let this->resizeProportional = pValue;
         
         return this;
     }
@@ -443,7 +443,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getRotation()
     {
-        return this->_rotation;
+        return this->rotation;
     }
 
     /**
@@ -454,7 +454,7 @@ class BaseDrawing implements ZIComparable
      */
     public function setRotation(pValue = 0) -> <\ZExcel\Worksheet\BaseDrawing>
     {
-        let this->_rotation = pValue;
+        let this->rotation = pValue;
         
         return this;
     }
@@ -466,7 +466,7 @@ class BaseDrawing implements ZIComparable
      */
     public function getShadow()
     {
-        return this->_shadow;
+        return this->shadow;
     }
 
     /**
@@ -478,7 +478,7 @@ class BaseDrawing implements ZIComparable
      */
     public function setShadow(<\ZExcel\Worksheet\Drawing\Shadow> pValue = null) -> <\ZExcel\Worksheet\BaseDrawing>
     {
-           let this->_shadow = pValue;
+           let this->shadow = pValue;
            
            return this;
     }
@@ -491,16 +491,16 @@ class BaseDrawing implements ZIComparable
     public function getHashCode()
     {
         return md5(
-              this->_name
-            . this->_description
-            . this->_worksheet->getHashCode()
-            . this->_coordinates
-            . this->_offsetX
-            . this->_offsetY
-            . this->_width
-            . this->_height
-            . this->_rotation
-            . this->_shadow->getHashCode()
+              this->name
+            . this->description
+            . this->worksheet->getHashCode()
+            . this->coordinates
+            . this->offsetX
+            . this->offsetY
+            . this->width
+            . this->height
+            . this->rotation
+            . this->shadow->getHashCode()
             . get_class(this)
         );
     }

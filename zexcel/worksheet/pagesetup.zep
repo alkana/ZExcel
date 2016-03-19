@@ -3,15 +3,15 @@ namespace ZExcel\Worksheet;
 class PageSetup
 {
     /* Paper size */
-    const PAPERSIZE_LETTER                          = 1;
-    const PAPERSIZE_LETTER_SMALL                    = 2;
-    const PAPERSIZE_TABLOID                         = 3;
-    const PAPERSIZE_LEDGER                          = 4;
-    const PAPERSIZE_LEGAL                           = 5;
-    const PAPERSIZE_STATEMENT                       = 6;
-    const PAPERSIZE_EXECUTIVE                       = 7;
-    const PAPERSIZE_A3                              = 8;
-    const PAPERSIZE_A4                              = 9;
+    const PAPERSIZE_LETTER                          =  1;
+    const PAPERSIZE_LETTER_SMALL                    =  2;
+    const PAPERSIZE_TABLOID                         =  3;
+    const PAPERSIZE_LEDGER                          =  4;
+    const PAPERSIZE_LEGAL                           =  5;
+    const PAPERSIZE_STATEMENT                       =  6;
+    const PAPERSIZE_EXECUTIVE                       =  7;
+    const PAPERSIZE_A3                              =  8;
+    const PAPERSIZE_A4                              =  9;
     const PAPERSIZE_A4_SMALL                        = 10;
     const PAPERSIZE_A5                              = 11;
     const PAPERSIZE_B4                              = 12;
@@ -76,8 +76,8 @@ class PageSetup
     const ORIENTATION_PORTRAIT  = "portrait";
 
     /* Print Range Set Method */
-    const SETPRINTRANGE_OVERWRITE   = "O";
-    const SETPRINTRANGE_INSERT      = "I";
+    const SETPRINTRANGE_OVERWRITE = "O";
+    const SETPRINTRANGE_INSERT    = "I";
 
 
     /**
@@ -85,14 +85,14 @@ class PageSetup
      *
      * @var int
      */
-    private _paperSize     = \ZExcel\Worksheet\PageSetup::PAPERSIZE_LETTER;
+    private _paperSize = \ZExcel\Worksheet\PageSetup::PAPERSIZE_LETTER;
 
     /**
      * Orientation
      *
      * @var string
      */
-    private _orientation   = \ZExcel\Worksheet\PageSetup::ORIENTATION_DEFAULT;
+    private _orientation = \ZExcel\Worksheet\PageSetup::ORIENTATION_DEFAULT;
 
     /**
      * Scale (Print Scale)
@@ -102,7 +102,7 @@ class PageSetup
      *
      * @var int?
      */
-    private _scale         = 100;
+    private _scale = 100;
 
     /**
       * Fit To Page
@@ -110,7 +110,7 @@ class PageSetup
       *
       * @var boolean
       */
-    private _fitToPage     = FALSE;
+    private _fitToPage = false;
 
     /**
       * Fit To Height
@@ -126,7 +126,7 @@ class PageSetup
       *
       * @var int?
       */
-    private _fitToWidth    = 1;
+    private _fitToWidth = 1;
 
     /**
      * Columns to repeat at left
@@ -147,28 +147,28 @@ class PageSetup
      *
      * @var boolean
      */
-    private _horizontalCentered = FALSE;
+    private _horizontalCentered = false;
 
     /**
      * Center page vertically
      *
      * @var boolean
      */
-    private _verticalCentered = FALSE;
+    private _verticalCentered = false;
 
     /**
      * Print area
      *
      * @var string
      */
-    private _printArea = NULL;
+    private _printArea = null;
 
     /**
      * First page number
      *
      * @var int
      */
-    private _firstPageNumber = NULL;
+    private _firstPageNumber = null;
 
     /**
      * Create a new \ZExcel\Worksheet\PageSetup

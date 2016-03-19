@@ -3,9 +3,9 @@ namespace ZExcel\Worksheet;
 class SheetView
 {
     /* Sheet View types */
-    const SHEETVIEW_NORMAL              = "normal";
-    const SHEETVIEW_PAGE_LAYOUT         = "pageLayout";
-    const SHEETVIEW_PAGE_BREAK_PREVIEW  = "pageBreakPreview";
+    const SHEETVIEW_NORMAL             = "normal";
+    const SHEETVIEW_PAGE_LAYOUT        = "pageLayout";
+    const SHEETVIEW_PAGE_BREAK_PREVIEW = "pageBreakPreview";
 
     private _sheetViewTypes = [
         self::SHEETVIEW_NORMAL,
@@ -20,7 +20,7 @@ class SheetView
      *
      * @var int
      */
-    private _zoomScale         = 100;
+    private _zoomScale     = 100;
 
     /**
      * ZoomScaleNormal
@@ -29,7 +29,7 @@ class SheetView
      *
      * @var int
      */
-    private _zoomScaleNormal   = 100;
+    private _zoomScaleNormal = 100;
 
     /**
      * View
@@ -38,7 +38,7 @@ class SheetView
      *
      * @var string
      */
-    private _sheetviewType     = self::SHEETVIEW_NORMAL;
+    private _sheetviewType = self::SHEETVIEW_NORMAL;
 
     /**
      * Create a new PHPExcel_Worksheet_SheetView
