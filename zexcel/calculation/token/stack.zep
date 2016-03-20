@@ -37,7 +37,6 @@ class Stack
     {
         var localeFunction;
         
-        let this->count++;
         let this->stack[this->count] = [
             "type": type,
             "value": value,
@@ -46,10 +45,13 @@ class Stack
         
         if (type == "Function") {
             let localeFunction = \ZExcel\Calculation::_localeFunc(value);
+            
             if (localeFunction != value) {
-                let this->stack[(this->count - 1)]["localeValue"] = localeFunction;
+                let this->stack[this->count]["localeValue"] = localeFunction;
             }
         }
+        
+        let this->count = this->count + 1;
     }
 
     /**
@@ -60,9 +62,11 @@ class Stack
     public function pop()
     {
         if (this->count > 0) {
-            let this->count--;
+            let this->count = this->count - 1;
+            
             return this->stack[this->count];
         }
+        
         return null;
     }
 
@@ -77,6 +81,7 @@ class Stack
         if (this->count - n < 0) {
             return null;
         }
+        
         return this->stack[this->count - n];
     }
 

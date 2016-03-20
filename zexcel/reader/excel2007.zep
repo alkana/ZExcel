@@ -237,14 +237,14 @@ class Excel2007 extends Abstrac implements IReader
         var instance, sharedFormulas, master, current, difference;
         
         let cellDataType    = "f";
-        let value           = "=" . c->f;
+        let value           = "=" . (string) c->f;
         let calculatedValue = call_user_func(["\\ZExcel\\Reader\\Excel2007", castBaseType], c);
 
         // Shared formula?
-        if (isset(c->f["t"]) && strtolower((string)c->f["t"]) == "shared") {
-            let instance = (string) c->f["si"];
+        if (isset(c->f->t) && strtolower((string) c->f->t) == "shared") {
+            let instance = (string) c->f->si;
 
-            if (!isset(sharedFormulas[(string)c->f["si"]])) {
+            if (!isset(sharedFormulas[(string) c->f->si])) {
                 let sharedFormulas[instance] = [
                     "master": r,
                     "formula": value
@@ -252,20 +252,21 @@ class Excel2007 extends Abstrac implements IReader
             } else {
                 let master = \ZExcel\Cell::coordinateFromString(sharedFormulas[instance]["master"]);
                 let current = \ZExcel\Cell::coordinateFromString(r);
-
-                let difference = [0, 0];
-                let difference[0] = \ZExcel\Cell::columnIndexFromString(current[0]) - \ZExcel\Cell::columnIndexFromString(master[0]);
-                let difference[1] = current[1] - master[1];
-
+                
+                let difference = [
+                    \ZExcel\Cell::columnIndexFromString(current[0]) - \ZExcel\Cell::columnIndexFromString(master[0]),
+                    current[1] - master[1]
+                ];
+                
                 let value = this->referenceHelper->updateFormulaReferences(sharedFormulas[instance]["formula"], "A1", difference[0], difference[1]);
             }
         }
         
-        // @TODO return references
         return [
             cellDataType,
             value,
-            calculatedValue
+            calculatedValue,
+            sharedFormulas
         ];
     }
 
@@ -481,31 +482,35 @@ class Excel2007 extends Abstrac implements IReader
                 case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument":
                     let dir = dirname(rel["Target"]);
                     
-                    let relsWorkbook = simplexml_load_string(this->securityScan(
-                        this->getFromZipArchive(zip, dir . "/_rels/" . basename(rel["Target"]) . ".rels")),
+                    let relsWorkbook = simplexml_load_string(
+                        this->securityScan(this->getFromZipArchive(zip, dir . "/_rels/" . basename(rel["Target"]) . ".rels")),
                         "SimpleXMLElement",
                         \ZExcel\Settings::getLibXmlLoaderOptions()
                     );
                     
                     relsWorkbook->registerXPathNamespace("rel", "http://schemas.openxmlformats.org/package/2006/relationships");
-
-                    let xpath = reset(self::getArrayItem(relsWorkbook->xpath("rel:Relationship[@Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings']")));
-                    
-                    let xmlStrings = simplexml_load_string(
-                        this->securityScan(this->getFromZipArchive(zip, dir . "/" . xpath["Target"])),
-                        "SimpleXMLElement",
-                        \ZExcel\Settings::getLibXmlLoaderOptions()
-                    );
                     
                     let sharedStrings = [];
+                    let xpath = self::getArrayItem(relsWorkbook->xpath("rel:Relationship[@Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings']"));
                     
-                    if (is_object(xmlStrings) && isset(xmlStrings->si)) {
-                        for val in iterator(xmlStrings) {
-                            if (isset(val->t)) {
-                                let sharedStrings[] = \ZExcel\Shared\Stringg::ControlCharacterOOXML2PHP( (string) val->t );
-                            } else {
-                                if (isset(val->r)) {
-                                    let sharedStrings[] = this->parseRichText(val);
+                    if (xpath !== null) {
+                        let xpath = reset(xpath);
+                        
+                        let xmlStrings = simplexml_load_string(
+                            this->securityScan(this->getFromZipArchive(zip, dir . "/" . xpath["Target"])),
+                            "SimpleXMLElement",
+                            \ZExcel\Settings::getLibXmlLoaderOptions()
+                        );
+                        
+                        
+                        if (is_object(xmlStrings) && isset(xmlStrings->si)) {
+                            for val in iterator(xmlStrings) {
+                                if (isset(val->t)) {
+                                    let sharedStrings[] = \ZExcel\Shared\Stringg::ControlCharacterOOXML2PHP( (string) val->t );
+                                } else {
+                                    if (isset(val->r)) {
+                                        let sharedStrings[] = this->parseRichText(val);
+                                    }
                                 }
                             }
                         }
@@ -845,7 +850,12 @@ class Excel2007 extends Abstrac implements IReader
                                                     let value = self::castToString(c);
                                                 } else {
                                                     // Formula
-                                                    this->castToFormula(c, r, cellDataType, value, calculatedValue, sharedFormulas, "castToString");
+                                                    let value = this->castToFormula(c, r, cellDataType, value, calculatedValue, sharedFormulas, "castToString");
+                                                    
+                                                    let calculatedValue = value[2];
+                                                    let sharedFormulas = value[3];
+                                                    let cellDataType = value[0];
+                                                    let value = value[1];
                                                 }
                                                 break;
                                         }

@@ -380,7 +380,7 @@ class Matrix
      */
     public function checkMatrixDimensions(var b = null)
     {
-        if (b instanceof \ZPExcel\Shared\JAMA\Matrix) {
+        if (b instanceof \ZExcel\Shared\JAMA\Matrix) {
             if ((this->m == b->getRowDimension()) && (this->n == b->getColumnDimension())) {
                 return true;
             } else {

@@ -148,7 +148,8 @@ class LookupRef
         reset(cellAddress);
         
         let isMatrix = (is_numeric(key(cellAddress)));
-        let tmp = \ZExcel\Calculation::_getMatrixDimensions(cellAddress);
+        let tmp = \ZExcel\Calculation::getMatrixDimensions(cellAddress);
+        let cellAddress = array_shift(tmp);
         let columns = tmp[0];
         let rows = tmp[1];
 
@@ -237,7 +238,7 @@ class LookupRef
      */
     public static function rows(var cellAddress = null)
     {
-        var isMatrix, columns, rows;
+        var isMatrix, columns, rows, tmp;
         
         if (is_null(cellAddress) || cellAddress === "") {
             return 1;
@@ -250,9 +251,10 @@ class LookupRef
         reset(cellAddress);
         
         let isMatrix = (is_numeric(key(cellAddress)));
-        let cellAddress = \ZExcel\Calculation::_getMatrixDimensions(cellAddress);
-        let columns = cellAddress[0];
-        let rows = cellAddress[1];
+        let tmp = \ZExcel\Calculation::getMatrixDimensions(cellAddress);
+        let cellAddress = array_shift(tmp);
+        let columns = tmp[0];
+        let rows = tmp[1];
 
         if (isMatrix) {
             return columns;

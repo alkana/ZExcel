@@ -269,6 +269,7 @@ class Cell
                         let result = array_pop(result);
                     }
                 }
+                
             } catch ZExcel\Exception, ex {
                 if ((ex->getMessage() === "Unable to access External Workbook") && (this->calculatedValue !== null)) {
                     return this->calculatedValue; // Fallback for calculations referencing external files.
@@ -280,11 +281,11 @@ class Cell
                     this->getWorksheet()->getTitle()."!".this->getCoordinate()." -> ".ex->getMessage()
                 );
             }
-
+            
             if (result === "#Not Yet Implemented") {
                 return this->calculatedValue; // Fallback if calculation engine does not support the formula.
             }
-
+            
             return result;
         } else {
             if (is_object(this->value) && this->value instanceof \ZExcel\RichText) {
