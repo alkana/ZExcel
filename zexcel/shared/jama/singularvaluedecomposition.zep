@@ -89,7 +89,7 @@ class SingularValueDecomposition
             }
 
             for j in range(k + 1, this->n - 1) {
-                if ((k < nct) & (this->s[k] != 0.0)) {
+                if ((k < nct) && (this->s[k] != 0.0)) {
                     // Apply the transformation.
                     let t = 0;
                     

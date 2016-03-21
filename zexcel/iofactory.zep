@@ -13,12 +13,12 @@ class IOFactory
         [
             "type": "IWriter",
             "path": "ZExcel/Writer/{0}.php",
-            "class": "\ZExcel\Writer_{0}"
+            "class": "\\ZExcel\\Writer\\{0}"
         ],
         [
             "type": "IReader",
             "path": "ZExcel/Reader/{0}.php",
-            "class": "\ZExcel\Reader\{0}"
+            "class": "\\ZExcel\\Reader\\{0}"
         ]
     ];
 

@@ -902,7 +902,7 @@ class EigenvalueDecomposition
                                 let vr = ((double) this->d[i] - p) * ((double) this->d[i] - p) + (double) this->e[i] * (double) this->e[i] - q * q;
                                 let vi = ((double) this->d[i] - p) * 2.0 * q;
                                 
-                                if (vr == 0.0 & vi == 0.0) {
+                                if (vr == 0.0 && vi == 0.0) {
                                     let vr = eps * norm * (abs(w) + abs(q) + abs(x) + abs(y) + abs(z));
                                 }
                                 
@@ -939,7 +939,7 @@ class EigenvalueDecomposition
 
         // Vectors of isolated roots
         for i in range(0, nn - 1) {
-            if (i < low | i > high) {
+            if (i < low || i > high) {
                 for j in range(i, nn - 1) {
                     let this->v[i][j] = this->h[i][j];
                 }

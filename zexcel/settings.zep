@@ -2,8 +2,8 @@ namespace ZExcel;
 
 class Settings
 {
-    const PCLZIP     = "\ZExcel\Shared\ZipArchive";
-    const ZIPARCHIVE = "\ZipArchive";
+    const PCLZIP     = "\\ZExcel\\Shared\\ZipArchive";
+    const ZIPARCHIVE = "\\ZipArchive";
 
     const CHART_RENDERER_JPGRAPH = "jpgraph";
 

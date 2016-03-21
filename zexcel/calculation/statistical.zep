@@ -86,13 +86,13 @@ class Statistical
         446315818741.9713286462081
     ];
     private static lg_c  = [
-        "-0.001910444077728",
-        "8.4171387781295e-4",
-        "-5.952379913043012e-4",
-        "7.93650793500350248e-4",
-        "-0.002777777777777681622553",
-        "0.08333333333333333331554247",
-        "0.0057083835261"
+        -0.001910444077728,
+        8.4171387781295,
+        -0.0005952379913043012,
+        0.000793650793500350248,
+        -0.002777777777777681622553,
+        0.08333333333333333331554247,
+        0.0057083835261
     ];
 
     // Rough estimate of the fourth root of logGamma_xBig
@@ -457,12 +457,12 @@ class Statistical
         
         let p0 = 1.000000000190015;
         let p = [
-            1: "76.18009172947146",
-            2: "-86.50532032941677",
-            3: "24.01409824083091",
-            4: "-1.231739572450155",
-            5: "1.208650973866179e-3",
-            6: "-5.395239384953e-6"
+            1: 76.18009172947146,
+            2: -86.50532032941677,
+            3: 24.01409824083091,
+            4: -1.231739572450155,
+            5: 0.001208650973866179,
+            6: -0.000005395239384953
         ];
         
         if (data == 0.0) {
@@ -573,12 +573,13 @@ class Statistical
     }
 
 
-    private static function inverseNcdf2(prob)
+    private static function inverseNcdf2(double prob)
     {
         //    Approximation of inverse standard normal CDF developed by
         //    B. Moro, "The Full Monte," Risk 8(2), Feb 1995, 57-58.
 
-        float a1 = 2.50662823884,
+        float
+            a1 = 2.50662823884,
             a2 = -18.61500062529,
             a3 = 41.39119773534,
             a4 = -25.44106049637,
@@ -590,13 +591,13 @@ class Statistical
 
             c1 = 0.337475482272615,
             c2 = 0.976169019091719,
-            c3 = 0.160797971491821;
-        var c4 = floatval("2.76438810333863e-02"),
-            c5 = floatval("3.8405729373609e-03"),
-            c6 = floatval("3.951896511919e-04"),
-            c7 = floatval("3.21767881768e-05"),
-            c8 = floatval("2.888167364e-07"),
-            c9 = floatval("3.960315187e-07"),
+            c3 = 0.160797971491821,
+            c4 = 0.0276438810333863,
+            c5 = 0.0038405729373609,
+            c6 = 0.0003951896511919,
+            c7 = 0.0000321767881768,
+            c8 = 0.0000002888167364,
+            c9 = 0.0000003960315187,
             y, z;
 
         let y = prob - 0.5;
@@ -606,9 +607,9 @@ class Statistical
             let z = y * (((a4 * z + a3) * z + a2) * z + a1) / ((((b4 * z + b3) * z + b2) * z + b1) * z + 1);
         } else {
             if (y > 0) {
-                let z = log(-log(1 - prob));
+                let z = 0.0 + log(-log(1 - prob));
             } else {
-                let z = log(-log(prob));
+                let z = 0.0 + log(-log(prob));
             }
             
             let z = c1 + z * (c2 + z * (c3 + z * (c4 + z * (c5 + z * (c6 + z * (c7 + z * (c8 + z * c9)))))));
@@ -3434,11 +3435,10 @@ class Statistical
         if (!is_null(aMean)) {
             let aCount = -1;
             for k, arg in aArgs {
-                if ((is_bool(arg)) &&
-                    (!\ZExcel\Calculation\Functions::isMatrixValue(k))) {
+                if ((is_bool(arg)) && (!\ZExcel\Calculation\Functions::isMatrixValue(k))) {
                 } else {
                     // Is it a numeric value?
-                    if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) & (arg != "")))) {
+                    if (is_numeric(arg) || is_bool(arg) || (is_string(arg) && arg != "")) {
                         if (is_bool(arg)) {
                             let arg = (int) arg;
                         } else {
@@ -3458,7 +3458,7 @@ class Statistical
                 }
             }
 
-            if ((aCount > 0) && (returnValue >= 0)) {
+            if (aCount > 0 && returnValue >= 0) {
                 return sqrt(returnValue / aCount);
             }
         }
@@ -3541,7 +3541,7 @@ class Statistical
                     (!\ZExcel\Calculation\Functions::isMatrixValue(k))) {
                 } else {
                     // Is it a numeric value?
-                    if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) & (arg != "")))) {
+                    if (is_numeric(arg) || is_bool(arg) || (is_string(arg) && arg != "")) {
                         if (is_bool(arg)) {
                             let arg = (int) arg;
                         } else {
@@ -3915,16 +3915,15 @@ class Statistical
         // Loop through arguments
         let aArgs = \ZExcel\Calculation\Functions::flattenArrayIndexed(func_get_args());
         let aCount = 0;
+        
         for k, arg in aArgs {
-            if ((is_string(arg)) &&
-                (\ZExcel\Calculation\Functions::isValue(k))) {
+            if (is_string(arg) && \ZExcel\Calculation\Functions::isValue(k)) {
                 return \ZExcel\Calculation\Functions::VaLUE();
             } else {
-                if ((is_string(arg)) &&
-                    (!\ZExcel\Calculation\Functions::isMatrixValue(k))) {
+                if (is_string(arg) && !\ZExcel\Calculation\Functions::isMatrixValue(k)) {
                 } else {
                     // Is it a numeric value?
-                    if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) & (arg != "")))) {
+                    if (is_numeric(arg) || is_bool(arg) || (is_string(arg) && arg != "")) {
                         if (is_bool(arg)) {
                             let arg = (int) arg;
                         } else {
@@ -4030,7 +4029,7 @@ class Statistical
             } else {
                 if (!is_string(arg) || \ZExcel\Calculation\Functions::isMatrixValue(k)) {
                     // Is it a numeric value?
-                    if ((is_numeric(arg)) || (is_bool(arg)) || ((is_string(arg) & (arg != "")))) {
+                    if (is_numeric(arg) || is_bool(arg) || (is_string(arg) && arg != "")) {
                         if (is_bool(arg)) {
                             let arg = (int) arg;
                         } else {

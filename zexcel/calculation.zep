@@ -4220,7 +4220,7 @@ class Calculation
         let pFunction = strtoupper (pFunction);
         
         if (isset(self::PHPExcelFunctions[pFunction])) {
-            return (self::PHPExcelFunctions[pFunction]["functionCall"] != "\ZExcel\Calculation\Functions::DUMMY");
+            return (self::PHPExcelFunctions[pFunction]["functionCall"] != "\\ZExcel\\Calculation\\Functions::DUMMY");
         } else {
             return false;
         }
@@ -4234,7 +4234,7 @@ class Calculation
         let returnValue = [];
         // Loop functions
         for functionName, functionn in self::PHPExcelFunctions {
-            if (functionn["functionCall"] != "\ZExcel\Calculation\Functions::DUMMY") {
+            if (functionn["functionCall"] != "\\ZExcel\\Calculation\\Functions::DUMMY") {
                 let returnValue[functionName] = new \ZExcel\Calculation\Functionn(functionn["category"], functionName, functionn["functionCall"]);
             }
         }
@@ -4261,7 +4261,7 @@ class Calculation
         
         // Loop functions
         for functionName, functionn in self::PHPExcelFunctions {
-            if (functionn["functionCall"] != "\ZExcel\Calculation\Functions::DUMMY") {
+            if (functionn["functionCall"] != "\\ZExcel\\Calculation\\Functions::DUMMY") {
                 let returnValue[] = functionName;
             }
         }
