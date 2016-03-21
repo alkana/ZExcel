@@ -58,7 +58,7 @@ class AdvancedValueBinder extends DefaultValueBinder implements IValueBinder
                 cell->getWorksheet()
                     ->getStyle(cell->getCoordinate())
                     ->getNumberFormat()
-                    ->setFormatCode("??/??");
+                    ->setFormatCode("\?\?/\?\?");
                 
                 return true;
             } else {
@@ -75,7 +75,7 @@ class AdvancedValueBinder extends DefaultValueBinder implements IValueBinder
                     cell->getWorksheet()
                         ->getStyle(cell->getCoordinate())
                         ->getNumberFormat()
-                        ->setFormatCode("# ??/??");
+                        ->setFormatCode("# \?\?/\?\?");
                     
                     return true;
                 }

@@ -278,7 +278,7 @@ class Cell
                 let result = "#N/A";
                 
                 throw new \ZExcel\Calculation\Exception(
-                    this->getWorksheet()->getTitle()."!".this->getCoordinate()." -> ".ex->getMessage()
+                    this->getWorksheet()->getTitle() . "!" . this->getCoordinate() . " -> " . ex->getMessage()
                 );
             }
             

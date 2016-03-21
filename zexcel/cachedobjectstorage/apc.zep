@@ -70,7 +70,7 @@ class Apc extends CacheBase implements ICache
     }
 
     /**
-     * Is a value set in the current \ZExcel\CachedObjectStorage_ICache for an indexed cell?
+     * Is a value set in the current \ZExcel\CachedObjectStorage\ICache for an indexed cell?
      *
      * @access  public
      * @param   string  pCoord  Coordinate address of the cell to check
@@ -80,13 +80,16 @@ class Apc extends CacheBase implements ICache
     public function isDataSet(pCoord)
     {
         var success;
+        
         // Check if the requested entry is the current object, or exists in the cache
         if (parent::isDataSet(pCoord)) {
             if (this->currentObjectID == pCoord) {
                 return true;
             }
+            
             // Check if the requested entry still exists in apc
-            let success = apc_fetch(this->cachePrefix.pCoord.".cache");
+            let success = apc_fetch(this->cachePrefix . pCoord . ".cache");
+            
             if (success === false) {
                 // Entry no longer exists in APC, so clear it from the cache array
                 parent::deleteCacheData(pCoord);

@@ -1318,12 +1318,13 @@ class Worksheet implements IComparable
        // Worksheet reference?
         if (strpos(pCoordinate, "!") !== false) {
             let worksheetReference = \ZExcel\Worksheet::extractSheetTitle(pCoordinate, true);
-            
             return this->parent->getSheetByName(worksheetReference[0])->cellExists(strtoupper(worksheetReference[1]));
         }
-
+        
         // Named range?
-        if ((!preg_match("/^" . \ZExcel\Calculation::CALCULATION_REGEXP_CELLREF . "/i", pCoordinate)) && (preg_match("/^" . \ZExcel\Calculation::CALCULATION_REGEXP_NAMEDRANGE . "/i", pCoordinate))) {
+        if ((!preg_match("/^" . \ZExcel\Calculation::CALCULATION_REGEXP_CELLREF . "$/i", pCoordinate))
+                && (preg_match("/^" . \ZExcel\Calculation::CALCULATION_REGEXP_NAMEDRANGE . "$/i", pCoordinate))) {
+            
             let namedRange = \ZExcel\NamedRange::resolveRange(pCoordinate, this);
             
             if (namedRange !== null) {
@@ -1340,19 +1341,18 @@ class Worksheet implements IComparable
                 return false;
             }
         }
-
+        
         // Uppercase coordinate
         let pCoordinate = strtoupper(pCoordinate);
 
         if (strpos(pCoordinate, ":") !== false || strpos(pCoordinate, ",") !== false) {
             throw new \ZExcel\Exception("Cell coordinate can not be a range of cells.");
         } else {
-            if (strpos(pCoordinate, "") !== false) {
+            if (strpos(pCoordinate, "$") !== false) {
                 throw new \ZExcel\Exception("Cell coordinate must not be absolute.");
             } else {
                 // Coordinates
                 \ZExcel\Cell::coordinateFromString(pCoordinate);
-    
                 // Cell exists?
                 return this->cellCollection->isDataSet(pCoordinate);
             }

@@ -2591,7 +2591,7 @@ class Calculation
         }
     }
     
-    public function calculateCellValue(<\ZExcel\Cell> pCell = null, var resetLog = null)
+    public function calculateCellValue(<\ZExcel\Cell> pCell = null, var resetLog = false)
     {
         var returnArrayAsType, result, cellAddress, e, testResult, r, c;
         
@@ -2604,7 +2604,7 @@ class Calculation
         if (resetLog) {
             //    Initialise the logging settings if requested
             let this->formulaError = null;
-            this->_debugLog->clearLog();
+            
             this->_cyclicReferenceStack->clear();
             let this->cyclicFormulaCount = 1;
 
@@ -2625,6 +2625,7 @@ class Calculation
         } catch \ZExcel\Exception, e {
             let cellAddress = array_pop(this->cellStack);
             this->workbook->getSheetByName(cellAddress["sheet"])->getCell(cellAddress["cell"]);
+            
             throw new \ZExcel\Calculation\Exception(e->getMessage());
         }
         
@@ -3760,6 +3761,9 @@ class Calculation
                             
                             if (pCellParent !== null) {
                                 let cellValue = this->extractCellRange(cellRef, this->workbook->getSheetByName(sheet1), false);
+                                
+                                let cellRef = array_shift(cellValue);
+                                let cellValue = array_shift(cellValue);
                             } else {
                                 return this->raiseFormulaError("Unable to access Cell Reference");
                             }
@@ -3842,115 +3846,135 @@ class Calculation
                 }
 
             // if the token is a unary operator, pop one value off the stack, do the operation, and push it back on
-            } elseif ((token === "~") || (token === "%")) {
-                
-                let arg = stack->pop();
-                
-                if (arg === null) {
-                    return this->raiseFormulaError("Internal error - Operand value missing from stack");
-                }
-                
-                let arg = arg["value"];
-                
-                if (token === "~") {
-                    let multiplier = -1;
-                } else {
-                    let multiplier = 0.01;
-                }
-                
-                if (is_array(arg)) {
-                    let tmp = self::checkMatrixOperands(arg, multiplier, 2);
+            } else {
+                if ((token === "~") || (token === "%")) {
+                    let arg = stack->pop();
                     
-                            let arg = array_shift(tmp);
-                            let multiplier = array_shift(tmp);
-                    
-                    try {
-                        let matrix1 = new \ZExcel\Shared\JAMA\Matrix();
-                        call_user_func([matrix1, "initialize"], arg);
-                        
-                        let matrixResult = call_user_func([matrix1, "arrayTimesEquals"], multiplier);
-                        let result = matrixResult->getArray();
-                    } catch \ZExcel\Exception, ex {
-                        this->_debugLog->writeDebugLog("JAMA Matrix Exception: ", ex->getMessage());
-                        let result = "#VALUE!";
+                    if (arg === null) {
+                        return this->raiseFormulaError("Internal error - Operand value missing from stack");
                     }
                     
-                    stack->push("Value", result);
-                } else {
-                    this->executeNumericBinaryOperation(cellID, multiplier, arg, "*", "arrayTimesEquals", stack);
-                }
-
-            } elseif (preg_match("/^" . self::CALCULATION_REGEXP_CELLREF . "$/i", token, matches)) {
-                    let cellRef = null;
+                    let arg = arg["value"];
+                    
+                    if (token === "~") {
+                        let multiplier = -1;
+                    } else {
+                        let multiplier = 0.01;
+                    }
+                    
+                    if (is_array(arg)) {
+                        let tmp = self::checkMatrixOperands(arg, multiplier, 2);
+                        
+                                let arg = array_shift(tmp);
+                                let multiplier = array_shift(tmp);
+                        
+                        try {
+                            let matrix1 = new \ZExcel\Shared\JAMA\Matrix();
+                            call_user_func([matrix1, "initialize"], arg);
                             
-                            if (isset(matches[8])) {
-                                if (pCell === null) {
-                                    let cellValue = \ZExcel\Calculation\Functions::ReF();
-                                } else {
-                                    let cellRef = matches[6] . matches[7] . ":" . matches[9] . matches[10];
+                            let matrixResult = call_user_func([matrix1, "arrayTimesEquals"], multiplier);
+                            let result = matrixResult->getArray();
+                        } catch \ZExcel\Exception, ex {
+                            this->_debugLog->writeDebugLog("JAMA Matrix Exception: ", ex->getMessage());
+                            let result = "#VALUE!";
+                        }
+                        
+                        stack->push("Value", result);
+                    } else {
+                        this->executeNumericBinaryOperation(cellID, multiplier, arg, "*", "arrayTimesEquals", stack);
+                    }
+                    
+                } else {
+                    let tmp = preg_match("/^" . self::CALCULATION_REGEXP_CELLREF . "$/i", token, matches);
+                    
+                    if (tmp === 1) {
+                        let cellRef = null;
+                        
+                        if (isset(matches[8])) {
+                            if (pCell === null) {
+                                let cellValue = \ZExcel\Calculation\Functions::ReF();
+                            } else {
+                                let cellRef = matches[6] . matches[7] . ":" . matches[9] . matches[10];
+                                
+                                if (strlen(matches[2]) > 0) {
+                                    let matches[2] = trim(matches[2], "\"\"");
                                     
-                                    if (strlen(matches[2]) > 0) {
-                                        let matches[2] = trim(matches[2], "\"\"");
+                                    if ((strpos(matches[2], "[") !== false) || (strpos(matches[2], "]") !== false)) {
+                                        return this->raiseFormulaError("Unable to access External Workbook");
+                                    }
+                                    
+                                    let matches[2] = trim(matches[2], "\"\"");
+                                    
+                                    if (pCellParent !== null) {
+                                        let cellValue = this->extractCellRange(cellRef, this->workbook->getSheetByName(matches[2]), false);
                                         
-                                        if ((strpos(matches[2], "[") !== false) || (strpos(matches[2], "]") !== false)) {
-                                            return this->raiseFormulaError("Unable to access External Workbook");
-                                        }
-                                        
-                                        let matches[2] = trim(matches[2], "\"\"");
-                                        
-                                        if (pCellParent !== null) {
-                                            let cellValue = this->extractCellRange(cellRef, this->workbook->getSheetByName(matches[2]), false);
-                                        } else {
-                                            return this->raiseFormulaError("Unable to access Cell Reference");
-                                        }
+		                                let cellRef = array_shift(cellValue);
+		                                let cellValue = array_shift(cellValue);
                                     } else {
-                                        if (pCellParent !== null) {
-                                            let cellValue = this->extractCellRange(cellRef, pCellWorksheet, false);
-                                        } else {
-                                            return this->raiseFormulaError("Unable to access Cell Reference");
-                                        }
+                                        return this->raiseFormulaError("Unable to access Cell Reference");
+                                    }
+                                } else {
+                                    if (pCellParent !== null) {
+                                        let cellValue = this->extractCellRange(cellRef, pCellWorksheet, false);
+                                        
+                                        let cellRef = array_shift(cellValue);
+                                        let cellValue = array_shift(cellValue);
+                                    } else {
+                                        return this->raiseFormulaError("Unable to access Cell Reference");
                                     }
                                 }
+                            }
+                        } else {
+                            if (pCell === null) {
+                                let cellValue = \ZExcel\Calculation\Functions::ReF();
                             } else {
-                                if (pCell === null) {
-                                    let cellValue = \ZExcel\Calculation\Functions::ReF();
-                                } else {
-                                    let cellRef = matches[6] . matches[7];
+                                let cellRef = matches[6] . matches[7];
+                                
+                                if (strlen(matches[2]) > 0) {
+                                    let matches[2] = trim(matches[2], "\"\"");
                                     
-                                    if (strlen(matches[2]) > 0) {
-                                        let matches[2] = trim(matches[2], "\"\"");
+                                    if ((strpos(matches[2], "[") !== false) || (strpos(matches[2], "]") !== false)) {
+                                        //    It"s a Reference to an external workbook (not currently supported)
+                                        return this->raiseFormulaError("Unable to access External Workbook");
+                                    }
+                                    
+                                    if (pCellParent !== null) {
+                                        let cellSheet = this->workbook->getSheetByName(matches[2]);
                                         
-                                        if ((strpos(matches[2], "[") !== false) || (strpos(matches[2], "]") !== false)) {
-                                            //    It"s a Reference to an external workbook (not currently supported)
-                                            return this->raiseFormulaError("Unable to access External Workbook");
-                                        }
-                                        
-                                        if (pCellParent !== null) {
-                                            let cellSheet = this->workbook->getSheetByName(matches[2]);
+                                        if (cellSheet && cellSheet->cellExists(cellRef)) {
+                                            let cellValue = this->extractCellRange(cellRef, this->workbook->getSheetByName(matches[2]), false);
                                             
-                                            if (cellSheet && cellSheet->cellExists(cellRef)) {
-                                                let cellValue = this->extractCellRange(cellRef, this->workbook->getSheetByName(matches[2]), false);
-                                                pCell->attach(pCellParent);
-                                            } else {
-                                                let cellValue = null;
-                                            }
-                                        } else {
-                                            return this->raiseFormulaError("Unable to access Cell Reference");
-                                        }
-                                    } else {
-                                        if (pCellParent->isDataSet(cellRef)) {
-                                            let cellValue = this->extractCellRange(cellRef, pCellWorksheet, false);
+	                                        let cellRef = array_shift(cellValue);
+	                                        let cellValue = array_shift(cellValue);
+	                                        
                                             pCell->attach(pCellParent);
                                         } else {
                                             let cellValue = null;
                                         }
+                                    } else {
+                                        return this->raiseFormulaError("Unable to access Cell Reference");
+                                    }
+                                } else {
+                                    if (pCellParent->isDataSet(cellRef)) {
+                                        let cellValue = this->extractCellRange(cellRef, pCellWorksheet, false);
+                                        
+                                        let cellRef = array_shift(cellValue);
+                                        let cellValue = array_shift(cellValue);
+                                        
+                                        pCell->attach(pCellParent);
+                                    } else {
+                                        let cellValue = null;
                                     }
                                 }
                             }
-                            stack->push("Value", cellValue, cellRef);
-            
-                        // if the token is a function, pop arguments off the stack, hand them to the function, and push the result back on
-                        } elseif (preg_match("/^" . self::CALCULATION_REGEXP_FUNCTION . "$/i", token, matches)) {
+                        }
+                        stack->push("Value", cellValue, cellRef);
+                        
+                    // if the token is a function, pop arguments off the stack, hand them to the function, and push the result back on
+                    } else {
+                        let tmp = preg_match("/^" . self::CALCULATION_REGEXP_FUNCTION . "$/i", token, matches);
+                        
+                        if (tmp === 1) {
                             let functionName = matches[1];
                             let argCount = stack->pop();
                             let argCount = argCount["value"];
@@ -4005,7 +4029,7 @@ class Calculation
                                     let args[] = cellID;
                                     let argArrayVals[] = this->showValue(cellID);
                                 }
-            
+                                
                                 if (functionName != "MKMATRIX") {
                                     if (this->_debugLog->getWriteDebugLog()) {
                                         krsort(argArrayVals);
@@ -4028,12 +4052,11 @@ class Calculation
                                 
                                 stack->push("Value", self::wrapResult(result));
                             }
-            
+                            
                         } else {
                             // if the token is a number, boolean, string or an Excel error, push it onto the stack
                             if (isset(self::excelConstants[strtoupper(token)])) {
                                 let excelConstant = strtoupper(token);
-            //                    echo "Token is a PHPExcel constant: ".excelConstant."<br />";
                                 stack->push("Constant Value", self::excelConstants[excelConstant]);
                             } else {
                                 if ((is_numeric(token)) || (token === null) || (is_bool(token)) || (token == "") || (substr(token, 0, 1) == "\"") || (substr(token, 0, 1) == "#")) {
@@ -4052,7 +4075,9 @@ class Calculation
                                 }
                             }
                         }
-                    
+                    }
+                }
+            }
         }
         
         // when we"re out of tokens, the stack should have a single element, the final result
@@ -4090,11 +4115,13 @@ class Calculation
                     stack->push("Value", operand);
                     
                     return false;
-                } elseif (!\ZExcel\Shared\Stringg::convertToNumberIfFraction(operand)) {
-                    //    If not a numeric or a fraction, then it's a text string, and so can't be used in mathematical binary operations
-                    stack->push("Value", "#VALUE!");
-                    
-                    return false;
+                } else {
+                    if (!\ZExcel\Shared\Stringg::convertToNumberIfFraction(operand)) {
+                        //    If not a numeric or a fraction, then it's a text string, and so can't be used in mathematical binary operations
+                        stack->push("Value", "#VALUE!");
+                        
+                        return false;
+                    }
                 }
             }
         }
@@ -4210,9 +4237,57 @@ class Calculation
         throw new \Exception("Not implemented yet!");
     }
     
-    public function extractCellRange(pRange = "A1", <\ZExcel\Worksheet> pSheet = null, resetLog = true)
+    public function extractCellRange(var pRange = "A1", <\ZExcel\Worksheet> pSheet = null, var resetLog = true) -> array
     {
-        throw new \Exception("Not implemented yet!");
+        var pSheetName, aReferences, reference, tmp, currentCol, currentRow;
+        array returnValue = [];
+
+        if (pSheet !== null) {
+            let pSheetName = pSheet->getTitle();
+            
+            if (strpos(pRange, "!") !== false) {
+                let tmp = \ZExcel\Worksheet::extractSheetTitle(pRange, true);
+                let pRange = tmp[1];
+                let pSheetName = tmp[0];
+                let pSheet = this->workbook->getSheetByName(pSheetName);
+            }
+            
+            // Extract range
+            let aReferences = \ZExcel\Cell::extractAllCellReferencesInRange(pRange);
+            let pRange = pSheetName . "!" . pRange;
+            
+            let currentCol = "";
+            let currentRow = "";
+            
+            if (!isset(aReferences[1])) {
+                // Single cell in range
+                sscanf(aReferences[0], "%[A-Z]%d", currentCol, currentRow);
+                
+                
+                if (pSheet->cellExists(aReferences[0])) {
+                    let returnValue[currentRow][currentCol] = pSheet->getCell(aReferences[0])->getCalculatedValue(resetLog);
+                } else {
+                    let returnValue[currentRow][currentCol] = null;
+                }
+            } else {
+                // Extract cell data for all cells in the range
+                for reference in aReferences {
+                    // Extract range
+                    sscanf(reference, "%[A-Z]%d", currentCol, currentRow);
+                    
+                    if (pSheet->cellExists(reference)) {
+                        let returnValue[currentRow][currentCol] = pSheet->getCell(reference)->getCalculatedValue(resetLog);
+                    } else {
+                        let returnValue[currentRow][currentCol] = null;
+                    }
+                }
+            }
+        }
+
+        return [
+            pRange, /// references
+            returnValue
+        ];
     }
     
     public function isImplemented(pFunction = "")

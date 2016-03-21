@@ -331,7 +331,7 @@ class NumberFormat extends Supervisor implements ZIComparable
             let self::builtInFormats[10] = "0.00%";
             let self::builtInFormats[11] = "0.00E+00";
             let self::builtInFormats[12] = "# ?/?";
-            let self::builtInFormats[13] = "# ??/??";
+            let self::builtInFormats[13] = "# \?\?/\?\?";
             let self::builtInFormats[14] = "m/d/yyyy";                     // Despite ECMA 'mm-dd-yy';
             let self::builtInFormats[15] = "d-mmm-yy";
             let self::builtInFormats[16] = "d-mmm";
@@ -370,7 +370,7 @@ class NumberFormat extends Supervisor implements ZIComparable
             let self::builtInFormats[67] = "t0%";
             let self::builtInFormats[68] = "t0.00%";
             let self::builtInFormats[69] = "t# ?/?";
-            let self::builtInFormats[70] = "t# ??/??";
+            let self::builtInFormats[70] = "t# \?\?/\?\?";
 
             // Flip array (for faster lookups)
             let self::flippedBuiltInFormats = array_flip(self::builtInFormats);
@@ -691,7 +691,7 @@ class NumberFormat extends Supervisor implements ZIComparable
 
         //  Check for date/time characters (not inside quotes)
         let matches = [];
-        if (preg_match("/(\[\$[A-Z]*-[0-9A-F]*\])*[hmsdy](?=(?:[^\"]|\"[^\"]*\")*$)/miu", format, matches)) {
+        if (preg_match("/(\\[\\$[A-Z]*-[0-9A-F]*\\])*[hmsdy](?=(?:[^\"]|\"[^\"]*\")*$)/miu", format, matches)) {
             // datetime format
             let sections = self::formatAsDate(value, format);
             let value = sections[0];
@@ -735,7 +735,7 @@ class NumberFormat extends Supervisor implements ZIComparable
                     
                     let m = [];
                     
-                    if (preg_match("/#?.*\?\/\?/", format, m)) {
+                    if (preg_match("/#?.*\\?\/\\?/", format, m)) {
                         if (value != (int) value) {
                             let sections = self::formatAsFraction(value, format);
                             let value  = sections[0];
@@ -750,9 +750,9 @@ class NumberFormat extends Supervisor implements ZIComparable
                         // Strip #
                         let format = preg_replace("/\\#/", strval(0), format);
     
-                        let n = "/\[[^\]]+\]/";
+                        let n = "/\\[[^\\]]+\\]/";
                         let m = preg_replace(n, "", format);
-                        let number_regex = "/(0+)(\.?)(0*)/";
+                        let number_regex = "/(0+)(\\.?)(0*)/";
                         let matches = [];
                         
                         if (preg_match(number_regex, m, matches)) {
@@ -775,7 +775,7 @@ class NumberFormat extends Supervisor implements ZIComparable
                                     //    Scientific format
                                     let value = sprintf("%5.2E", value);
                                 } else {
-                                    if (preg_match("/0([^\d\.]+)0/", format)) {
+                                    if (preg_match("/0([^\\d\\.]+)0/", format)) {
                                         let value = self::complexNumberFormatMask(value, format);
                                     } else {
                                         let sprintf_pattern = "%0" . minWidth . "." . strlen(right) . "f";
@@ -787,7 +787,7 @@ class NumberFormat extends Supervisor implements ZIComparable
                         }
                     }
                 
-                    if (preg_match("/\[\$(.*)\]/u", format, m)) {
+                    if (preg_match("/\\[\\$(.*)\\]/u", format, m)) {
                         //  Currency or Accounting
                         let currencyFormat = m[0];
                         let currencyCode = m[1];
@@ -797,7 +797,7 @@ class NumberFormat extends Supervisor implements ZIComparable
                             let currencyCode = \ZExcel\Shared\Stringg::getCurrencyCode();
                         }
                         
-                        let value = preg_replace("/\[\$([^\]]*)\]/u", currencyCode, value);
+                        let value = preg_replace("/\\[\\$([^\\]]*)\\]/u", currencyCode, value);
                     }
                 }
             }

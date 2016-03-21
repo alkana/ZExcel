@@ -7,8 +7,8 @@ class AutoFilter
      *
      *    @var    array
      */
-    private static _toReplace   = [".*", ".",  "~",  "\*",  "\?"];
-    private static _fromReplace = ["\*", "\?", "~~", "~.*", "~.?"];
+    private static _toReplace   = [".*", ".",  "~",  "\\*",  "\\?"];
+    private static _fromReplace = ["\\*", "\?", "~~", "~.*", "~.?"];
     
     /**
      * Autofilter Worksheet
@@ -474,7 +474,7 @@ class AutoFilter
                     let this->{key} = clone value;
                 }
             } else {
-                if ((is_array(value)) && (key == "_olumns")) {
+                if ((is_array(value)) && (key == "columns")) {
                     //    The columns array of \ZExcel\Worksheet\AutoFilter objects
                     let aTmp = [];
                     
