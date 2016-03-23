@@ -562,7 +562,7 @@ class Functions
     public static function flattenSingleValue(var value = "")
     {
         while (is_array(value)) {
-            let value = array_pop(value);
+            let value = end(value);
         }
 
         return value;

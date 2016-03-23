@@ -1219,10 +1219,10 @@ class Worksheet implements IComparable
                 return namedRange->getWorksheet()->getCell(pCoordinate, createIfNotExists);
             }
         }
-
+        
         // Uppercase coordinate
         let pCoordinate = strtoupper(pCoordinate);
-
+        
         if (strpos(pCoordinate, ":") !== false || strpos(pCoordinate, ",") !== false) {
             throw new \ZExcel\Exception("Cell coordinate can not be a range of cells.");
         } else {
@@ -1230,7 +1230,7 @@ class Worksheet implements IComparable
                 throw new \ZExcel\Exception("Cell coordinate must not be absolute.");
             }
         }
-
+        
         // Create new cell object, if required
         return createIfNotExists ? this->createNewCell(pCoordinate) : null;
     }

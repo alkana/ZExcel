@@ -2408,7 +2408,7 @@ class Engineering
      */
     public static function imsum()
     {
-        var returnValue, activeSuffix, aArgs, arg, parsedComplex;
+        var returnValue = null, activeSuffix, aArgs, arg, parsedComplex;
         
         let returnValue = self::parseComplex(strval(0));
         let activeSuffix = "";
@@ -2450,7 +2450,7 @@ class Engineering
      */
     public static function improduct()
     {
-        var returnValue, activeSuffix, aArgs, arg, parsedComplex, workValue;
+        var returnValue = null, activeSuffix, aArgs, arg, parsedComplex, workValue;
         
         let returnValue = self::parseComplex("1");
         let activeSuffix = "";

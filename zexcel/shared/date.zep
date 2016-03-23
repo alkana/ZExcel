@@ -90,7 +90,7 @@ class Date
      */
     public static function ExcelToPHP(double dateValue = 0, boolean adjustToTimezone = false, var timezone = null)
     {
-        var returnValue, hours, mins, secs, timezoneAdjustment;
+        var returnValue = null, hours, mins, secs, timezoneAdjustment;
         double myexcelBaseDate, utcDays;
         
         if (self::excelBaseDate == self::CALENDAR_WINDOWS_1900) {

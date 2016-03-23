@@ -61,7 +61,7 @@ class Logical
      */
     public static function logical_and() -> boolean
     {
-        var returnValue, aArgs, arg, argCount;
+        var returnValue = null, aArgs, arg, argCount;
         
         // Return value
         let returnValue = true;
@@ -127,7 +127,7 @@ class Logical
      */
     public static function logical_or() -> boolean
     {
-        var returnValue, aArgs, arg, argCount;
+        var returnValue = null, aArgs, arg, argCount;
         
         // Return value
         let returnValue = false;

@@ -2556,15 +2556,15 @@ class Calculation
      * @param mixed value
      * @return mixed
      */
-    public static function unwrapResult(value)
+    public static function unwrapResult(var value)
     {
         if (is_string(value)) {
-            if ((isset(value[0])) && (value[0] == "\"") && (substr(value,-1) == "\"")) {
-                return substr(value,1,-1);
+            if (strlen(value) > 0 && substr(value, 0, 1) == "\"" && substr(value, -1) == "\"") {
+                return substr(value, 1, -1);
             }
         //    Convert numeric errors to NaN error
         } else {
-            if((is_float(value)) && ((is_nan(value)) || (is_infinite(value)))) {
+            if(is_float(value) && (is_nan(value) || is_infinite(value))) {
                 return \ZExcel\Calculation\Functions::NaN();
             }
         }
@@ -2658,6 +2658,7 @@ class Calculation
             
             let result = array_shift(testResult);
         }
+        
         let self::returnArrayAsType = returnArrayAsType;
         
         if (result === null) {
@@ -3045,7 +3046,7 @@ class Calculation
      * @param    mixed        value    First matrix operand
      * @return    mixed
      */
-    private function showValue(value)
+    private function showValue(var value)
     {
         var row, testArray, returnMatrix, pad, rpad;
         
@@ -3290,7 +3291,10 @@ class Calculation
                 let d = stack->last(2);
                 
                 let matches = [];
-                if (preg_match("/^" . self::CALCULATION_REGEXP_FUNCTION . "$/i", d["value"], matches)) {    //    Did this parenthesis just close a function?
+                
+                let o2 = preg_match("/^" . self::CALCULATION_REGEXP_FUNCTION . "$/i", d["value"], matches);
+                
+                if (o2 === 1) {    //    Did this parenthesis just close a function?
                     let functionName = matches[1]; // Get the function name
                     
                     let d = stack->pop();
@@ -3406,9 +3410,9 @@ class Calculation
                 let val = match[1];
                 let length = strlen(val);
                 let matches = [];
-
+                
                 let o2 = preg_match("/^" . self::CALCULATION_REGEXP_FUNCTION . "$/i", val, matches);
-
+                
                 if (o2 === 1) {
                     let val = preg_replace("/\s/u", "", val);
                     
@@ -3436,7 +3440,7 @@ class Calculation
                     if (o2 === 1) {
                         // Watch for this case-change when modifying to allow cell references in different worksheets...
                         // Should only be applied to the actual cell column, not the worksheet name
-    
+                        
                         // If the last entry on the stack was a : operator, then we have a cell range reference
                         let testPrevOp = stack->last(1);
                         
@@ -3457,7 +3461,7 @@ class Calculation
                                 return this->raiseFormulaError("3D Range references are not yet supported");
                             }
                         }
-    
+                        
                         let output[] = ["type": "Cell Reference", "value": val, "reference": val];
                     } else {    // it"s a variable, constant, string, number or boolean
                         //    If the last entry on the stack was a : operator, then we may have a row or column range reference
@@ -3505,7 +3509,7 @@ class Calculation
                                 }
                             }
                         }
-    
+                        
                         let localeConstant = false;
                         
                         if (opCharacter == "\"") {
@@ -3606,7 +3610,7 @@ class Calculation
                 }
             }
         }
-
+        
         let op = stack->pop();
         
         while (op !== null) {    // pop everything off the stack and push onto output
@@ -4000,7 +4004,8 @@ class Calculation
                                 for i in range(0, argCount - 1) {
                                     let arg = stack->pop();
                                     let a = argCount - i - 1;
-                                    if ((passByReference) && (isset(self::PHPExcelFunctions[functionName]["passByReference"][a])) && (self::PHPExcelFunctions[functionName]["passByReference"][a])) {
+                                    
+                                    if (passByReference && isset(self::PHPExcelFunctions[functionName]["passByReference"][a]) && self::PHPExcelFunctions[functionName]["passByReference"][a]) {
                                         if (arg["reference"] === null) {
                                             let args[] = cellID;
                                             
@@ -4023,9 +4028,10 @@ class Calculation
                                     }
                                 }
                                 
-                                //    Reverse the order of the arguments
+                                // Reverse the order of the arguments
                                 krsort(args);
-                                if ((passByReference) && (argCount == 0)) {
+                                
+                                if (passByReference && argCount == 0) {
                                     let args[] = cellID;
                                     let argArrayVals[] = this->showValue(cellID);
                                 }
@@ -4040,6 +4046,7 @@ class Calculation
                                 if (passCellReference) {
                                     let args[] = pCell;
                                 }
+                                
                                 if (strpos(functionCall, "::") !== false) {
                                     let result = call_user_func_array(explode("::", functionCall), args);
                                 } else {
@@ -4303,7 +4310,7 @@ class Calculation
     
     public function listFunctions()
     {
-        var returnValue, functionName, functionn;
+        var returnValue = null, functionName, functionn;
         
         // Return value
         let returnValue = [];
@@ -4329,7 +4336,7 @@ class Calculation
     
     public function listFunctionNames()
     {
-        var returnValue, functionName, functionn;
+        var returnValue = null, functionName, functionn;
         
         // Return value
         let returnValue = [];

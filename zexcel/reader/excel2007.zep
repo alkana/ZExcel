@@ -235,11 +235,11 @@ class Excel2007 extends Abstrac implements IReader
     public function castToFormula(var c, var r, var cellDataType, var value, var calculatedValue, var sharedFormulas, var castBaseType)
     {
         var instance, sharedFormulas, master, current, difference;
-        
+
         let cellDataType    = "f";
         let value           = "=" . (string) c->f;
         let calculatedValue = call_user_func(["\\ZExcel\\Reader\\Excel2007", castBaseType], c);
-
+        
         // Shared formula?
         if (isset(c->f->t) && strtolower((string) c->f->t) == "shared") {
             let instance = (string) c->f->si;
@@ -859,7 +859,7 @@ class Excel2007 extends Abstrac implements IReader
                                                 }
                                                 break;
                                         }
-
+                                        
                                         // Check for numeric values
                                         if (is_numeric(value) && cellDataType != "s") {
                                             if (value == (int) value) {

@@ -269,7 +269,7 @@ class Cell
                         let result = array_pop(result);
                     }
                 }
-                
+            
             } catch ZExcel\Exception, ex {
                 if ((ex->getMessage() === "Unable to access External Workbook") && (this->calculatedValue !== null)) {
                     return this->calculatedValue; // Fallback for calculations referencing external files.
@@ -292,7 +292,7 @@ class Cell
                 return this->value->getPlainText();
             }
         }
-
+        
         return this->value;
     }
 

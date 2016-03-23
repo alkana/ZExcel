@@ -1590,7 +1590,7 @@ class Statistical
      */
     public static function devsq()
     {
-        var returnValue, aArgs, aMean, k, arg, aCount;
+        var returnValue = null, aArgs, aMean, k, arg, aCount;
         
         // Return value
         let returnValue = null;
@@ -1965,7 +1965,7 @@ class Statistical
      */
     public static function harMean()
     {
-        var returnValue, aArgs, aCount, arg;
+        var returnValue = null, aArgs, aCount, arg;
         
         // Return value
         let returnValue = \ZExcel\Calculation\Functions::Na();
@@ -2399,22 +2399,24 @@ class Statistical
      */
     public static function max()
     {
-        var returnValue, aArgs, arg;
+        var returnValue = null, aArgs, arg;
 
         // Loop through arguments
         let aArgs = \ZExcel\Calculation\Functions::flattenArray(func_get_args());
+        
         for arg in aArgs {
             // Is it a numeric value?
-            if ((is_numeric(arg)) && (!is_string(arg))) {
-                if ((is_null(returnValue)) || (arg > returnValue)) {
+            if (is_numeric(arg) && !is_string(arg)) {
+                if (is_null(returnValue) || arg > returnValue) {
                     let returnValue = arg;
                 }
             }
         }
-
+        
         if (is_null(returnValue)) {
             return 0;
         }
+        
         return returnValue;
     }
 
@@ -2434,7 +2436,7 @@ class Statistical
      */
     public static function maxA()
     {
-        var returnValue, aArgs, arg;
+        var returnValue = null, aArgs, arg;
 
         // Loop through arguments
         let aArgs = \ZExcel\Calculation\Functions::flattenArray(func_get_args());
@@ -2480,7 +2482,7 @@ class Statistical
      */
     public static function maxIf(aArgs, condition, sumArgs = [])
     {
-        var returnValue, testCondition, arg;
+        var returnValue = null, testCondition, arg;
 
         let aArgs = \ZExcel\Calculation\Functions::flattenArray(aArgs);
         let sumArgs = \ZExcel\Calculation\Functions::flattenArray(sumArgs);
@@ -2524,7 +2526,7 @@ class Statistical
      */
     public static function median()
     {
-        var returnValue, mArgs, aArgs, arg, mValueCount;
+        var returnValue = null, mArgs, aArgs, arg, mValueCount;
         
         let returnValue = \ZExcel\Calculation\Functions::NaN();
 
@@ -2573,7 +2575,7 @@ class Statistical
      */
     public static function min()
     {
-        var returnValue, aArgs, arg;
+        var returnValue = null, aArgs, arg;
 
         // Loop through arguments
         let aArgs = \ZExcel\Calculation\Functions::flattenArray(func_get_args());
@@ -2609,7 +2611,7 @@ class Statistical
      */
     public static function minA()
     {
-        var returnValue, aArgs, arg;
+        var returnValue = null, aArgs, arg;
 
         // Loop through arguments
         let aArgs = \ZExcel\Calculation\Functions::flattenArray(func_get_args());
@@ -2654,7 +2656,7 @@ class Statistical
      */
     public static function minIf(aArgs, condition, sumArgs = [])
     {
-        var returnValue, testCondition, arg;
+        var returnValue = null, testCondition, arg;
 
         let aArgs = \ZExcel\Calculation\Functions::flattenArray(aArgs);
         let sumArgs = \ZExcel\Calculation\Functions::flattenArray(sumArgs);
@@ -2739,7 +2741,7 @@ class Statistical
      */
     public static function mode()
     {
-        var returnValue, aArgs, arg;
+        var returnValue = null, aArgs, arg;
         array mArgs;
         
         let returnValue = \ZExcel\Calculation\Functions::Na();
@@ -3857,7 +3859,7 @@ class Statistical
      */
     public static function varFunc()
     {
-        var returnValue, summerA, summerB, aArgs, aCount, arg;
+        var returnValue = null, summerA, summerB, aArgs, aCount, arg;
         
         let returnValue = \ZExcel\Calculation\Functions::DiV0();
 
@@ -3905,7 +3907,7 @@ class Statistical
      */
     public static function vara()
     {
-        var returnValue, summerA, summerB, aArgs, aCount, k, arg;
+        var returnValue = null, summerA, summerB, aArgs, aCount, k, arg;
         
         let returnValue = \ZExcel\Calculation\Functions::DiV0();
 
@@ -3964,7 +3966,7 @@ class Statistical
      */
     public static function varp()
     {
-        var returnValue, summerA, summerB, aArgs, aCount, arg;
+        var returnValue = null, summerA, summerB, aArgs, aCount, arg;
         
         // Return value
         let returnValue = \ZExcel\Calculation\Functions::DiV0();
@@ -4011,7 +4013,7 @@ class Statistical
      */
     public static function varpa()
     {
-        var returnValue, summerA, summerB, aArgs, aCount, k, arg;
+        var returnValue = null, summerA, summerB, aArgs, aCount, k, arg;
         
         let returnValue = \ZExcel\Calculation\Functions::DiV0();
 
